@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+
+    <h:body >
+        <h:form styleClass="jsfcrud_list_form">
+            <h:panelGroup style="text-align: left ; margin-left: 20px"  layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" style="color: red" globalOnly="true" layout="table"/>
+                <h:outputText value="email or Username " />
+                <h:inputText id="username" value="#{login.username}" required="true" requiredMessage="Please enter username">
+                    <f:ajax event="blur" render="usernameMessage" />
+                </h:inputText>
+                <h:message id="usernameMessage" for="username" style="color: red"></h:message>
+                <br /><br />
+
+                <h:outputText value="Password " />
+                <h:inputSecret id="password" value="#{login.password}" required="true" requiredMessage="Please enter password">
+                    <f:ajax event="blur" render="passwordMessage" />
+                </h:inputSecret>
+                <h:message id="passwordMessage" for="password" style="color: red"></h:message>
+                <br /><br />
+                <h:commandButton action="#{login.login}"
+                                 value="Login">
+                </h:commandButton>
+            </h:panelGroup>
+        </h:form>
+    </h:body>
+
+
+</html>

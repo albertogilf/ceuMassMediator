@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>Login. CEU mass mediator</title>
+        </ui:define>
+
+
+        <ui:define name="intro-wrapper">
+            <div class="title">Login</div>
+            <div class="form" >
+                <h:form id="mainsearch" prependId="false">
+                    <table id="tablemainsearch" class="default">
+                        <tbody>
+                            <tr>
+                                <td colspan="2" align="right"> 
+                                    <!--<h:outputText value=" Tolerance (ppm) " pt:align="center"/>-->
+                                    <label for="username" style="float: top">email or Username: &nbsp;</label>
+                                </td>
+                                <td colspan="2" align="left">
+                                    <!-- Look the performance to do the validations in client instead of server -->
+                                    <p:inputText id="username" size="2" maxlength="10"  
+                                                 value="#{login.username}"
+                                                 required="true"
+                                                 pt:placeholder="Please enter username"
+                                                 style=" float: top; width: 300px"
+                                                 >
+                                        <f:ajax event="blur" render="usernameMessage" />
+                                    </p:inputText>
+                                    <p:message for="username" class="errormessage"></p:message>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="right"> 
+                                    <!--<h:outputText value=" Tolerance (ppm) " pt:align="center"/>-->
+                                    <label for="password" style="float: top">Password: &nbsp;</label>
+                                </td>
+                                <td colspan="2" align="left">
+                                    <!-- Look the performance to do the validations in client instead of server -->
+                                    <p:password id="password" size="2" maxlength="10"  
+                                                value="#{login.password}" 
+                                                required="true"
+                                                pt:placeholder="Please enter password"
+                                                style=" float: top; width: 300px"
+                                                >
+                                        <f:ajax event="blur" render="passwordMessage" />
+                                    </p:password>
+                                    <p:message for="password" class="errormessage"></p:message>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="right">
+                                    <p:messages id="messages" showDetail="true" autoUpdate="true" />
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <center>
+                        <p:commandButton class="button style3 small" action="#{login.login}" value="Login" />
+                    </center>
+                </h:form>
+            </div>
+        </ui:define>
+    </ui:composition>
+
+</html>
+
