@@ -47,6 +47,10 @@ public class NewCompounds implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
     private NewCompoundsHMDB ncHMDB;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private NewCompoundsInHouse ncInHouse;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
@@ -240,6 +244,31 @@ public class NewCompounds implements Serializable {
     public String obtainLMWebPage() {
         return WEB_COMPUESTO_LM + getLmId();
         //return "";
+    }
+    
+    public NewCompoundsInHouse getNcInHouse() {
+        return ncInHouse;
+    }
+
+    public void setNcLM(NewCompoundsInHouse ncInHouse) {
+        this.ncInHouse = ncInHouse;
+    }
+
+    public String getInHouseId() {
+        if (this.ncInHouse == null) {
+            return "";
+
+        } else {
+            return this.ncInHouse.getInHouseId();
+        }
+    }
+
+    public void setInHouseId(String ncInHouseId) {
+        this.ncInHouse.setInHouseId(ncInHouseId);
+    }
+
+    public String obtainInHouseWebPage() {
+        return getInHouseId();
     }
 
     public NewCompoundsHMDB getNcHMDB() {

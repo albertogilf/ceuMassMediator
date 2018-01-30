@@ -61,10 +61,27 @@
                             <li class="#{view.viewId == '/batch_advanced_search.xhtml'?'current':null}">
                                 <a href="batch_advanced_search.xhtml">Batch Advanced Search</a>
                             </li>
+                            <li class="#{view.viewId == '/browse_search.xhtml'?'current':null}">
+                                <a href="browse_search.xhtml">Browse Search</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="#{view.viewId == '/pathway_displayer.xhtml'?'current':null}">
                         <a href="pathway_displayer.xhtml">Pathway Displayer</a>
+                    </li>
+                    <li class="#{view.viewId.contains('oxidation') ? 'current':null}">
+                        <a href="">Oxidation</a>
+                        <ul>
+                            <li class="#{view.viewId == '/oxidation_lc.xhtml'?'current':null}">
+                                <a href="oxidation_lc.xhtml">Oxidation in long FA chain</a>
+                            </li>
+                            <li class="#{view.viewId == '/oxidation_sc.xhtml'?'current':null}">
+                                <a href="oxidation_sc.xhtml">Oxidation in short FA chain</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="#{view.viewId == '/qa.xhtml'?'current':null}">
+                        <a href="qa.xhtml">Spectral Controller</a>
                     </li>
                     <li class="#{view.viewId == '/manuals.xhtml'?'current':null}">
                         <a href="manuals.xhtml" target="_blank">Manual</a>
@@ -73,17 +90,28 @@
             </nav>
         </div>
 
-        <div id="beta" class="wrapper style1">
+        <!--<div id="beta" class="wrapper style1">
             <div class="container warning">
                 <img src="images/error_1.png" alt="Warning icon" height="32" style="vertical-align:middle;"></img>
                 <strong>CEU Mass Mediator is in Beta version</strong>. If you find 
                 any issue, we would love to hear about it. Please let us know at 
                 <script>getmailaddress('es', 'ceu', 'cembio');</script>.
             </div>
-        </div>
+        </div>-->
 
         <div id="intro-wrapper" class="wrapper style1">
             <ui:insert name="intro-wrapper">Default Intro Wrapper</ui:insert>
+        </div>
+        
+        <div id="version" class="wrapper style1">
+            <div class="container warning">
+                
+                <strong>CEU Mass Mediator version 2.0</strong>. If you find 
+                any issue, we would love to hear about it. Please let us know at 
+                <script>getmailaddress('es', 'ceu', 'cembio');</script>
+                <br/>
+                <strong>Last updated: 26/01/2018</strong>
+            </div>
         </div>
 
         <div id="footer-wrapper" class="wrapper">
@@ -97,7 +125,7 @@
 
                     <p>
                         All data has been obtained from: <br />
-                        <a href="http://www.genome.jp/kegg/" target="_blank">kegg</a>
+                        <a href="http://www.genome.jp/kegg/" target="_blank">KEGG</a>
                         <br/>
                         <a href="https://metlin.scripps.edu/index.php" target="_blank">Metlin</a>
                         <br/>
@@ -164,6 +192,7 @@
         </div>
 
         <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/jquery-ui.min.js"></script>
         <script src="assets/js/jquery.dropotron.min.js"></script>
         <script src="assets/js/skel.min.js"></script>
         <script src="assets/js/skel-viewport.min.js"></script>

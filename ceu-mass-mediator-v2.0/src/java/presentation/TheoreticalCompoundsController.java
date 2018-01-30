@@ -1,6 +1,7 @@
 package presentation;
 
 import exporters.CompoundExcelExporter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,12 +13,15 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
+import org.primefaces.event.FileUploadEvent;
 import persistence.theoreticalCompound.TheoreticalCompounds;
 import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
 import presentation.paginationHelpers.MyPaginationHelper;
@@ -28,6 +32,7 @@ import presentation.paginationHelpers.PaginationHelper;
 import ruleengine.ConfigFilter;
 import ruleengine.RuleProcessor;
 import utilities.Constantes;
+import org.primefaces.model.UploadedFile;
 
 /**
  * Controller (Bean) of the application
@@ -44,13 +49,14 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     private MyPaginationHelper pagination;
     private String queryInputMasses;
     private String queryInputRetentionTimes;
-    private String queryInputCompositeSpectrums;
+    private String queryInputCompositeSpectra;
 
     private String allInputMasses;
     private String allInputRetentionTimes;
-    private String allInputCompositeSpectrums;
+    private String allInputCompositeSpectra;
 
     private String inputTolerance;
+    private String inputModeTolerance;
     private String massesMode;
     private String ionMode;
     private String chemAlphabet;
@@ -70,7 +76,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     private List<Double> allRetentionTimes;
     private List<Map<Double, Integer>> allCompositeSpectrum;
      */
-    private List<SelectItem> massesModeCandidates;
+    private List<SelectItem> ionizationModeCandidates;
     private List<String> adducts;
     private List<SelectItem> adductsCandidates;
     private final List<SelectItem> positiveCandidates;
@@ -97,7 +103,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     private String queryName;
     private String queryFormula;
     private boolean exactName;
-    
+
     private int maxNumberOfRTScoresApplied;
 
     @EJB
@@ -105,6 +111,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     public TheoreticalCompoundsController() {
         this.inputTolerance = TOLERANCE_INICITAL_VALUE;
+        this.inputModeTolerance = TOLERANCE_MODE_INICITAL_VALUE;
         //String version = FacesContext.class.getPackage().getImplementationVersion();
         //System.out.println("\n\n  VERSION DE JSF: " + version + "\n\n");
         this.items = null;
@@ -135,13 +142,13 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
         this.positiveCandidates = new LinkedList<SelectItem>();
         this.positiveCandidates.add(new SelectItem("allPositives", "All"));
-        for (Map.Entry e : (AdductsLists.MAPRECALCULATEDPOSITIVEADDUCTS).entrySet()) {
+        for (Map.Entry e : (AdductsLists.MAPMZPOSITIVEADDUCTS).entrySet()) {
             this.positiveCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
         }
 
         this.negativeCandidates = new LinkedList<SelectItem>();
         this.negativeCandidates.add(new SelectItem("allNegatives", "All"));
-        for (Map.Entry e : (AdductsLists.MAPRECALCULATEDNEGATIVEADDUCTS).entrySet()) {
+        for (Map.Entry e : (AdductsLists.MAPMZNEGATIVEADDUCTS).entrySet()) {
             this.negativeCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
         }
 
@@ -151,17 +158,17 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             this.neutralCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
         }
         this.massesMode = "neutral";
-        this.massesModeCandidates = AdductsLists.LISTNEUTRALMODES;
+        this.ionizationModeCandidates = AdductsLists.LISTNEUTRALMODES;
         this.ionMode = "neutral";
         this.adductsCandidates = neutralCandidates;
         this.adducts = new LinkedList<String>();
         this.adducts.add("allNeutral");
         this.queryInputMasses = "";
         this.queryInputRetentionTimes = "";
-        this.queryInputCompositeSpectrums = "";
+        this.queryInputCompositeSpectra = "";
         this.allInputMasses = "";
         this.allInputRetentionTimes = "";
-        this.allInputCompositeSpectrums = "";
+        this.allInputCompositeSpectra = "";
         this.chemAlphabet = "ALL";
         this.maxNumberOfRTScoresApplied = 0;
     }
@@ -182,8 +189,16 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     public void setAdvancedDemoMass() {
         this.setQueryInputMasses(ONEDEMOMASS);
         this.setQueryInputRetentionTimes(ONERETENTIONTIME);
-        this.setQueryInputCompositeSpectrums(ONECOMPOSITESPECTRUM);
+        this.setQueryInputCompositeSpectra(ONECOMPOSITESPECTRUM);
         this.ionMode = "positive";
+        this.adductsCandidates = positiveCandidates;
+        this.adducts.clear();
+        this.adducts.add("M+H");
+        this.adducts.add("M+2H");
+        this.adducts.add("M+Na");
+        this.adducts.add("M+K");
+        this.adducts.add("M+NH4");
+        this.adducts.add("M+H-H2O");
         //System.out.println(demoMasses);
     }
 
@@ -203,11 +218,16 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     public void setAdvancedDemoMasses() {
         this.setQueryInputMasses(NEWDEMOMASSES);
         this.setQueryInputRetentionTimes(NEWDEMORETENTIONTIME);
-        this.setQueryInputCompositeSpectrums(NEWDEMOSPECTRUM);
+        this.setQueryInputCompositeSpectra(NEWDEMOSPECTRUM);
         this.ionMode = "positive";
         this.adductsCandidates = positiveCandidates;
         this.adducts.clear();
-        this.adducts.add("allPositives");
+        this.adducts.add("M+H");
+        this.adducts.add("M+2H");
+        this.adducts.add("M+Na");
+        this.adducts.add("M+K");
+        this.adducts.add("M+NH4");
+        this.adducts.add("M+H-H2O");
         //System.out.println(demoMasses);
         // TODO Set All Masses,RTs and Composites
 
@@ -219,13 +239,14 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     public void clearForm() {
         this.queryInputMasses = "";
         this.queryInputRetentionTimes = "";
-        this.queryInputCompositeSpectrums = "";
+        this.queryInputCompositeSpectra = "";
         this.allInputMasses = "";
         this.allInputRetentionTimes = "";
-        this.allInputCompositeSpectrums = "";
+        this.allInputCompositeSpectra = "";
         this.inputTolerance = TOLERANCE_INICITAL_VALUE;
+        this.inputModeTolerance = TOLERANCE_MODE_INICITAL_VALUE;
         /*this.massesMode = "neutral";
-        this.massesModeCandidates = AdductsLists.LISTNEUTRALMODES;
+        this.ionizationModeCandidates = AdductsLists.LISTNEUTRALMODES;
         this.ionMode = "neutral";
         this.adductsCandidates = neutralCandidates;
         this.adducts.clear();
@@ -290,8 +311,8 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         List<Double> massesAux; // auxiliar List for input Masses
         int numInputMasses;
         List<Double> retAux; // Auxiliar List for Retention Times
-        List<Double> firstSpectrumAux; // Auxiliar List for raw Composite Spectrums
-        List<Map<Double, Integer>> spectrumAux;  // Auxiliar List for Composite Spectrums processed
+        List<Double> firstSpectrumAux; // Auxiliar List for raw Composite Spectra
+        List<Map<Double, Integer>> spectrumAux;  // Auxiliar List for Composite Spectra processed
         List<Boolean> isSignifativeCompoundAux;
         // CHANGE THE INPUT ELEMENTS FOR THE ALL INPUT ELEMENTS
         List<Double> allMassesAux;
@@ -304,12 +325,12 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             //Method returns an ArrayList because it is acceded by index
             massesAux = Cadena.extractDoubles(this.queryInputMasses);
             numInputMasses = massesAux.size();
-            retAux = getListOfDoubles(this.queryInputRetentionTimes, numInputMasses);
+            retAux = Cadena.getListOfDoubles(this.queryInputRetentionTimes, numInputMasses);
             isSignifativeCompoundAux = new ArrayList<Boolean>(Collections.nCopies(numInputMasses, true));
-            spectrumAux = getListOfCompositeSpectrums(this.queryInputCompositeSpectrums, numInputMasses);
+            spectrumAux = getListOfCompositeSpectra(this.queryInputCompositeSpectra, numInputMasses);
             // System.out.println("INPUT: " + queryInputMasses + " \n ARRAY: " + massesAux);
             // System.out.println("INPUT RETENTION TIME: " + this.queryInputRetentionTimes);
-            // System.out.println("INPUT COMPOSITE SPECTRUM: " + this.queryInputCompositeSpectrums);
+            // System.out.println("INPUT COMPOSITE SPECTRUM: " + this.queryInputCompositeSpectra);
             //System.out.println("SIMPLE SEARCH");
             //System.out.println("Sign Compounds: "+ isSignifativeCompoundAux.toString() + " size: " + isSignifativeCompoundAux.size());
             this.setQueryMasses(massesAux);
@@ -324,7 +345,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             //Method returns an ArrayList because it is acceded by index
             allMassesAux = Cadena.extractDoubles(this.allInputMasses);
             numInputMasses = allMassesAux.size();
-            allRetAux = getListOfDoubles(this.allInputRetentionTimes, numInputMasses);
+            allRetAux = Cadena.getListOfDoubles(this.allInputRetentionTimes, numInputMasses);
             isSignifativeCompoundAux = Cadena.fillIsSignificativeCompound(this.allInputMasses,
                     this.allInputRetentionTimes,
                     numInputMasses,
@@ -335,7 +356,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             //System.out.println("KEYS: " + KeysSignificativeCompounds.toString());
             //System.out.println("Significatives Compounds: " + isSignifativeCompoundAux.toString()+ " size: " + isSignifativeCompoundAux.size());
 
-            AllSpectrumAux = getListOfCompositeSpectrums(this.allInputCompositeSpectrums, numInputMasses);
+            AllSpectrumAux = getListOfCompositeSpectra(this.allInputCompositeSpectra, numInputMasses);
 
             this.setQueryMasses(allMassesAux);
             this.setQueryRetentionTimes(allRetAux);
@@ -380,21 +401,20 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     }
 
     /**
-     * @return the queryInputCompositeSpectrums
+     * @return the queryInputCompositeSpectra
      */
-    public String getQueryInputCompositeSpectrums() {
-        return this.queryInputCompositeSpectrums;
+    public String getQueryInputCompositeSpectra() {
+        return this.queryInputCompositeSpectra;
     }
 
     /**
      * Catches the input text in the formulary on the web of the composite
      * Spectrum and obtains the list of them in order.
      *
-     * @param queryInputCompositeSpectrums the queryInputCompositeSpectrums to
-     * set
+     * @param queryInputCompositeSpectra the queryInputCompositeSpectra to set
      */
-    public void setQueryInputCompositeSpectrums(String queryInputCompositeSpectrums) {
-        this.queryInputCompositeSpectrums = queryInputCompositeSpectrums;
+    public void setQueryInputCompositeSpectra(String queryInputCompositeSpectra) {
+        this.queryInputCompositeSpectra = queryInputCompositeSpectra;
     }
 
     /**
@@ -438,12 +458,12 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.allInputRetentionTimes = allInputRetentionTimes;
     }
 
-    public String getAllInputCompositeSpectrums() {
-        return allInputCompositeSpectrums;
+    public String getAllInputCompositeSpectra() {
+        return allInputCompositeSpectra;
     }
 
-    public void setAllInputCompositeSpectrums(String allInputCompositeSpectrums) {
-        this.allInputCompositeSpectrums = allInputCompositeSpectrums;
+    public void setAllInputCompositeSpectra(String allInputCompositeSpectra) {
+        this.allInputCompositeSpectra = allInputCompositeSpectra;
     }
 
     public List<Boolean> getIsSignificativeCompound() {
@@ -466,6 +486,20 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      */
     public void setInputTolerance(String inputTolerance) {
         this.inputTolerance = inputTolerance;
+    }
+
+    /**
+     * @return the inputModeTolerance
+     */
+    public String getInputModeTolerance() {
+        return inputModeTolerance;
+    }
+
+    /**
+     * @param inputModeTolerance the inputModeTolerance to set
+     */
+    public void setInputModeTolerance(String inputModeTolerance) {
+        this.inputModeTolerance = inputModeTolerance;
     }
 
     /**
@@ -631,7 +665,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     public void setMassesMode(String massesMode) {
         switch (massesMode) {
             case "neutral":
-                this.massesModeCandidates = AdductsLists.LISTNEUTRALMODES;
+                this.ionizationModeCandidates = AdductsLists.LISTNEUTRALMODES;
                 this.ionMode = "neutral";
                 this.adductsCandidates = neutralCandidates;
                 this.adducts.clear();
@@ -640,23 +674,35 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             // If there is not any of these 3 (It should not occur) The assigned mode is neutral
             case "mz":
                 // By default, positive
-                this.massesModeCandidates = AdductsLists.LISTIONIZEDMODES;
+                this.ionizationModeCandidates = AdductsLists.LISTIONIZEDMODES;
                 this.ionMode = "positive";
                 this.adductsCandidates = positiveCandidates;
                 this.adducts.clear();
-                this.adducts.add("allPositives");
+
+                this.adducts.add("M+H");
+                this.adducts.add("M+2H");
+                this.adducts.add("M+Na");
+                this.adducts.add("M+K");
+                this.adducts.add("M+NH4");
+                this.adducts.add("M+H-H2O");
                 break;
             /*
             case Constantes.NAME_FOR_RECALCULATED:
-                this.massesModeCandidates = AdductsLists.LISTIONIZEDMODES;
+                this.ionizationModeCandidates = AdductsLists.LISTIONIZEDMODES;
                 this.ionMode = "positive";
                 this.adductsCandidates = positiveCandidates;
                 this.adducts.clear();
-                this.adducts.add("allPositives");
+                
+                this.adducts.add("M+H");
+                this.adducts.add("M+2H");
+                this.adducts.add("M+Na");
+                this.adducts.add("M+K");
+                this.adducts.add("M+NH4");
+                this.adducts.add("M+H-H2O");
                 break;
              */
             default:
-                this.massesModeCandidates = AdductsLists.LISTNEUTRALMODES;
+                this.ionizationModeCandidates = AdductsLists.LISTNEUTRALMODES;
                 break;
         }
         // System.out.println("CHANGED TO: "+massesMode);
@@ -684,13 +730,23 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                 this.ionMode = ionMode;
                 this.adductsCandidates = positiveCandidates;
                 this.adducts.clear();
-                this.adducts.add("allPositives");
+
+                this.adducts.add("M+H");
+                this.adducts.add("M+2H");
+                this.adducts.add("M+Na");
+                this.adducts.add("M+K");
+                this.adducts.add("M+NH4");
+                this.adducts.add("M+H-H2O");
                 break;
             case "negative":
                 this.ionMode = ionMode;
                 this.adductsCandidates = negativeCandidates;
                 this.adducts.clear();
-                this.adducts.add("allNegatives");
+
+                this.adducts.add("M-H");
+                this.adducts.add("M+Cl");
+                this.adducts.add("M+FA-H");
+                this.adducts.add("M-H-H2O");
                 break;
             // If there is not any of these 3 (It should not occur) The assigned mode is neutral
             case "neutral":
@@ -849,67 +905,23 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      * @return the number of adducts
      */
     public int getNumAdducts() {
-        if (massesMode.equals("neutral")) {
-
-            if (adducts.contains("allPositives")) {
-                // Double check
-                if (!ionMode.equals("positive")) {
-                    System.out.println("\nSomething is wrong in the search form "
-                            + "Adducts contains positive and ion mode is: " + ionMode);
-                }
-                return AdductsLists.MAPRECALCULATEDPOSITIVEADDUCTS.size();
-            } else if (adducts.contains("allNegatives")) {
-                if (!ionMode.equals("negative")) {
-                    System.out.println("\nSomething is wrong in the search form "
-                            + "Adducts contains negative and ion mode is: " + ionMode);
-                }
-                return AdductsLists.MAPRECALCULATEDNEGATIVEADDUCTS.size();
-            } else if (ionMode.equals("neutral")) {
-                return 1;
+        if (adducts.contains("allPositives")) {
+            // Double check
+            if (!ionMode.equals("positive")) {
+                System.out.println("\nSomething is wrong in the search form "
+                        + "Adducts contains positive and ion mode is: " + ionMode);
             }
-        } else if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED)) {
-
-            if (adducts.contains("allPositives")) {
-                // Double check
-                if (!ionMode.equals("positive")) {
-                    System.out.println("\nSomething is wrong in the search form "
-                            + "Adducts contains positive and ion mode is: " + ionMode);
-                }
-                return AdductsLists.MAPRECALCULATEDPOSITIVEADDUCTS.size();
+            return AdductsLists.MAPMZPOSITIVEADDUCTS.size();
+        } else if (adducts.contains("allNegatives")) {
+            if (!ionMode.equals("negative")) {
+                System.out.println("\nSomething is wrong in the search form "
+                        + "Adducts contains negative and ion mode is: " + ionMode);
             }
-            if (adducts.contains("allNegatives")) {
-                if (!ionMode.equals("negative")) {
-                    System.out.println("\nSomething is wrong in the search form "
-                            + "Adducts contains negative and ion mode is: " + ionMode);
-                }
-                return AdductsLists.MAPRECALCULATEDNEGATIVEADDUCTS.size();
-            }
-            if (ionMode.equals("neutral")) {
-                System.out.println("\nSomething is wrong in the search form."
-                        + "Masses mode is not neutral and ionMode is: " + ionMode);
-            }
-        } else if (massesMode.equals("mz")) {
-
-            if (adducts.contains("allPositives")) {
-                // Double check
-                if (!ionMode.equals("positive")) {
-                    System.out.println("\nSomething is wrong in the search form "
-                            + "Adducts contains positive and ion mode is: " + ionMode);
-                }
-                return AdductsLists.MAPMZPOSITIVEADDUCTS.size();
-            }
-            if (adducts.contains("allNegatives")) {
-                if (!ionMode.equals("negative")) {
-                    System.out.println("\nSomething is wrong in the search form "
-                            + "Adducts contains negative and ion mode is: " + ionMode);
-                }
-                return AdductsLists.MAPMZNEGATIVEADDUCTS.size();
-            }
-            if (ionMode.equals("neutral")) {
-                System.out.println("\nSomething is wrong in the search form."
-                        + "Masses mode is not neutral and ionMode is: " + ionMode);
-            }
+            return AdductsLists.MAPMZPOSITIVEADDUCTS.size();
+        } else if (ionMode.equals("neutral")) {
+            return 1;
         }
+
         // By default, paginate with number of adducts
         return adducts.size();
     }
@@ -930,30 +942,13 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.DBcandidates = DBcandidates;
     }
 
-    public List<SelectItem> getMassesModeCandidates() {
-        // System.out.println("GET CANDIDATES: "+ massesModeCandidates);
-        return massesModeCandidates;
+    public List<SelectItem> getIonizationModeCandidates() {
+        // System.out.println("GET CANDIDATES: "+ ionizationModeCandidates);
+        return ionizationModeCandidates;
     }
 
-    public void setMassesModeCandidates(List<SelectItem> massesModeCandidates) {
-        this.massesModeCandidates = massesModeCandidates;
-    }
-
-    private List<Double> getListOfDoubles(String input, int numInputMasses) {
-        List<Double> retAux;
-        if (!input.equals("")) {
-            retAux = Cadena.extractDoubles(input);
-            // If there is no time for all queryMasses, fill with 0
-            for (int i = retAux.size(); i < numInputMasses; i++) {
-                retAux.add(0d);
-            }
-        } else {
-            retAux = new ArrayList<Double>();
-            for (int i = 0; i < numInputMasses; i++) {
-                retAux.add(0d);
-            }
-        }
-        return retAux;
+    public void setIonizationModeCandidates(List<SelectItem> ionizationModeCandidates) {
+        this.ionizationModeCandidates = ionizationModeCandidates;
     }
 
     private List<Double> getListOfFirstDataSpectrum(String input, int numInputMasses) {
@@ -975,7 +970,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         return firstSpectrumAux;
     }
 
-    private List<Map<Double, Integer>> getListOfCompositeSpectrums(String input, int numInputMasses) {
+    private List<Map<Double, Integer>> getListOfCompositeSpectra(String input, int numInputMasses) {
         List<Map<Double, Integer>> spectrumAux;
         if (!input.equals("")) {
             spectrumAux = Cadena.extractDataSpectrum(input);
@@ -1007,11 +1002,12 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
         }
         if (this.items == null || this.itemsGrouped.isEmpty()) {
-            this.items = this.ejbFacade.findCompoundsAdvanced(new int[]{0, queryMasses.size() - 1},
+            this.items = this.ejbFacade.findCompoundsAdvanced(
                     this.queryMasses,
                     this.queryRetentionTimes,
                     this.queryCompositeSpectrum,
                     this.isSignificativeCompound,
+                    this.inputModeTolerance,
                     Double.parseDouble(this.inputTolerance),
                     this.chemAlphabet,
                     this.ionMode,
@@ -1031,11 +1027,12 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
         }
         if (this.items == null || this.itemsGrouped.isEmpty()) {
-            this.items = this.ejbFacade.findCompoundsAdvanced(new int[]{0, queryMasses.size() - 1},
+            this.items = this.ejbFacade.findCompoundsAdvanced(
                     this.queryMasses,
                     this.queryRetentionTimes,
                     this.queryCompositeSpectrum,
                     this.isSignificativeCompound,
+                    this.inputModeTolerance,
                     Double.parseDouble(this.inputTolerance),
                     this.chemAlphabet,
                     this.ionMode,
@@ -1065,8 +1062,9 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
         }
         if (this.items == null || this.itemsGrouped.isEmpty()) {
-            this.items = this.ejbFacade.findCompoundsSimple(new int[]{0, queryMasses.size() - 1},
+            this.items = this.ejbFacade.findCompoundsSimple(
                     this.queryMasses,
+                    this.inputModeTolerance,
                     Double.parseDouble(this.inputTolerance),
                     this.ionMode,
                     this.massesMode,
@@ -1136,12 +1134,12 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             i++;
         }
     }
-    
+
     private void calculateMaxNumberOfRTScores() {
         for (TheoreticalCompoundsGroup tcg : this.itemsGrouped) {
-            for (TheoreticalCompounds tc : tcg.getTheoreticalCompounds()) {
-                if(tc.getNumberRTScores() > this.maxNumberOfRTScoresApplied)
-                {
+            for (Object o : tcg.getTheoreticalCompounds()) {
+                TheoreticalCompounds tc = (TheoreticalCompounds) o;
+                if (tc.getNumberRTScores() > this.maxNumberOfRTScoresApplied) {
                     this.maxNumberOfRTScoresApplied = tc.getNumberRTScores();
                 }
             }
@@ -1152,7 +1150,8 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     private void calculateScores() {
         calculateMaxNumberOfRTScores();
         for (TheoreticalCompoundsGroup tcg : this.itemsGrouped) {
-            for (TheoreticalCompounds tc : tcg.getTheoreticalCompounds()) {
+            for (Object o : tcg.getTheoreticalCompounds()) {
+                TheoreticalCompounds tc = (TheoreticalCompounds) o;
                 tc.calculateRetentionTimeScore();
                 tc.calculateFinalScore(this.maxNumberOfRTScoresApplied);
                 // Create tags for colours
@@ -1193,7 +1192,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     }
 
     /**
-     * Validates the input Tolerance to be a float between 0 and 10000
+     * Validates the input single mass to be a float between 0 and 10000
      *
      * @param arg0 FacesContext of the form
      * @param arg1 Component of the form
@@ -1417,5 +1416,38 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             throw new ValidatorException(new FacesMessage("Null pointer exception validating name"));
         }
     }
+
+    UploadedFile fileUploaded;
+
+    public UploadedFile getFileUploaded() {
+        return fileUploaded;
+    }
+
+    public void setFileUploaded(UploadedFile fileUploaded) {
+        this.fileUploaded = fileUploaded;
+    }
+
+    
+    /* Start the code for the uploaded file */
+    /*
+    public void handleFileUpload() {
+        System.out.println("FILE: " + fileUploaded.getFileName() + " SIZE: " + fileUploaded.getSize());
+        System.out.println("TYPE: " + fileUploaded.getContentType());
+    }
+    */
+    
+    public void handleFileUpload(FileUploadEvent event) throws IOException {
+
+    UploadedFile file = event.getFile();
+    System.out.println(file.getFileName());
+ //application code
+}
+
+    public void upload(ActionEvent event) {
+        String fileName = fileUploaded.getFileName();
+        byte[] content = fileUploaded.getContents();
+        String contentType = fileUploaded.getContentType();
+        FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage("Successful! " + fileUploaded.getSize() + " is uploaded."));
+}
 
 }

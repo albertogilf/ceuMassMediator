@@ -71,7 +71,7 @@ public class FileUploadServlet extends HttpServlet implements Constantes {
             LOGGER.log(Level.INFO, "File{0}being uploaded to {1}", new Object[]{fileName, path});
             // if the load is complete, we pass to the view. we pass also the name of the file. 
 
-            // constuct the items for the jsp
+            // constuct the items for the jsf
             PathwayPageConstructor pageC = new PathwayPageConstructor();
             int codeLoad = pageC.start(fileName);
 
@@ -92,9 +92,7 @@ public class FileUploadServlet extends HttpServlet implements Constantes {
             LOGGER.log(Level.SEVERE, "Problems during file upload. Error: {0}",
                     new Object[]{fne.getMessage()});
 
-        } catch (SQLException ex) {
-            Logger.getLogger(FileUploadServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NamingException ex) {
+        } catch (SQLException | NamingException ex) {
             Logger.getLogger(FileUploadServlet.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (out != null) {

@@ -1,8 +1,6 @@
 package presentation.paginationHelpers;
 
 import java.io.Serializable;
-import java.util.List;
-import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
 
 /**
    * Abstract class to paginate the results

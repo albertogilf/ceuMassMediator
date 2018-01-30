@@ -11,7 +11,8 @@
             <title>Advanced Search. CEU mass mediator</title>
         </ui:define>
 
-
+        <ui:param name="onloadbody" value="#{theoreticalCompoundsController.clearForm()}"/>
+        
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Advanced Search</div>
@@ -21,8 +22,8 @@
                 <h:form id="mainsearch" prependId="false">
                     <p:focus for="inputmasses"/>
                     <h:commandButton id="dummy" actionListener="#{theoreticalCompoundsController.submitCompoundsAdvanced()}" 
-                                         action="/theoreticalCompounds/Advancedlist" style="display:none;"
-                                          />
+                                     action="/theoreticalCompounds/Advancedlist" style="display:none;"
+                                     />
                     <div id="highlights" class="container whiteborder">
 
                         <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
@@ -52,22 +53,36 @@
                             <p:row></p:row>
 
                             <p:row>
-                                <label for="inputtolerance" style="float: top">Tolerance -ppm- (*):</label>
-                                <p:inputText id="inputtolerance" size="2" maxlength="4"  
-                                             value="#{theoreticalCompoundsController.inputTolerance}" 
-                                             validator="#{theoreticalCompoundsController.validateInputTolerance}"
-                                             required="true"
-                                             pt:placeholder="enter tolerance"
-                                             style="width:100%"
-                                             />
-                                <p:message for="inputtolerance" styleClass="errormessage"></p:message>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputtolerance" style="float: top">Tolerance (*): &nbsp;</label>
+                                    <p:inputText id="inputtolerance" size="2" maxlength="4"  
+                                                 value="#{theoreticalCompoundsController.inputTolerance}" 
+                                                 validator="#{theoreticalCompoundsController.validateInputTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="inputtolerance" styleClass="errormessage"></p:message>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmodetolerance" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmodetolerance" 
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{theoreticalCompoundsController.inputModeTolerance}" >
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>
+                                        <f:selectItem itemValue="mDa" itemLabel="mDa"/>  
+                                    </p:selectOneRadio>
+                                </div>
                             </p:row>
 
                             <p:row></p:row>
                             <p:row></p:row>
 
                             <p:row>
-                                <label for="rtimes" style="float: top">Retention Time:</label>
+                                <label for="rtimes" class="tooltip">Retention Time:
+                                <span class="tooltiptext">any unit accepted (see manual)</span>
+                                </label>
                                 <p:inputText id="rtimes" size="2" maxlength="10"  
                                              value="#{theoreticalCompoundsController.queryInputRetentionTimes}"
                                              validator="#{theoreticalCompoundsController.validateSingleRT}"
@@ -81,20 +96,27 @@
                             <p:row></p:row>
 
                             <p:row>
-                                <label for="compistespectrum" style="float: top">Composite Spectrum: &nbsp;</label>
-                                <p:inputText id="compistespectrum" size="2" 
-                                             value="#{theoreticalCompoundsController.queryInputCompositeSpectrums}"
-                                             pt:placeholder="enter Composite Spectrum"
+                                <label for="compositespectrum" class="tooltip">Composite Spectrum: &nbsp;
+                                    <span class="tooltiptext">(m/z,intensity) for all clustered ions<br/>
+                                    </span>
+                                </label>
+                                <p:inputText id="compositespectrum" size="2" 
+                                             value="#{theoreticalCompoundsController.queryInputCompositeSpectra}"
+                                             pt:placeholder="enter composite spectrum"
                                              style="width:100%"
                                              />
-                                <p:message for="compistespectrum" styleClass="errormessage"></p:message>
+                                <p:message for="compositespectrum" styleClass="errormessage"></p:message>
                             </p:row>
 
                             <p:row></p:row>
                             <p:row></p:row>
 
                             <p:row>
-                                <label for="chemicalalphabet" style="float: top">Chemical Alphabet (*): &nbsp;</label>
+                                <label for="chemicalalphabet" class="tooltip">Chemical Alphabet (*): &nbsp;
+                                    <span class="tooltiptext">Search restricted to selected elements<br/>
+                                    </span>
+                                </label>
+                                
                                 <p:selectOneListbox id="chemicalalphabet" 
                                                     value="#{theoreticalCompoundsController.chemAlphabet}"
                                                     style="width:100%">
@@ -109,7 +131,11 @@
                             <p:row></p:row>
 
                             <p:row>
-                                <label for="databasesmenu" style="float: top">Modifiers (*): &nbsp;</label>
+                                <label for="modifiersmenu" class="tooltip">Modifiers (*): &nbsp;
+                                    <span class="tooltiptext">Modifiers added to the mobile phase<br/>
+                                    </span>
+                                </label>
+                                
                                 <p:selectOneListbox id="modifiersmenu" 
                                                     value="#{theoreticalCompoundsController.modifier}" 
                                                     filter="false" 
@@ -176,7 +202,8 @@
                                     <f:selectItem itemValue="neutral" itemLabel="Neutral Masses"/>
                                     <f:selectItem itemValue="mz" itemLabel="m/z Masses"/>
                                     <!--<f:selectItem itemValue="recalculated" itemLabel="Recalculated m/z Masses"/>-->
-                                    <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu adductsmenu messageionmode"/>
+                                    <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu 
+                                            adductsmenu messageionmode"/>
                                 </p:selectOneListbox>
                                 <p:message for="massesmodemenu" styleClass="errormessage"></p:message>
                             </p:row>
@@ -188,7 +215,7 @@
                                                     required="true"
                                                     requiredMessage="Choose an ionization mode"
                                                     style="width:100%">
-                                    <f:selectItems value="#{theoreticalCompoundsController.massesModeCandidates}" />
+                                    <f:selectItems value="#{theoreticalCompoundsController.ionizationModeCandidates}" />
                                     <f:ajax execute="ionmodemenu" render=" ionmodemenu adductsmenu messageionmode"/>
                                 </p:selectOneListbox>
                                 <p:message for="ionmodemenu" styleClass="errormessage"></p:message>
@@ -215,7 +242,7 @@
                             </p:row>
 
                         </p:panelGrid>
-                        
+
                         <hr/>
 
                         <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
@@ -227,7 +254,8 @@
                                     action="#{theoreticalCompoundsController.setAdvancedDemoMass()}" 
                                     immediate="true"
                                     style="width:100%">
-                                    <f:ajax render="inputtolerance inputmasses massesmodemenu ionmodemenu adductsmenu compistespectrum rtimes"/>
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
                                 </h:commandButton>
                             </p:row>
                             <p:row>
@@ -247,7 +275,8 @@
                                     action="#{theoreticalCompoundsController.clearForm()}"
                                     immediate="true"
                                     style="width:100%"> 
-                                    <f:ajax render="inputtolerance inputmasses massesmodemenu ionmodemenu adductsmenu compistespectrum rtimes"/>
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
                                 </h:commandButton>
                             </p:row>
                         </p:panelGrid>

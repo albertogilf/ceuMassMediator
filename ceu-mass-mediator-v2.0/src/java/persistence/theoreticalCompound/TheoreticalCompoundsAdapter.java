@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import static utilities.Constantes.MIN_RETENTION_TIME_SCORE;
 
 /**
  * Abstract class to work TheoreticalCompounds
@@ -15,12 +16,12 @@ import java.util.Map;
  */
 public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompounds {
 
-    Double experimentalMass;
-    Double retentionTime;
-    String adduct;
-    Integer incrementPPM;
-    boolean significativeCompound;
-    boolean boolShowPathways;
+    private final Double experimentalMass;
+    private final Double retentionTime;
+    private final String adduct;
+    protected Integer incrementPPM;
+    final boolean significativeCompound;
+    private boolean boolShowPathways;
 
     private float ionizationScore;
     private float adductRelationScore;
@@ -39,9 +40,9 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
 
     private float finalScore;
 
-    String adductAutoDetected;
-    String AdductAutoDetectedString;
-    boolean boolAdductAutoDetected;
+    private final String adductAutoDetected;
+    private final String AdductAutoDetectedString;
+    private final boolean boolAdductAutoDetected;
 
     private String colorIonizationScore;
     private String colorAdductRelationScore;
@@ -54,15 +55,19 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
      * @param em
      * @param rt
      * @param adduct
+     * @param booladductAutoDetected
+     * @param adductAutoDetected
      */
-    public TheoreticalCompoundsAdapter(Double em, Double rt, String adduct) {
+    public TheoreticalCompoundsAdapter(Double em, Double rt, String adduct,
+            boolean booladductAutoDetected, String adductAutoDetected) {
         this.experimentalMass = em;
         this.retentionTime = rt;
         this.adduct = adduct;
         this.significativeCompound = true;
-
-        this.adductAutoDetected = "";
-        this.boolAdductAutoDetected = false;
+        this.boolAdductAutoDetected = booladductAutoDetected;
+        this.adductAutoDetected = adductAutoDetected;
+        this.AdductAutoDetectedString = " because we detected the adduct based on the composite spectrum. Look results for"
+                + " adduct: " + this.adductAutoDetected;
 
         this.boolShowPathways = false;
 
@@ -82,19 +87,23 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
      * @param em
      * @param rt
      * @param adduct
+     * @param booladductAutoDetected
+     * @param adductAutoDetected
      * @param isSignificative
      */
-    public TheoreticalCompoundsAdapter(Double em, Double rt, String adduct, Boolean isSignificative) {
+    public TheoreticalCompoundsAdapter(Double em, Double rt, String adduct,
+            boolean booladductAutoDetected, String adductAutoDetected, boolean isSignificative) {
         this.experimentalMass = em;
         this.retentionTime = rt;
         this.adduct = adduct;
         this.significativeCompound = isSignificative;
 
+        this.boolAdductAutoDetected = booladductAutoDetected;
+        this.adductAutoDetected = adductAutoDetected;
+        this.AdductAutoDetectedString = " because we detected the adduct based on the composite spectrum. Look results for"
+                + " adduct: " + this.adductAutoDetected;
+
         this.boolShowPathways = false;
-        this.adductAutoDetected = "";
-
-        this.boolAdductAutoDetected = false;
-
         //this.nokPrecedenceScore = 0;
         //this.okPrecedenceScore = 0;
         // INITIALIZE to -1F to dont print when no need
@@ -115,16 +124,6 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
     }
 
     /**
-     * Sets the retentionTime to the theoreticalCompound
-     *
-     * @param retentionTime
-     */
-    @Override
-    public void setRetentionTime(Double retentionTime) {
-        this.retentionTime = retentionTime;
-    }
-
-    /**
      * @return the experimentalMass
      */
     @Override
@@ -133,27 +132,11 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
     }
 
     /**
-     * @param experimentalMass the experimentalMass to set
-     */
-    @Override
-    public void setExperimentalMass(Double experimentalMass) {
-        this.experimentalMass = experimentalMass;
-    }
-
-    /**
      * @return the adduct
      */
     @Override
     public String getAdduct() {
         return this.adduct;
-    }
-
-    /**
-     * @param adduct the adduct to set
-     */
-    @Override
-    public void setAdduct(String adduct) {
-        this.adduct = adduct;
     }
 
     /**
@@ -174,22 +157,7 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
         this.ionMode = ionMode;
     }
      */
-    /**
-     * Set the ppm difference between meassured mass and theoretical mass
-     *
-     * @param measuredMass Mass meassured by MS
-     * @param theoreticalMass Theoretical mass of the compound
-     */
-    @Override
-    public final void setPPMIncrement(Double measuredMass, Double theoreticalMass) {
-        //System.out.println("\nMeasured: " + measuredMass + " Theoretical: " + theoreticalMass
-        //+ " ppm: " +(Math.abs((measuredMass - theoreticalMass) * 1000000
-        //        / theoreticalMass)));
-
-        this.incrementPPM = (int) Math.round(Math.abs((measuredMass - theoreticalMass) * 1000000
-                / theoreticalMass));
-        // this.incrementPPM =  (int) Math.round(measuredMass);
-    }
+    
 
     /**
      * @return the PPM increment
@@ -197,6 +165,21 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
     @Override
     public Integer getPPMIncrement() {
         return this.incrementPPM;
+    }
+
+    @Override
+    public String getAdductAutoDetected() {
+        return this.adductAutoDetected;
+    }
+
+    @Override
+    public String getAdductAutoDetectedString() {
+        return AdductAutoDetectedString;
+    }
+
+    @Override
+    public boolean isBoolAdductAutoDetected() {
+        return boolAdductAutoDetected;
     }
 
 // Attributes for Scoring of Lipids Clasification
@@ -212,7 +195,8 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
 
     /**
      * Set the Ionization score -2F means that we change the ionization score
-     * because detection of pattern
+     * because detection of pattern and -3F means we decrease the ionization
+     * score because lack of adducts when all EM are introduced by the user.
      *
      * @param ionizationScore
      */
@@ -321,6 +305,9 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
                 //System.out.println("Relative score" + relativeScore);
             }
             this.retentionTimeScore = this.retentionTimeScore / this.totalNumberScores;
+            if (this.retentionTimeScore < MIN_RETENTION_TIME_SCORE && this.retentionTimeScore >= 0F) {
+                this.retentionTimeScore = MIN_RETENTION_TIME_SCORE;
+            }
         }
     }
 
@@ -421,11 +408,25 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
             wB = 2d;
         }
 
-        if (Math.abs(this.retentionTimeScore + 1F) < 0.001f) {
+        if (Math.abs(this.retentionTimeScore + 1F) < 0.001F) {
             // There is no ionization score
             // Weight is 0
             lnC = 0d;
             wC = 0d;
+        } else if (this.retentionTimeScore < MIN_RETENTION_TIME_SCORE) {
+            // RetentionTimeScore is = 0;
+            // wC is variable. If the number of Relationships with other EM 
+            // is above maxNumberOfRTRulesApplied/2, then the weight is maximum weight = 2. 
+            // If it is below maxNumberOfRTRulesApplied/2, then Wc is the proportion
+            // of this.totalNumberScores *2 / (MaxNumberOfRTRulesApplied/2) 
+            if (this.totalNumberScores >= thresholdMaxWC) {
+                // ln(0.05)=-3d
+                lnC = -3d;
+                wC = 2d;
+            } else {
+                lnC = -3d;
+                wC = 2 * this.totalNumberScores / (double) thresholdMaxWC;
+            }
         } else {
             lnC = Math.log(this.retentionTimeScore);
             // wC is variable. If the number of Relationships with other EM 
@@ -434,23 +435,29 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
             // of this.totalNumberScores *2 / (MaxNumberOfRTRulesApplied/2) 
             if (this.totalNumberScores > thresholdMaxWC) {
                 wC = 2d;
-            }
-            else
-            {
-                wC = 2*this.totalNumberScores/ thresholdMaxWC;
+            } else {
+                wC = 2 * this.totalNumberScores / (double) thresholdMaxWC;
             }
         }
-        System.out.println(this.myKey + " -> WC: " + wC);
+        //System.out.println(this.myKey + " -> WC: " + wC);
         numeratorFinalScore = wA * lnA + wB * lnB + wC * lnC;
         denominatorFinalScore = wA + wB + wC;
-        if (Math.abs(denominatorFinalScore - 0d) < 0.001d) {
+        if (Math.abs(denominatorFinalScore) < 0.000001d) {
             this.finalScore = -1F;
         } else {
-
             finalScore = numeratorFinalScore / denominatorFinalScore;
             finalScore = Math.exp(finalScore);
             this.finalScore = Float.parseFloat(Double.toString(finalScore));
         }
+        /*
+        if (this.retentionTimeScore <= 0.05F && this.retentionTimeScore > 0F) {
+            System.out.println("RT SCORE: " + this.retentionTimeScore
+                    + " IONISATION SCORE: " + this.ionizationScore
+                    + " ADDUCT SCORE: " + this.adductRelationScore
+                    + " num: " + numeratorFinalScore
+                    + " den: " + denominatorFinalScore + "  FINAL score: " + this.finalScore);
+        }
+        */
     }
 
     /**
@@ -473,10 +480,6 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
 
     public boolean getSignificativeCompound() {
         return this.significativeCompound;
-    }
-
-    public void setSignificativeCompound(boolean significativeCompound) {
-        this.significativeCompound = significativeCompound;
     }
 
     public boolean isBoolShowPathways() {

@@ -5,78 +5,51 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import persistence.theoreticalCompound.TheoreticalCompounds;
-import utilities.Constantes;
 
-  /**
-   * Implementation of TheoreticalCompoundsGroup grouped by experimental mass
-   * @author: Alberto Gil de la Fuente. San Pablo-CEU
-   * @version: 3.1, 17/02/2016
-   */
-public class CompoundsGroupByMass implements Serializable, TheoreticalCompoundsGroup {
-    
+/**
+ * Implementation of TheoreticalCompoundsGroup, where compounds are grouped by
+ * experimental mass
+ *
+ * @author: Alberto Gil de la Fuente. San Pablo-CEU
+ * @version: 3.1, 17/02/2016
+ */
+public class CompoundsGroupByMass extends CompoundsGroupAdapter implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
-    Double experimentalMass;
-    String adduct;
+
+    private final String adduct;
     List<TheoreticalCompounds> listCompounds;
-    boolean isSignificativeCompoundGroup;
-    
-    public CompoundsGroupByMass(Double experimentalMass, String adduct)
-    {
-        this.experimentalMass = experimentalMass;
-        this.adduct=adduct;
-        this.isSignificativeCompoundGroup=true;
-        listCompounds = new LinkedList<TheoreticalCompounds>();
-    }
-    
-    public CompoundsGroupByMass(Double experimentalMass, String adduct, boolean isSignificativeCompoundGroup)
-    {
-        this.experimentalMass = experimentalMass;
-        this.adduct=adduct;
-        this.isSignificativeCompoundGroup=isSignificativeCompoundGroup;
+    private final boolean isSignificativeCompoundGroup;
+
+    public CompoundsGroupByMass(Double experimentalMass, String adduct) {
+        super(experimentalMass, 0d);
+        this.adduct = adduct;
+        this.isSignificativeCompoundGroup = true;
         listCompounds = new LinkedList<TheoreticalCompounds>();
     }
 
-    /**
-     * @return the experimentalMass
-     */
-    @Override
-    public Double getExperimentalMass() {
-        return this.experimentalMass;
-    }
-
-    /**
-     * @param experimentalMass the experimentalMass to set
-     */
-    @Override
-    public void setExperimentalMass(Double experimentalMass) {
-        this.experimentalMass = experimentalMass;
+    public CompoundsGroupByMass(Double experimentalMass, Double retentionTime, String adduct, boolean isSignificativeCompoundGroup) {
+        super(experimentalMass, retentionTime);
+        this.adduct = adduct;
+        this.isSignificativeCompoundGroup = isSignificativeCompoundGroup;
+        listCompounds = new LinkedList<TheoreticalCompounds>();
     }
 
     /**
      * @return the adduct
      */
-    @Override
     public String getAdduct() {
         return this.adduct;
     }
 
     /**
-     * @param adduct the adduct to set
-     */
-    @Override
-    public void setAdduct(String adduct) {
-        this.adduct = adduct;
-    }
-    
-    /**
      * Add the compound to the group of compounds
+     *
      * @param compound
      */
     @Override
-    public void addCompound(TheoreticalCompounds compound)
-    {
-        listCompounds.add(compound);
+    public void addCompound(Object compound) {
+        listCompounds.add((TheoreticalCompounds) compound);
     }
 
     public List<TheoreticalCompounds> getListCompounds() {
@@ -91,12 +64,6 @@ public class CompoundsGroupByMass implements Serializable, TheoreticalCompoundsG
         return isSignificativeCompoundGroup;
     }
 
-    public void setIsSignificativeCompoundGroup(boolean isSignificativeCompoundGroup) {
-        this.isSignificativeCompoundGroup = isSignificativeCompoundGroup;
-    }
-    
-    
-
     /**
      *
      * @return the collection of compounds from the group
@@ -106,34 +73,55 @@ public class CompoundsGroupByMass implements Serializable, TheoreticalCompoundsG
         return listCompounds;
     }
 
-    @Override
-    public String getKeggWebPage() {
-        return Constantes.WEB_KEGG;
-    }
-
-    @Override
-    public String getHMDBWebPage() {
-        return Constantes.WEB_HMDB;
-    }
-
-    @Override
-    public String getMetlinWebPage() {
-        return Constantes.WEB_METLIN;
-    }
-
-    @Override
-    public String getLMWebPage() {
-        return Constantes.WEB_LIPID_MAPS;
-    }
-
-    @Override
-    public String getPCWebPage() {
-        return Constantes.WEB_PUBCHEMICHAL;
-    }
-
-    @Override
     public boolean isSignificativeCompoundGroup() {
         return isIsSignificativeCompoundGroup();
+    }
+
+    @Override
+    public int getSizeTheoreticalCompoundsGroup() {
+        return this.listCompounds.size();
+    }
+
+    @Override
+    public boolean isThereTheoreticalCompounds() {
+        if (this.getSizeTheoreticalCompoundsGroup() == 1 && this.listCompounds.get(0).getIdentifier() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean isAutoDetectedAdduct() {
+        if (!isThereTheoreticalCompounds()) {
+            if (this.listCompounds.get(0).isBoolAdductAutoDetected()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return the message for the title on the presentation
+     */
+    @Override
+    public String getTitleMessage() {
+        String titleMessage;
+        titleMessage = "Metabolites found for mass: " + this.experimentalMass + "";
+        if (this.retentionTime > 0d) {
+            titleMessage = titleMessage + ", retention time: " + this.retentionTime;
+        }
+        titleMessage = titleMessage + " and adduct: " + this.adduct;
+
+        if (!isThereTheoreticalCompounds()) {
+            titleMessage = "No " + titleMessage;
+            if (isAutoDetectedAdduct()) {
+                titleMessage = titleMessage + this.listCompounds.get(0).getAdductAutoDetectedString();
+            }
+        } else {
+            titleMessage = titleMessage + " -> " + getSizeTheoreticalCompoundsGroup();
+        }
+        return titleMessage;
     }
 
 }

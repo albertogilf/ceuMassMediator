@@ -10,6 +10,8 @@
         <ui:define name="head">
             <title>Browse Search. CEU mass mediator</title>
         </ui:define>
+        
+        <ui:param name="onloadbody" value="#{theoreticalCompoundsController.clearForm()}"/>
 
         <ui:define name="intro-wrapper">
 
@@ -114,7 +116,8 @@
                                     action="#{theoreticalCompoundsController.setDemoNameFormula()}" 
                                     immediate="true"
                                     style="width:100%">
-                                    <f:ajax render="name formula"/>
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
                                 </h:commandButton>
                             </p:row>
                             <p:row>
@@ -134,7 +137,8 @@
                                     action="#{theoreticalCompoundsController.clearForm()}"
                                     immediate="true"
                                     style="width:100%"> 
-                                    <f:ajax render="name formula"/>
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
                                 </h:commandButton>
                             </p:row>
 

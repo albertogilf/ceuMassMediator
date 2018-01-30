@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scene Scope="Project" version="2">
     <Scope Scope="Faces Configuration Only"/>
-    <Scope Scope="Project"/>
+    <Scope Scope="Project">
+        <Node id="theoreticalCompounds/List.xhtml" x="150" y="750" zoom="true"/>
+        <Node id="batch_advanced_search.xhtml" x="1150" y="300" zoom="true"/>
+        <Node id="theoreticalCompounds/oxidationlist.xhtml" x="1150" y="450" zoom="true"/>
+        <Node id="test.xhtml" x="650" y="600" zoom="true"/>
+        <Node id="images/icons/famfamfam_silk_icons_v013/readme.html" x="900" y="450" zoom="true"/>
+        <Node id="login_1.xhtml" x="150" y="900" zoom="true"/>
+        <Node id="qa_inputtexts.xhtml" x="400" y="600" zoom="true"/>
+        <Node id="Error.xhtml" x="650" y="450" zoom="true"/>
+        <Node id="ExcelImporter.xhtml" x="1400" y="300" zoom="true"/>
+        <Node id="oxidation_sc.xhtml" x="1400" y="150" zoom="true"/>
+        <Node id="batch_search.xhtml" x="400" y="750" zoom="true"/>
+        <Node id="test_1.xhtml" x="400" y="300" zoom="true"/>
+        <Node id="template_general.xhtml" x="400" y="150" zoom="true"/>
+        <Node id="browse_search.xhtml" x="650" y="750" zoom="true"/>
+        <Node id="index.xhtml" x="150" y="450" zoom="true"/>
+        <Node id="oxidation_lc.xhtml" x="400" y="900" zoom="true"/>
+        <Node id="advanced_search.xhtml" x="900" y="600" zoom="true"/>
+        <Node id="qa.xhtml" x="900" y="150" zoom="true"/>
+        <Node id="pathway_displayer.xhtml" x="1650" y="150" zoom="true"/>
+        <Node id="theoreticalCompounds/Advancedlist.xhtml" x="650" y="150" zoom="true"/>
+        <Node id="manuals.xhtml" x="150" y="150" zoom="true"/>
+        <Node id="login.xhtml" x="150" y="300" zoom="true"/>
+        <Node id="sessionExpired.xhtml" x="150" y="600" zoom="true"/>
+        <Node id="qa_inputtexts_old.xhtml" x="1150" y="150" zoom="true"/>
+        <Node id="template_list_compounds.xhtml" x="900" y="300" zoom="true"/>
+        <Node id="simple_search.xhtml" x="400" y="450" zoom="true"/>
+        <Node id="register.xhtml" x="650" y="300" zoom="true"/>
+    </Scope>
     <Scope Scope="All Faces Configurations"/>
 </Scene>

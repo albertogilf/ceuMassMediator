@@ -10,11 +10,11 @@ import persistence.NewPathways;
  */
 public interface TheoreticalCompounds {
     Double getExperimentalMass();
-    void setExperimentalMass(Double experimentalMass);
+    //void setExperimentalMass(Double experimentalMass);
     Double getRetentionTime();
-    void setRetentionTime(Double retentionTime);
+    //void setRetentionTime(Double retentionTime);
     String getAdduct();
-    void setAdduct(String adduct);
+    //void setAdduct(String adduct);
 
     String getCasId();
     Integer getIdentifier();
@@ -23,8 +23,13 @@ public interface TheoreticalCompounds {
     //String getDatabase();
     // String getDatabaseWebPage();
     Double getMolecularWeight();
-    void setPPMIncrement(Double measuredMass, Double theoreticalMass);
+    //void setPPMIncrement(Double measuredMass, Double theoreticalMass);
     Integer getPPMIncrement();
+    
+    boolean isBoolAdductAutoDetected();
+    String getAdductAutoDetected();
+    String getAdductAutoDetectedString();
+    
     //Collection<NewPathways> getPathways();
     Collection<NewPathways> getPathways();
     boolean areTherePathways();
@@ -92,5 +97,4 @@ public interface TheoreticalCompounds {
     //public void createPrecedenceScore();
     public void createColorRetentionTimeScore();
     public void createColorFinalScore();
-    
 }

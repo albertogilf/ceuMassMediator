@@ -113,7 +113,7 @@ public class Cadena {
             return masses;
         }
     }
-
+    
     /**
      * This method extracts the masses (doubles) of a chain. It returns a list
      * with the results
@@ -140,6 +140,23 @@ public class Cadena {
             firstDataSpectrum.add(Cadena.extractFirstDouble(line));
         }
         return firstDataSpectrum;
+    }
+    
+    static public List<Double> getListOfDoubles(String input, int numInputMasses) {
+        List<Double> retAux;
+        if (!input.equals("")) {
+            retAux = Cadena.extractDoubles(input);
+            // If there is no time for all queryParentIonMasses, fill with 0
+            for (int i = retAux.size(); i < numInputMasses; i++) {
+                retAux.add(0d);
+            }
+        } else {
+            retAux = new ArrayList<Double>();
+            for (int i = 0; i < numInputMasses; i++) {
+                retAux.add(0d);
+            }
+        }
+        return retAux;
     }
 
     /**

@@ -217,6 +217,7 @@ public class PathwayPageConstructor implements Serializable {
      * File not read 8 Bad Structure 4 Bad structure 0 Correct read
      *
      * @param filename name of the file
+     * @return error code or status ok (0)
      */
     public int start(String filename) throws SQLException, NamingException {
         // 

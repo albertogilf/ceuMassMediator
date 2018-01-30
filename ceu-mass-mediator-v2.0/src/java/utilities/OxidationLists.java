@@ -18,8 +18,6 @@ import javax.faces.model.SelectItem;
  * @version: 5.0, 28/06/2017
  */
 public class OxidationLists {
-    
-    public static final double H_WEIGHT=1.0073d;
 
     public static final List<SelectItem> LISTIONMODES;
 
@@ -37,20 +35,133 @@ public class OxidationLists {
         listDBTMP.add("HMDB");
         listDBTMP.add("LipidMaps");
         listDBTMP.add("Metlin");
-        listDBTMP.add("In-house library");
+        listDBTMP.add("In-House-Library");
         LISTDB = Collections.unmodifiableList(listDBTMP);
     }
     
+    public static final List<String> LIST_LONG_CHAIN_OXIDATION_TYPES;
+
+    static {
+        List<String> listLONGCHAINOXIDATIONTMP = new LinkedList<String>();
+        listLONGCHAINOXIDATIONTMP.add("O");
+        listLONGCHAINOXIDATIONTMP.add("OH");
+        listLONGCHAINOXIDATIONTMP.add("OH-OH");
+        listLONGCHAINOXIDATIONTMP.add("OOH");
+        LIST_LONG_CHAIN_OXIDATION_TYPES = Collections.unmodifiableList(listLONGCHAINOXIDATIONTMP);
+    }
+    
+    public static final List<String> LIST_SHORT_CHAIN_OXIDATION_TYPES;
+
+    static {
+        List<String> listSHORTCHAINOXIDATIONTMP = new LinkedList<String>();
+        listSHORTCHAINOXIDATIONTMP.add("COH");
+        listSHORTCHAINOXIDATIONTMP.add("COOH");
+        LIST_SHORT_CHAIN_OXIDATION_TYPES = Collections.unmodifiableList(listSHORTCHAINOXIDATIONTMP);
+    }
+
     public static final Map<String, String> MAPOXIDATIONS;
 
     static {
-        Map<String, String> mapMZNegativeAdductsTMP = new LinkedHashMap<String, String>();
-        mapMZNegativeAdductsTMP.put("OH", "");
-        mapMZNegativeAdductsTMP.put("O", "");
-        mapMZNegativeAdductsTMP.put("OOH", "");
-        mapMZNegativeAdductsTMP.put("COH", "");
-        mapMZNegativeAdductsTMP.put("COOH", "");
-        MAPOXIDATIONS = Collections.unmodifiableMap(mapMZNegativeAdductsTMP);
+        Map<String, String> mapOXIDATIONSTMP = new LinkedHashMap<String, String>();
+        mapOXIDATIONSTMP.put("O", "-13.9793");
+        mapOXIDATIONSTMP.put("OH", "-15.9949");
+        mapOXIDATIONSTMP.put("OH-OH", "-31.9898");
+        mapOXIDATIONSTMP.put("OOH", "-31.9898");
+        //mapMZNegativeAdductsTMP.put("COH", "-27.995");
+        //mapMZNegativeAdductsTMP.put("COOH", "-43.9899");
+        mapOXIDATIONSTMP.put("COH", "-13.9793");
+        mapOXIDATIONSTMP.put("COOH", "-29.9742");
+        MAPOXIDATIONS = Collections.unmodifiableMap(mapOXIDATIONSTMP);
+    }
+
+    public static final List<Double> LISTNLPOS_O;
+
+    static {
+        List<Double> listNLPTMP_O = new LinkedList<Double>();
+        LISTNLPOS_O = Collections.unmodifiableList(listNLPTMP_O);
+    }
+
+    public static final List<Double> LISTNLPOS_OH;
+
+    static {
+        List<Double> listNLPTMP_OH = new LinkedList<Double>();
+        listNLPTMP_OH.add(-18.0108d);
+        LISTNLPOS_OH = Collections.unmodifiableList(listNLPTMP_OH);
     }
     
+    public static final List<Double> LISTNLPOS_OH_OH;
+
+    static {
+        List<Double> listNLPTMP_OH_OH = new LinkedList<Double>();
+        listNLPTMP_OH_OH.add(-18.0108d);
+        listNLPTMP_OH_OH.add(-36.0216d);
+        LISTNLPOS_OH_OH = Collections.unmodifiableList(listNLPTMP_OH_OH);
+    }
+    
+    public static final List<Double> LISTNLPOS_OOH;
+
+    static {
+        List<Double> listNLPTMP_OOH = new LinkedList<Double>();
+        listNLPTMP_OOH.add(-18.0108d);
+        listNLPTMP_OOH.add(-34.0049d);
+        LISTNLPOS_OOH = Collections.unmodifiableList(listNLPTMP_OOH);
+    }
+    
+    public static final List<Double> LISTNLPOS_COH;
+
+    static {
+        List<Double> listNLPTMP_COH = new LinkedList<Double>();
+        LISTNLPOS_COH = Collections.unmodifiableList(listNLPTMP_COH);
+    }
+    
+    public static final List<Double> LISTNLPOS_COOH;
+
+    static {
+        List<Double> listNLPTMP_COOH = new LinkedList<Double>();
+        LISTNLPOS_COOH = Collections.unmodifiableList(listNLPTMP_COOH);
+    }
+    
+    public static final List<Double> LISTNLNEG_O;
+
+    static {
+        List<Double> listNLNTMP_O = new LinkedList<Double>();
+        LISTNLNEG_O = Collections.unmodifiableList(listNLNTMP_O);
+    }
+    
+    public static final List<Double> LISTNLNEG_OH;
+
+    static {
+        List<Double> listNLNTMP_OH = new LinkedList<Double>();
+       LISTNLNEG_OH = Collections.unmodifiableList(listNLNTMP_OH);
+    }
+    
+    public static final List<Double> LISTNLNEG_OH_OH;
+
+    static {
+        List<Double> listNLNTMP_OH_OH = new LinkedList<Double>();
+       LISTNLNEG_OH_OH = Collections.unmodifiableList(listNLNTMP_OH_OH);
+    }
+    
+    public static final List<Double> LISTNLNEG_OOH;
+
+    static {
+        List<Double> listNLNTMP_O = new LinkedList<Double>();
+      LISTNLNEG_OOH = Collections.unmodifiableList(listNLNTMP_O);
+    }
+    
+    public static final List<Double> LISTNLNEG_COH;
+
+    static {
+        List<Double> listNLNTMP_COH = new LinkedList<Double>();
+        listNLNTMP_COH.add(-59.0371d);
+        LISTNLNEG_COH = Collections.unmodifiableList(listNLNTMP_COH);
+    }
+    
+    public static final List<Double> LISTNLNEG_COOH;
+
+    static {
+        List<Double> listNLNTMP_COOH = new LinkedList<Double>();
+        listNLNTMP_COOH.add(-59.0371d);
+        LISTNLNEG_COOH = Collections.unmodifiableList(listNLNTMP_COOH);
+    }
 }

@@ -12,7 +12,7 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import persistence.NewCompounds;
 import persistence.NewLipidsClassification;
-import persistence.theoreticalCompound.NewCompoundsAdapter;
+import persistence.theoreticalCompound.NewCompound;
 import persistence.theoreticalCompound.TheoreticalCompounds;
 
 /**
@@ -153,6 +153,7 @@ public class RuleProcessor {
                 }
 
             } catch (RuntimeException e) {
+                System.out.println("EXCEPTION: " + e.toString());
                 System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processCompounds");
             } catch (Exception e) {
                 System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processCompounds");
@@ -195,9 +196,9 @@ public class RuleProcessor {
                 System.out.println("#########--> Ionization rules. END. Time: " + (System.currentTimeMillis() - time));
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
             }
         }
         return compounds;
@@ -216,7 +217,7 @@ public class RuleProcessor {
         List<TheoreticalCompounds> compounds = new ArrayList();
 
         NewCompounds comp = null;
-        NewCompoundsAdapter newComp = null;
+        NewCompound newComp = null;
 
         comp = new NewCompounds();
         comp.setCompoundId(41757);
@@ -226,8 +227,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401"); // PG
-        newComp = new NewCompoundsAdapter(comp, 750.54108526, 1D, 750.54108526, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 750.54108526, 1D, 750.54108526, "M+H", false, "",true);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -238,8 +238,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP02");
         comp.setSubClass("GP0201"); // PE
-        newComp = new NewCompoundsAdapter(comp, 719.546504989, 4D, 719.546504989, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 719.546504989, 4D, 719.546504989, "M+H", false, "",true);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -250,8 +249,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP06");
         comp.setSubClass("GP0601"); // PI
-        newComp = new NewCompoundsAdapter(comp, 838.557129254, 2D, 838.557129254, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 838.557129254, 2D, 838.557129254, "M+H", false, "",true);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -262,8 +260,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP10");
         comp.setSubClass("GP1001"); // PA
-        newComp = new NewCompoundsAdapter(comp, 676.504309, 3D, 676.504309, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 676.504309, 3D, 676.504309, "M+H", false, "",true);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -274,8 +271,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP03");
         comp.setSubClass("GP0301"); // PS
-        newComp = new NewCompoundsAdapter(comp, 763.536334233, 5D, 763.536334233, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 763.536334233, 5D, 763.536334233, "M+H", false, "",true);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -286,8 +282,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP01");
         comp.setSubClass("GP0101"); // PC
-        newComp = new NewCompoundsAdapter(comp, 761.593455181, 6D, 761.593455181, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 761.593455181, 6D, 761.593455181, "M+H", false, "",true);
         compounds.add(newComp);
 
         return compounds;
@@ -306,7 +301,7 @@ public class RuleProcessor {
         List<TheoreticalCompounds> compounds = new ArrayList();
 
         NewCompounds comp = null;
-        NewCompoundsAdapter newComp = null;
+        NewCompound newComp = null;
 
         // 34	0	1
         comp = new NewCompounds();
@@ -317,8 +312,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401");
-        newComp = new NewCompoundsAdapter(comp, 750.54108526, 1D, 750.54108526, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 750.54108526, 1D, 750.54108526, "M+H", false, "",true);
         compounds.add(newComp);
 
         // 34	1	3
@@ -330,8 +324,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401");
-        newComp = new NewCompoundsAdapter(comp, 750.54108526, 3D, 750.54108526, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 750.54108526, 3D, 750.54108526, "M+H", false, "",true);
         compounds.add(newComp);
 
         // 32	0	4
@@ -343,8 +336,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401"); // PG
-        newComp = new NewCompoundsAdapter(comp, 750.54108526, 4D, 750.54108526, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 750.54108526, 4D, 750.54108526, "M+H", false, "",true);
         compounds.add(newComp);
 
         // 32	1	2
@@ -356,8 +348,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401"); // PG
-        newComp = new NewCompoundsAdapter(comp, 750.54108526, 2D, 750.54108526, "M+H", "");
-        newComp.setSignificativeCompound(true);
+        newComp = new NewCompound(comp, 750.54108526, 2D, 750.54108526, "M+H", false, "",true);
         compounds.add(newComp);
 
         return compounds;

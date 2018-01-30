@@ -54,16 +54,14 @@
                                 <f:facet name="header">
                                     Results
                                 </f:facet>
-                                <h:outputText value="Metabolites found for mass #{itemgroup.experimentalMass} 
-                                              and adduct #{itemgroup.adduct} -> #{itemgroup.theoreticalCompounds.size()}
-                                              metabolites found" 
+                                <h:outputText value="#{itemgroup.getTitleMessage()}" 
                                               rendered="#{itemgroup.isSignificativeCompoundGroup()}"/>
                                 <p:dataTable value="#{itemgroup.theoreticalCompounds}" 
                                              var="compound" 
                                              sortMode="multiple"
                                              id="datatablecompound"
                                              styleClass="compoundresults" 
-                                             rendered="#{itemgroup.isSignificativeCompoundGroup()}"
+                                             rendered="#{itemgroup.isSignificativeCompoundGroup() and itemgroup.isThereTheoreticalCompounds()}"
                                              >
                                     <!-- Every column has the minimum pixels enough to show information.
                                          The addition of every column is the widh of body -> 1600px
@@ -161,7 +159,7 @@
                                             <h:outputText value="#{compound.keggCompound}" />
                                         </h:outputLink>
                                     </p:column>
-                                    <p:column sortBy="#{compound.HMDBCompound}" style="width:100px">
+                                    <p:column sortBy="#{compound.HMDBCompound}" style="width:120px">
                                         <f:facet name="header">  
                                             <h:outputLink value="#{itemgroup.HMDBWebPage}" target="_blank" styleClass="prime">
                                                 <h:outputText value="HMDB" />  
@@ -203,15 +201,17 @@
                                         </h:outputLink>
                                     </p:column>
                                     <p:column headerText="Pathways" id="columnpathways" styleClass="prime" style="width:200px"> 
-                                        <p:commandButton value="Show pathways" id="showpathways" update="datalistpathways" actionListener="#{compound.exchangeBoolShowPathways()}" rendered="#{compound.areTherePathways()}">
-                                            <f:ajax execute="showpathways" render=" showpathways"/>
+                                        <p:commandButton value="Show pathways" id="showpathways" update="datalistpathways" 
+                                                         actionListener="#{compound.exchangeBoolShowPathways()}" 
+                                                         rendered="#{compound.areTherePathways()}">
+                                            <f:ajax execute="showpathways" render="showpathways"/>
                                         </p:commandButton>
                                         <p:dataList value="#{compound.pathways}" 
                                                     var="pathway"
                                                     styleClass="withoutBorders pathways"
-                                                    style="background: white; "
                                                     id="datalistpathways" 
                                                     rendered="#{compound.areTherePathways()}"
+                                                    emptyMessage=""
                                                     type="ordered">
                                             <h:outputLink value="#{pathway.obtainPathwayWebPage()}" target="_blank" class="prime pathways">
                                                 #{pathway.pathwayName}

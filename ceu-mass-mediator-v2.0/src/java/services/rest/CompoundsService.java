@@ -17,7 +17,7 @@ import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.tomcat.jdbc.pool.DataSource;
-import persistence.theoreticalCompound.NewCompoundsAdapter;
+import persistence.theoreticalCompound.NewCompound;
 import presentation.TheoreticalCompoundsFacade;
 import utilities.Cadena;
 import com.google.gson.Gson;
@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
-import persistence.adapterFactories.NewCompoundsAdapterFactory;
+import persistence.compoundsFactories.NewCompoundFactory;
 import persistence.theoreticalCompound.TheoreticalCompounds;
 import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
 
@@ -53,6 +53,7 @@ public class CompoundsService {
             @PathParam("tolerance") String tolerance) {
 
         Double expMas = Cadena.extractFirstDouble(experimentalMass);
+        String toleranceMode = "ppm";
         Double tol = Double.parseDouble(tolerance);
         List<TheoreticalCompounds> compounds;
         List<Double> queryMasses = new ArrayList<Double>();
@@ -70,14 +71,15 @@ public class CompoundsService {
         List<TheoreticalCompoundsGroup> listCompoundsGroup = new LinkedList<TheoreticalCompoundsGroup>();
         List<String> databases = new LinkedList<String>();
         String metabolitesType = "All except peptides";
-        TheoreticalCompounds compound = new NewCompoundsAdapterFactory().construct(
-                            null, 200d, 10d, 200d, "M+2H","", true);
+        TheoreticalCompounds compound = new NewCompoundFactory().construct(
+                            null, 200d, 10d, 200d, "M+2H", false, "", true);
         databases.add("All");
-        compounds = ejbFacade.findRangeAdvanced(new int[]{0, 0},
+        compounds = ejbFacade.findRangeAdvanced(
                 queryMasses, 
                 queryRetentionTimes, 
                 queryCompositeSpectrum,
                 significativeCompounds,
+                toleranceMode,
                 tol, 
                 chemicalAlphabet, 
                 ionMode, MassesMode, 

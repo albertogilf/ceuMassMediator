@@ -1252,43 +1252,73 @@
         /* PrimeFaces List */
         /* pathways id */
         #datalistpathways.ui-datalist {
-            background: white;
+            /*background: white;*/
+            background-color: #ffffff;
+            opacity: .4;
             border: 0px none;
         }
         
-        #datalistresults.ui-datalist .ui-datatable .ui-datalist .ui-datalist-data{
-        	background: white!important;
+        #datalistresults.ui-datalist .ui-datatable-even .ui-datalist .ui-datalist-data{
+        	background: white;
                 border: 0px none;
                 list-style-type: decimal;
                 padding:10px;
         }
         
+        #datalistresults.ui-datalist .ui-datatable-odd .ui-datalist .ui-datalist-data  {
+        	background: #f2f5f9;
+                border: 0px none;
+                list-style-type: decimal;
+                padding:10px;
+        }
+        
+        #datalistresults_list > li.ui-datalist-item:nth-child(even) {
+            background:#919499;
+        }
+        
+        
         #datalistresults.ui-datalist .ui-datatable .ui-datalist li{
                 vertical-align: top;
-                color:grey;
+                color:black;
                 margin: 0 10px;
                 font-size: inherit;
         }
         
-        #datalistresults.ui-datalist .ui-datatable .ui-datalist .ui-datalist-content {
-                background: white!important;
+        #datalistresults.ui-datalist .ui-datatable-even .ui-datalist .ui-datalist-content {
+                background: white;
                 border: 0px none;
                 font-size: 0.85em;
         }
+        
+        #datalistresults.ui-datalist .empty_list {
+                background: white;
+                border: 0px none;
+                font-size: 0.85em;
+        }
+        
+        #datalistresults.ui-datalist .ui-datatable-odd .ui-datalist .ui-datalist-content {
+                background: #f2f5f9;
+                border: 0px none;
+                font-size: 0.85em;
+        }
+        
         #datalistresults.ui-datalist .ui-datalist-data .ui-datalist-item a  {
             color:white ;
         }
         
         #datalistresults.ui-datalist .ui-datalist-data .ui-datalist-item .ui-column-title a  {
-            color: #4f4f4f;
+            color: black;
         }
         
         #datalistresults.ui-datalist .ui-datalist-data .ui-datalist-item .ui-datatable-even a  {
-            color: #4f4f4f;
+            color: black;
         }
         #datalistresults.ui-datalist .ui-datalist-data .ui-datalist-item .ui-datatable-odd a  {
-            color: #4f4f4f;
+            color: black;
         }
+        
+        
+        
         
         #datalistresults.ui-datalist {
             border: 0px none;
@@ -1306,6 +1336,10 @@
                 color: white;
         }
         
+        #datalistresults.ui-datalist .ui-datatable .ui-datalist .ui-datalist-empty-message {
+                color: black;
+        }
+        
         #datalistresults.ui-datalist .ui-datalist-footer {
                 background: url("../../images/banner.jpg") center center;
 		background-size: cover;
@@ -1319,7 +1353,7 @@
         }
         
         .pathways {
-            background : white;
+            /*background : white;*/
         }
         
         /* PrimeFaces table */
@@ -1394,12 +1428,20 @@
                 background:white;
         }
         
+        .canvas-poligon{
+            border:2px solid black;
+        }
+        
          .highlight >  label.ui-state-error {
             background: inherit;
             color:inherit;
         }
         .buttons {
             text-align:center;
+        }
+        
+        .centerStyle{
+            text-align: center;
         }
         
         .ui-chkbox{
@@ -2196,7 +2238,7 @@
 		/* Wrappers */
 
 			.wrapper {
-				padding: 0.5em 0 9em 0;
+				padding: 0.5em 0 5em 0;
 			}
 
 				.wrapper .title {
@@ -2215,7 +2257,7 @@
 			}
 
 			#intro-wrapper {
-				padding-bottom: 5em;
+				padding-bottom: 1em;
 			}
 
 		/* Header */
@@ -2522,7 +2564,7 @@
 			}
 
 			#intro-wrapper {
-				padding-bottom: 5em;
+				padding-bottom: 1em;
 			}
 
 			#footer-wrapper hr {
@@ -2896,15 +2938,23 @@
 			#header-wrapper {
 				padding: 6em 2em 6em 2em;
 			}
+                        
+                        #intro-wrapper {
+				padding-bottom: 1em;
+			}
 
 			#footer-wrapper {
 				padding-top: 3em;
 			}
+                        
+                            #footer-wrapper #footer {
+                                    padding-top: 3em;
+                            }
 
-				#footer-wrapper .feature-list section {
-					border-top-color: #eee;
-					border-top-color: rgba(255, 255, 255, 0.05);
-				}
+                            #footer-wrapper .feature-list section {
+                                    border-top-color: #eee;
+                                    border-top-color: rgba(255, 255, 255, 0.05);
+                            }
 
 		/* Logo */
 
@@ -2912,17 +2962,17 @@
 				text-align: center;
 			}
 
-				#logo h1 {
-					font-size: 1.5em;
-					letter-spacing: 0.2em;
-				}
+                            #logo h1 {
+                                    font-size: 1.5em;
+                                    letter-spacing: 0.2em;
+                            }
 
-				#logo p {
-					margin: 1.25em 0 0 0;
-					display: block;
-					letter-spacing: 0.2em;
-					font-size: 0.9em;
-				}
+                            #logo p {
+                                    margin: 1.25em 0 0 0;
+                                    display: block;
+                                    letter-spacing: 0.2em;
+                                    font-size: 0.9em;
+                            }
 
 		/* Nav */
 
@@ -2986,7 +3036,8 @@
 						#copyright ul li:first-child {
 							margin-top: 0;
 						}
-
+                                                
+                                                
 	}
         
 /* MODIFICACIONES */
@@ -3051,22 +3102,101 @@
             padding:4px;
         }
         
+        
+        
         table {
             margin-bottom: 1em;
         }
+        
+/* Colors for quality assurance. */
+
+    .red {
+        background-color : red!important; 
+        color : black;
+    }
+    .yellow {
+        background-color : yellow!important; 
+        color : black;
+    }
+    .green {
+        background-color : green!important; 
+        color : black;
+    }
+
+    .qa-result{
+        display: block;
+        font-weight: 700;
+        /* color: #484d55; */
+        color: rgba(255, 255, 255, 0.75);
+    }
+/*
+.sup {
+  position: relative;
+  bottom: 1ex; 
+  font-size: 80%;
+}
+
+.ui-buttton-separated{
+    margin-left: 2em;
+}
+*/
 
 /* DROOLS. Do not change names. These class names have relation with drools rules names. */
 
-        .row_EXPECTED {
-            background-color: #92d050;
-        }
-        .row_POSSIBLE {
-            background-color: #ffc000;
-        }
-        .row_NOT_PROBABLE {
-            background-color: #ff8000;
-        }
-        .row_NOT_EXPECTED {
-            background-color: #ff6666;
-            color: #ffffff;
-        }
+    .row_EXPECTED {
+        background-color: #92d050;
+    }
+    .row_POSSIBLE {
+        background-color: #ffc000;
+    }
+    .row_NOT_PROBABLE {
+        background-color: #ff8000;
+    }
+    .row_NOT_EXPECTED {
+        background-color: #ff6666;
+        color: #ffffff;
+    }
+
+    /* Tooltips */
+
+    /* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted white; /* If you want dots under the hoverable text */
+    }
+
+/* Tooltip text */
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 240px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }

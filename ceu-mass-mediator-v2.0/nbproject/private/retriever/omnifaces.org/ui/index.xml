@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>OmniFaces UI</title>
+		<meta name="description" content="OmniFaces docs" />
+		<meta name="robots" content="noindex" />
+		<link rel="stylesheet" href="../stylesheets/stylesheet.css" />
+	</head>
+	<body>
+		<!-- HEADER -->
+		<div id="header_wrap" class="outer">
+			<header class="inner">
+				<h1 id="project_title">OmniFaces UI</h1>
+			</header>
+		</div>
+
+		<!-- MAIN CONTENT -->
+		<div id="main_content_wrap" class="outer">
+			<section id="main_content" class="inner">
+
+<h2>UI</h2>
+
+<p>
+	This is actually not supposed to be a public web page.
+</p>
+<p>
+	The <code>http://omnifaces.org/ui</code> is supposed to be the XML namespace URI of OmniFaces UI components.
+	Usually, you declare this URI in the XML root element of your XHTML file as below in order to use OmniFaces UI components within the element.
+</p>
+
+<div class="highlight highlight-XML"><pre>&lt;html ... xmlns:o="http://omnifaces.org/ui"&gt;</pre></div>
+
+<p>
+	Normally, XML namespace URIs do not represent actual web resources. 
+	That they start with <code>http://</code> is indeed confusing to starters, but that's so far the best way to have a unique resource identifier (URI) for a XML namespace.
+</p>
+
+<h2>How does it work then?</h2>
+
+<p>
+	During webapp's startup, Facelets will parse any <code>.taglib.xml</code> file found in the web application and remember its structure by the <code>&lt;namespace&gt;</code> entry.
+	This way Facelets can find the appropriate tagfiles, <code>TagHandler</code> classes and/or <code>UIComponent</code> classes for any <code>&lt;o:xxx&gt;</code> tag.
+	Also, this way any IDE such as Eclipse can load the appropriate tag/attribute listing/documentation which is displayed on mouseover or autocomplete.
+	You can find the OmniFaces UI <code>.taglib.xml</code> source code <a href="https://github.com/omnifaces/omnifaces/blob/master/src/main/resources/META-INF/omnifaces-ui.taglib.xml">here</a>. 
+</p>
+
+<h2>But my OmniFaces tags doesn't work!</h2>
+
+<p>
+	And that's why you looked up here? 
+	Well, apparently the OmniFaces JAR is just missing in webapp's runtime classpath.
+	Make sure that the JAR file is present in <code>/WEB-INF/lib</code> folder of the built WAR file.
+	If you're not using a dependency management framework such as Maven, 
+	then this is usually to be achieved by manually placing a copy of the JAR file straight in the <code>/WEB-INF/lib</code> folder of your webapp project.
+</p>
+
+<h2>Got it</h2>
+
+<p>
+	Go back to <a href="http://omnifaces.org">OmniFaces homepage</a> then :)
+</p>
+
+			</section>
+		</div>
+
+		<!-- FOOTER  -->
+		<div id="footer_wrap" class="outer">
+			<footer class="inner">
+				<p>
+					Copypasted from <a href="http://pages.github.com">GitHub Pages</a>
+				</p>
+			</footer>
+		</div>
+
+		<script type="text/javascript">
+			var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+		<script type="text/javascript">
+			try {
+				var pageTracker = _gat._getTracker("UA-29559297-6");
+				pageTracker._trackPageview();
+			} catch(err) {}
+		</script>
+	</body>
+</html>

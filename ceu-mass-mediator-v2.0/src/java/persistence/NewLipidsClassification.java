@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package persistence;
 
 import java.io.Serializable;
@@ -17,7 +13,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
+/**
+ * JPA definition for Compounds Lipids Classification
+ *
+ * @author alberto Gil de la Fuente. San Pablo-CEU
+ * @version: 3.1, 17/02/2016
+ */
 @Entity
 @Table(name = "compounds_lipids_classification")
 @XmlRootElement
@@ -46,10 +47,18 @@ public class NewLipidsClassification implements Serializable {
     @Column(name = "sub_class")
     private String subClass;
     
+    @Size(max = 20)
+    @Column(name = "lipid_type")
+    private String lipidType;
+    
+    @Size(max = 2)
+    @Column(name = "num_chains")
+    private int numChains;
+    
     @Size(max = 10)
     @Column(name = "number_carbons")
     private int carbons;
-        
+    
     @Size(max = 10)
     @Column(name = "double_bonds")
     private int doubleBonds;
@@ -91,6 +100,22 @@ public class NewLipidsClassification implements Serializable {
 
     public void setSubClass(String subClass) {
         this.subClass = subClass;
+    }
+
+    public String getLipidType() {
+        return lipidType;
+    }
+
+    public void setLipidType(String lipidType) {
+        this.lipidType = lipidType;
+    }
+
+    public int getNumChains() {
+        return numChains;
+    }
+
+    public void setNumChains(int numChains) {
+        this.numChains = numChains;
     }
 
     public int getCarbons() {

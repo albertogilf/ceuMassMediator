@@ -1,6 +1,11 @@
 package utilities;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,6 +127,25 @@ public class PatternFinder {
         }
 
         return result;
+    }
+    
+     public static List<Double> readDoublesFromFile(String PATH) {
+        List<Double> listDoubles = new LinkedList<Double>();
+
+        Scanner scan;
+        File file = new File(PATH);
+        try {
+            scan = new Scanner(file);
+
+            while (scan.hasNextDouble()) {
+                Double number = scan.nextDouble();
+                //System.out.println(number);
+                listDoubles.add(number);
+            }
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+        return listDoubles;
     }
 
 }

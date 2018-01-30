@@ -10,7 +10,9 @@
         <ui:define name="head">
             <title>Simple Search. CEU mass mediator</title>
         </ui:define>
-
+        
+        <ui:param name="onloadbody" value="#{theoreticalCompoundsController.clearForm()}"/>
+        
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Simple Search</div>
@@ -20,8 +22,8 @@
                 <h:form id="mainsearch" prependId="false">
                     <p:focus for="inputmasses"/>
                     <h:commandButton id="dummy" actionListener="#{theoreticalCompoundsController.submitCompoundsSimple()}" 
-                                         action="/theoreticalCompounds/List" style="display:none;"
-                                          />
+                                     action="/theoreticalCompounds/List" style="display:none;"
+                                     />
                     <div id="highlights" class="container whiteborder">
 
                         <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
@@ -32,7 +34,7 @@
 
                             </p:row>
                             <p:row></p:row>
-                            
+
                             <p:row></p:row>
 
                             <p:row>
@@ -51,19 +53,30 @@
                             <p:row></p:row>
 
                             <p:row>
-                                <label for="inputtolerance" style="float: top">Tolerance (ppm): &nbsp;</label>
-                                <p:inputText id="inputtolerance" size="2" maxlength="4"  
-                                             value="#{theoreticalCompoundsController.inputTolerance}" 
-                                             validator="#{theoreticalCompoundsController.validateInputTolerance}"
-                                             required="true"
-                                             pt:placeholder="enter tolerance"
-                                             style="width:100%"
-                                             />
-                                <p:message for="inputtolerance" styleClass="errormessage"></p:message>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputtolerance" style="float: top">Tolerance: &nbsp;</label>
+                                    <p:inputText id="inputtolerance" size="2" maxlength="4"  
+                                                 value="#{theoreticalCompoundsController.inputTolerance}" 
+                                                 validator="#{theoreticalCompoundsController.validateInputTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="inputtolerance" styleClass="errormessage"></p:message>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmodetolerance" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmodetolerance" 
+                                                        required="true"
+                                                        requiredMessage="Choose tolerance mode"
+                                                        value="#{theoreticalCompoundsController.inputModeTolerance}">
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>
+                                        <f:selectItem itemValue="mDa" itemLabel="mDa"/>  
+                                    </p:selectOneRadio>
+                                </div>
                             </p:row>
-
+                            
                             <p:row></p:row>
-
                             <p:row></p:row>
 
                             <p:row>
@@ -115,7 +128,8 @@
                                     <f:selectItem itemValue="neutral" itemLabel="Neutral Masses"/>
                                     <f:selectItem itemValue="mz" itemLabel="m/z Masses"/>
                                     <!--<f:selectItem itemValue="recalculated" itemLabel="Recalculated m/z Masses"/>-->
-                                    <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu adductsmenu messageionmode"/>
+                                    <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu 
+                                            adductsmenu messageionmode"/>
                                 </p:selectOneListbox>
                                 <p:message for="massesmodemenu" styleClass="errormessage"></p:message>
                             </p:row>
@@ -127,7 +141,7 @@
                                                     required="true"
                                                     requiredMessage="Choose an ionization mode"
                                                     style="width:100%">
-                                    <f:selectItems value="#{theoreticalCompoundsController.massesModeCandidates}" />
+                                    <f:selectItems value="#{theoreticalCompoundsController.ionizationModeCandidates}" />
                                     <f:ajax execute="ionmodemenu" render=" ionmodemenu adductsmenu messageionmode"/>
                                 </p:selectOneListbox>
                                 <p:message for="ionmodemenu" styleClass="errormessage"></p:message>
@@ -157,7 +171,7 @@
                         <hr/>
 
                         <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
-                            <p:row>                                
+                            <p:row>      
                                 <h:commandButton 
                                     id="loadDemo" 
                                     type="submit" 
@@ -165,7 +179,8 @@
                                     action="#{theoreticalCompoundsController.setDemoMass()}" 
                                     immediate="true"
                                     style="width:100%">
-                                    <f:ajax render="inputtolerance inputmasses massesmodemenu ionmodemenu adductsmenu"/>
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
                                 </h:commandButton>
                             </p:row>
                             <p:row>
@@ -185,7 +200,8 @@
                                     action="#{theoreticalCompoundsController.clearForm()}"
                                     immediate="true"
                                     style="width:100%"> 
-                                    <f:ajax render="inputtolerance inputmasses massesmodemenu ionmodemenu adductsmenu"/>
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
                                 </h:commandButton>
                             </p:row>
 

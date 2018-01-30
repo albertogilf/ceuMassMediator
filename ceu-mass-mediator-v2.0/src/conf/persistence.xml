@@ -4,8 +4,9 @@
     <!--<jta-data-source>compuestos</jta-data-source>-->
     <!--<jta-data-source>jdbc/compounds</jta-data-source>-->
     <!--<jta-data-source>jdbc/proof</jta-data-source>-->
-    <!--<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>-->
-    <jta-data-source>jdbc/newDataModel</jta-data-source>
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <!--<jta-data-source>jdbc/newDataModel</jta-data-source>-->
+    <jta-data-source>java:comp/env/jdbc/test</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
         <property name="eclipselink.logging.file" value="outputEclipseLink.log"/>
