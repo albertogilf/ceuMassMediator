@@ -1,12 +1,7 @@
-package presentation;
+package facades;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import DBManager.QueryConstructor;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,47 +14,38 @@ import persistence.NewCompoundsGen;
 import persistence.compoundsFactories.NewCompoundFactory;
 import persistence.compoundsFactories.NewCompoundGenFactory;
 import persistence.compoundsFactories.TheoreticalCompoundFactory;
-import persistence.FACompoundFactories.OxidizedCompoundFactory;
 import persistence.theoreticalCompound.TheoreticalCompounds;
 import persistence.theoreticalGroup.CompoundsGroupByMass;
 import persistence.oxidizedTheoreticalCompound.OxidizedCompound;
 import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
 import utilities.TheoreticalCompoundsComparer;
-import utilities.AdductsLists;
-import utilities.Constantes;
-import static utilities.Constantes.ADDUCT_AUTOMATIC_DETECTION_WINDOW;
 import utilities.ConstantesForOxidation;
-import utilities.OxidationLists;
 import static utilities.OxidationLists.MAPOXIDATIONS;
-import utilities.TheoreticalOxidizedCompoundsComparer;
-import static utilities.Constantes.FILE_FOR_ANALYTICS_PATH;
 import persistence.oxidizedTheoreticalCompound.OxidizedTheoreticalCompound;
-import persistence.FACompoundFactories.OxidizedTheoreticalCompoundFactory;
+import utilities.AdductProcessing;
 import static utilities.OxidationLists.LIST_LONG_CHAIN_OXIDATION_TYPES;
 import static utilities.OxidationLists.LIST_SHORT_CHAIN_OXIDATION_TYPES;
+import utilities.OxidationProcessing;
 import utilities.Utilities;
 import static utilities.Utilities.calculateFAEMFromPIandOtherFAEM;
 
 /**
  *
  * @author Alberto Gil de la Fuente
- * @version: 4.0, 20/07/2016. Modified by Alberto Gil de la Fuente
+ * @version: 4.0, 20/07/2016. Modified by Alberto Gil de la Fuente Last
+ * Modified: 22/05/2018
  */
 @Stateless
 public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompounds> {
 
     private static final long serialVersionUID = 1L;
 
-    @PersistenceContext(unitName = "ceuMassMediator")
     /**
      * EntityManager to manage the Java Persistence Api
      */
-    public EntityManager em;
+    @PersistenceContext(unitName = "ceuMassMediator")
+    private EntityManager em;
 
-    /**
-     * HashMap to ?
-     */
-    // HashMap massIntervalOfCompounds = new HashMap();
     /**
      * Gets the EntityManager
      *
@@ -70,14 +56,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         return this.em;
     }
 
-    /*
-    public void setEntityManager(EntityManager em){
-        this.em = em;
-    }
-     */
     /**
-     * constructor where it is called the father and the argument passed to the
-     * father is the atribute class of TheoreticalCompounds
+     * constructor to set the entityClass from the inherited class
      */
     public TheoreticalCompoundsFacade() {
         super(TheoreticalCompounds.class);
@@ -89,7 +69,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
      *
      * @param tcl. The list of TheoreticalCompounds
      * @param queryResult. The list of queryResults
-     * @param measuredMass. Measured Mass in the Mass Spectrometer
+     * @param experimentalMass. Measured Mass in the Mass Spectrometer
      * @param retentionTime. Retention time in MS
      * @param tcf. The factory
      * @param massToSearch Mass To Search in the database
@@ -97,7 +77,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
      */
     private void addToTheoreticalCompoundList(List<TheoreticalCompounds> tcl,
             List<Compounds> queryResult,
-            Double measuredMass,
+            Double experimentalMass,
             Double retentionTime,
             TheoreticalCompoundFactory tcf,
             Double massToSearch,
@@ -106,14 +86,22 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             String adductAutoDetected,
             TheoreticalCompoundsGroup compoundGroup,
             Boolean isSignificative) {
+        // FOR MARIA. 
+        // HERE THE Results of the query comes in the list of Compounds queryResult
+        // In the new DataModel, you can adapt this method to have a List of Compound 
+        // and create for each compound the corresponding LCMS compound, which will be added 
+        // to the CompoundsLCMSGroupByAdduct
+        // The organisation is little bit different, that is why we have to refactorise. 
+        // For example, we established directly in the CompoundsLCMSGroupByAdduct 
+        // if the adduct was autodetected or not!
+        // Ask me if you have doubts. 
+        // Now we have two list because we organise the compounds in a full list (List<TheoreticalCompounds> tcl)
+        // and in different groups grouped by adduct(TheoreticalCompoundsGroup compoundGroup)
+        // DOUBT ALBERTO, Sorry but I dont understand what you mean.
         Iterator<Compounds> it = queryResult.iterator();
         while (it.hasNext()) {
-
-            //NewCompounds nc = (NewCompounds) it.next();
-            //System.out.println("COMPOUND: ID" + nc.getCompoundId() + " KEGG ID: " + nc.getNcKegg().getKeggId() + 
-            //        " HMDB ID: " + nc.getNcHMDB().getHmdbId());
             TheoreticalCompounds compound = tcf.construct(it.next(),
-                    measuredMass,
+                    experimentalMass,
                     retentionTime,
                     massToSearch,
                     adduct,
@@ -127,8 +115,9 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
     }
 
     /**
-     * returns the TheoreticalFACompound which it is in the List queryResult If
-     * there is more than one, it returns the first one and
+     * TODO ALBERTO REFACTORIZATION FOR NEW CLASS FACOMPOUND (Compound
+     * INHERITANCE) returns the TheoreticalFACompound which it is in the List
+     * queryResult If there is more than one, it returns the first one and
      *
      * @param queryResult. The list of queryResults
      * @param FAcompoundFactory. The factory for constructing the FA
@@ -137,6 +126,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
      * @param queryParentIonMass queryParentIonMass. It should be bigger than 50
      * Da
      * @param oxidationType Oxidation Type
+     * @return the first FA Compound or null if there is not FA
      */
     private FACompound getFirstFACompoundFromQuery(
             List<Compounds> queryResult,
@@ -146,7 +136,6 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             String oxidationType) {
         Iterator<Compounds> it = queryResult.iterator();
         if (it.hasNext()) {
-            //NewCompounds nc = (NewCompounds) it.next();
             FACompound FAcompound = FAcompoundFactory.construct(it.next(),
                     FAEM,
                     massToSearch,
@@ -158,10 +147,12 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
     }
 
     /**
-     * adds to the FAoxidized compound oxidizedcompound all the query results
-     * according the mass of the precursor. This method works for long and short
-     * chain due to the transformation on the FA also occurs in the oxidized
-     * compound
+     * REFACTORIZED DONE IN OxidationFACADE
+     *
+     * Adds to the oxidized compound oxidizedcompound all the annotations in the
+     * query results according the mass of the precursor. This method works for
+     * long and short chain due to the transformation on the FA also occurs in
+     * the oxidized compound
      *
      * @param oxidizedCompound. The compound to add the annotations
      * @param queryParentIonMass queryParentIonMass to be searched
@@ -204,21 +195,23 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         tcf = new NewCompoundFactory();
         Double massToSearch; // Mass to search based on adducts
         // Finish the query with the mass condition
-        String startQuery;
-        startQuery = "SELECT nc.compoundId FROM NewCompounds nc ";
+        String aliasTable = "nc";
+        String startQuery = "SELECT " + aliasTable + ".compoundId FROM NewCompounds " + aliasTable;
         String finalQuery;
 
-        startQuery = startQuery + " INNER JOIN NewLipidsClassification nlc on nc.compoundId=nlc.compoundId ";
-        startQuery = startQuery + " INNER JOIN NewLipidsClassificationChains nlcc on nlc.compoundId=nlcc.compoundId ";
+        startQuery = startQuery + " INNER JOIN NewLMClassification nlmc on nc.compoundId=nlmc.compoundId ";
+        startQuery = startQuery + " INNER JOIN CompoundChain cc on nc.compoundId=cc.keyCompoundChain.compoundId ";
+        startQuery = startQuery + " INNER JOIN Chains chains on cc.keyCompoundChain.chainId=chains.chainId ";
         startQuery = startQuery + " WHERE (";
-        startQuery = startQuery + "nlc.compoundId is not null and ";
-        startQuery = startQuery + "nlcc.compoundId is not null";
+        startQuery = startQuery + "nlmc.compoundId is not null and ";
+        startQuery = startQuery + "cc.keyCompoundChain.compoundId is not null";
         startQuery = startQuery + ") and ";
 
 // Stablish the classification of Fatty Acids
-        startQuery = startQuery + "nlc.subClass = " + ConstantesForOxidation.PC_OXIDIZED_LIPIDS_LM_CLASSIFICATION + " and ";
-        startQuery = startQuery + "nlcc.carbons = " + numCarbonsOfOxidizedFA + " and ";
-        startQuery = startQuery + "nlcc.doubleBonds = " + doubleBondsOfOxidizedFA + " and ";
+        startQuery = startQuery + "nlmc.subClass = " + ConstantesForOxidation.PC_OXIDIZED_LIPIDS_LM_CLASSIFICATION + " and ";
+// set the number of carbons and double bonds for oxidized FA. The query for Non Oxidized is not needed since the mass already matched
+        startQuery = startQuery + "chains.carbons = " + numCarbonsOfOxidizedFA + " and ";
+        startQuery = startQuery + "chains.doubleBonds = " + doubleBondsOfOxidizedFA + " and ";
 
         if (neutralMassPI > 0) {
             massToSearch = neutralMassPI;
@@ -227,27 +220,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             return;
         }
 
-        Double delta;
-        switch (toleranceModeForPI) {
-            // Case mDa
-            case "mDa":
-                delta = toleranceForPI * 0.001d;
-                break;
-            // Case ppm
-            case "ppm":
-                delta = massToSearch * toleranceForPI * 0.000001f;
-                break;
-            default:
-                delta = massToSearch * toleranceForPI * 0.000001f;
-                break;
-        }
-        Double low = massToSearch - delta;
-        Double high = massToSearch + delta;
+        finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearch, toleranceModeForPI, toleranceForPI);
+        //System.out.println("FINAL QUERY OXIDIZED COMPOUND: " + finalQuery);
         Query queryForOxidizedFA;
 
-        // set the mass 
-        finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-        finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearch + ")";
         //System.out.println("FINAL QUERY: " + finalQuery);
         queryForOxidizedFA = getEntityManager().createQuery(finalQuery, Integer.class);
         List resultsForOxidizedFA = queryForOxidizedFA.getResultList();
@@ -262,13 +238,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 int compoundId = iteratorForCompoundIDsofOxidizedFAs.next();
                 String queryForNonOxidizeFA;
                 queryForNonOxidizeFA = "SELECT nc FROM NewCompounds nc ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + " INNER JOIN NewLipidsClassificationChains nlcc on nc.compoundId=nlcc.compoundId ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + " WHERE ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + "nc.compoundId=" + compoundId + " and (";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + "nlcc.compoundId is not null";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + " INNER JOIN CompoundChain cc on nc.compoundId=cc.keyCompoundChain.compoundId ";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + " INNER JOIN Chains chains on cc.keyCompoundChain.chainId=chains.chainId ";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + " WHERE (";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + "nc.compoundId=" + compoundId + " and ";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + "cc.keyCompoundChain.compoundId is not null";
                 queryForNonOxidizeFA = queryForNonOxidizeFA + ") and ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + "nlcc.carbons = " + numCarbonsOfNonOxidizedFA + " and ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + "nlcc.doubleBonds = " + doubleBondsOfNonOxidizedFA;
+                queryForNonOxidizeFA = queryForNonOxidizeFA + "chains.carbons = " + numCarbonsOfNonOxidizedFA + " and ";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + "chains.doubleBonds = " + doubleBondsOfNonOxidizedFA;
                 Query query2;
                 query2 = getEntityManager().createQuery(queryForNonOxidizeFA, NewCompounds.class);
                 List resultsForNonOxidizedFA = query2.getResultList();
@@ -291,19 +268,19 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                             true);
                     // Add the chemical Alphabet
                     oxidizedAnnotationOverPC.addCompound(compound);
-
                 }
-
             }
-
         }
-
     }
 
     /**
-     * adds to the list of TheoreticalCompounds tocl all the query results
-     * according the mass. This method works only for long chain oxidation.
-     * Short chain
+     * TODO ALBERTO REFACTORIZATION FOR NEW CLASS CompoundOxidized
+     *
+     * Adds to the oxidized compound oxidizedcompound all the non Oxidizided
+     * annotations in the query results according the mass of the precursor.
+     * This method works only for long chain oxidation. Short chain oxidized
+     * compounds suffer alterations in the structure, so it is not possible to
+     * know the non oxidized compounds/mass
      *
      * @param oxidizedCompound. The compound to add the annotations
      * @param queryParentIonMass queryParentIonMass to be searched
@@ -349,20 +326,22 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         tcf = new NewCompoundFactory();
         Double massToSearch; // Mass to search based on adducts
         // Finish the query with the mass condition
-        String startQuery;
-        startQuery = "SELECT nc.compoundId FROM NewCompounds nc ";
+        String aliasTable = "nc";
+        String startQuery = "SELECT " + aliasTable + ".compoundId FROM NewCompounds " + aliasTable;
         String finalQuery;
-        startQuery = startQuery + " INNER JOIN NewLipidsClassification nlc on nc.compoundId=nlc.compoundId ";
-        startQuery = startQuery + " INNER JOIN NewLipidsClassificationChains nlcc on nlc.compoundId=nlcc.compoundId ";
+        startQuery = startQuery + " INNER JOIN NewLMClassification nlmc on nc.compoundId=nlmc.compoundId ";
+        startQuery = startQuery + " INNER JOIN CompoundChain cc on nc.compoundId=cc.keyCompoundChain.compoundId ";
+        startQuery = startQuery + " INNER JOIN Chains chains on cc.keyCompoundChain.chainId=chains.chainId ";
         startQuery = startQuery + " WHERE (";
-        startQuery = startQuery + "nlc.compoundId is not null and ";
-        startQuery = startQuery + "nlcc.compoundId is not null";
+        startQuery = startQuery + "nlmc.compoundId is not null and ";
+        startQuery = startQuery + "cc.keyCompoundChain.compoundId is not null";
         startQuery = startQuery + ") and ";
 
 // Stablish the classification of Fatty Acids
-        startQuery = startQuery + "nlc.mainClass = " + ConstantesForOxidation.PC_NON_OXIDIZED_LIPIDS_LM_CLASSIFICATION + " and ";
-        startQuery = startQuery + "nlcc.carbons = " + numCarbonsOfOxidizedFA + " and ";
-        startQuery = startQuery + "nlcc.doubleBonds = " + doubleBondsOfOxidizedFA + " and ";
+        startQuery = startQuery + "nlmc.mainClass = " + ConstantesForOxidation.PC_NON_OXIDIZED_LIPIDS_LM_CLASSIFICATION + " and ";
+// set the number of carbons and double bonds for oxidized FA. The query for Non Oxidized is not needed since the mass already matched
+        startQuery = startQuery + "chains.carbons = " + numCarbonsOfOxidizedFA + " and ";
+        startQuery = startQuery + "chains.doubleBonds = " + doubleBondsOfOxidizedFA + " and ";
         if (neutralMassPI > 0) {
             massToSearch = neutralMassPI;
             // Also include the oxidation
@@ -375,29 +354,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             massToSearch = null;
             return;
         }
+        finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearch, toleranceModeForPI, toleranceForPI);
+        // System.out.println("FINAL QUERY NON OXIDIZED COMPOUND: " + finalQuery);
 
-        Double delta;
-        switch (toleranceModeForPI) {
-            // Case mDa
-            case "mDa":
-                delta = toleranceForPI * 0.001d;
-                break;
-            // Case ppm
-            case "ppm":
-                delta = massToSearch * toleranceForPI * 0.000001f;
-                break;
-            default:
-                delta = massToSearch * toleranceForPI * 0.000001f;
-                break;
-        }
-        Double low = massToSearch - delta;
-        Double high = massToSearch + delta;
         Query queryForOxidizedFA;
-
-        // set the mass 
-        finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-        finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearch + ")";
-        //System.out.println("FINAL QUERY: " + finalQuery);
         queryForOxidizedFA = getEntityManager().createQuery(finalQuery, Integer.class);
         List resultsForOxidizedFA = queryForOxidizedFA.getResultList();
         CompoundsGroupByMass NonOxidizedAnnotationOverPC = null;
@@ -411,13 +371,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 int compoundId = iteratorForCompoundIDsofOxidizedFAs.next();
                 String queryForNonOxidizeFA;
                 queryForNonOxidizeFA = "SELECT nc FROM NewCompounds nc ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + " INNER JOIN NewLipidsClassificationChains nlcc on nc.compoundId=nlcc.compoundId ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + " WHERE ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + "nc.compoundId=" + compoundId + " and (";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + "nlcc.compoundId is not null";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + " INNER JOIN CompoundChain cc on nc.compoundId=cc.keyCompoundChain.compoundId ";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + " INNER JOIN Chains chains on cc.keyCompoundChain.chainId=chains.chainId ";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + " WHERE (";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + "nc.compoundId=" + compoundId + " and ";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + "cc.keyCompoundChain.compoundId is not null";
                 queryForNonOxidizeFA = queryForNonOxidizeFA + ") and ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + "nlcc.carbons = " + numCarbonsOfNonOxidizedFA + " and ";
-                queryForNonOxidizeFA = queryForNonOxidizeFA + "nlcc.doubleBonds = " + doubleBondsOfNonOxidizedFA;
+                queryForNonOxidizeFA = queryForNonOxidizeFA + "chains.carbons = " + numCarbonsOfNonOxidizedFA + " and ";
+                queryForNonOxidizeFA = queryForNonOxidizeFA + "chains.doubleBonds = " + doubleBondsOfNonOxidizedFA;
                 Query query2;
                 query2 = getEntityManager().createQuery(queryForNonOxidizeFA, NewCompounds.class);
                 List resultsForNonOxidizedFA = query2.getResultList();
@@ -440,84 +401,13 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                             true);
                     // Add the chemical Alphabet
                     NonOxidizedAnnotationOverPC.addCompound(compound);
-
                 }
-
             }
-
         }
-    }
-
-    private static Double getChargedOriginalMass(double inputMass, double adductValue, int charge) {
-        double result = inputMass;
-
-        result = result + adductValue;
-        result = result * charge;
-
-        return result;
-    }
-
-    private static Double getDimmerOriginalMass(double inputMass, double adductValue, int numberAtoms) {
-        double result = inputMass;
-
-        result = result + adductValue;
-        result = result / numberAtoms;
-
-        return result;
-    }
-
-    private static Double getMassToSearch(Double inputMass, String adduct, Double adductValue) {
-        Double massToSearch;
-
-        if (AdductsLists.CHARGE_2.contains(adduct)) {
-            massToSearch = getChargedOriginalMass(inputMass, adductValue, 2);
-        } else if (AdductsLists.CHARGE_3.contains(adduct)) {
-            massToSearch = getChargedOriginalMass(inputMass, adductValue, 3);
-        } else if (AdductsLists.DIMER_2.contains(adduct)) {
-            massToSearch = getDimmerOriginalMass(inputMass, adductValue, 2);
-        } else if (AdductsLists.DIMER_3.contains(adduct)) {
-            massToSearch = getDimmerOriginalMass(inputMass, adductValue, 3);
-        } else {
-            massToSearch = inputMass + adductValue;
-        }
-        return massToSearch;
-    }
-
-    private static Double getChargedAdductMass(double inputMass, double adductValue, int charge) {
-        double result = inputMass;
-
-        result = result / charge;
-        result = result - adductValue;
-
-        return result;
-    }
-
-    private static Double getDimmerAdductMass(double inputMass, double adductValue, int numberAtoms) {
-        double result = inputMass;
-        result = result * numberAtoms;
-        result = result - adductValue;
-
-        return result;
-    }
-
-    private static Double getAdductMass(Double inputMass, String adduct, Double adductValue) {
-        Double massToSearch;
-
-        if (AdductsLists.CHARGE_2.contains(adduct)) {
-            massToSearch = getChargedAdductMass(inputMass, adductValue, 2);
-        } else if (AdductsLists.CHARGE_3.contains(adduct)) {
-            massToSearch = getChargedAdductMass(inputMass, adductValue, 3);
-        } else if (AdductsLists.DIMER_2.contains(adduct)) {
-            massToSearch = getDimmerAdductMass(inputMass, adductValue, 2);
-        } else if (AdductsLists.DIMER_3.contains(adduct)) {
-            massToSearch = getDimmerAdductMass(inputMass, adductValue, 3);
-        } else {
-            massToSearch = inputMass - adductValue;
-        }
-        return massToSearch;
     }
 
     /**
+     *
      * returns a list of compounds from the databases according to the number of
      * the mass and the tolerance .
      *
@@ -543,8 +433,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases,
             String metabolitesType) {
+        long simpleJPA = 0;
+        long start = System.currentTimeMillis();
         List<TheoreticalCompounds> theoreticalCompoundList;
-
+        
         // If the search is only in MINE, it goes directly to findRangeGeneratedAdvanced
         if (databases.size() == 1 && databases.contains("MINE (Only In Silico Compounds)")) {
             theoreticalCompoundList = findRangeGeneratedSimple(
@@ -568,6 +460,9 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     databases,
                     metabolitesType);
         }
+        long end = System.currentTimeMillis();
+        simpleJPA = simpleJPA + (end - start);
+        System.out.println("simple JPA: " + simpleJPA);
         return theoreticalCompoundList;
     }
 
@@ -605,8 +500,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         //System.out.println("Databases " + databases);
 
         // Choose the adducts to perform the search
-        provisionalMap = chooseprovisionalMapAdducts(massesMode, ionMode, adducts);
-        adducts = chooseAdducts(ionMode, provisionalMap, adducts);
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
+        adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
         /*
         System.out.println("PROVISIONALMAP IN MAIN METHOD: " + provisionalMap);
@@ -616,59 +511,19 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         Double massToSearch;
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
-        String startQuery = "SELECT nc FROM NewCompounds nc ";
+        String aliasTable = "nc";
+        String startQuery = "SELECT " + aliasTable + " FROM NewCompounds " + aliasTable;
         String finalQuery;
 // Add databases depending on the user selection
 // finalQuery = "SELECT c FROM NewCompounds c 
 // LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId 
 // left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId 
 // where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
-        if (!(databases.contains("AllWM") || databases.contains("All")
-                || (databases.contains("Kegg") && databases.contains("HMDB")
-                && databases.contains("LipidMaps") && databases.contains("Metlin")))) {
-            if (databases.contains("Kegg")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsKegg ck on nc.compoundId=ck.compoundId ";
-            }
-            if (databases.contains("HMDB")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsHMDB ch on nc.compoundId=ch.compoundId ";
-            }
-            if (databases.contains("LipidMaps")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsLM cl on nc.compoundId=cl.compoundId ";
-            }
-            if (databases.contains("Metlin")) {
-                startQuery = startQuery + "LEFT JOIN NewCompoundsMetlin cm on nc.compoundId=cm.compoundId ";
-            }
-            startQuery = startQuery + " WHERE (";
-            if (databases.contains("Kegg")) {
-                startQuery = startQuery + "ck.keggId is not null or ";
-            }
-            if (databases.contains("HMDB")) {
-                startQuery = startQuery + "ch.hmdbId is not null or ";
-            }
-            if (databases.contains("LipidMaps")) {
-                startQuery = startQuery + "cl.lmId is not null or ";
-            }
-            if (databases.contains("Metlin")) {
-                startQuery = startQuery + "cm.agilentId is not null or ";
-            }
-
-            // delete the last or
-            startQuery = startQuery.substring(0, startQuery.length() - 4);
-            startQuery = startQuery + ") and ";
-        } else {
-            // add where condition for all databases
-            startQuery = startQuery + " WHERE ";
-        }
+// Add filter for databases
+        startQuery = QueryConstructor.addFilterDatabasesJPA(startQuery, databases);
 
 // Add compound type for search
-        if (metabolitesType.equals("All including peptides")) {
-            // Then search in all compounds in the database
-        } else if (metabolitesType.equals("Only lipids")) {
-            startQuery = startQuery + "(nc.compoundType = " + "1" + ") and ";
-        } else {
-            // By default, searches includes all compounds but peptides (2)
-            startQuery = startQuery + "(nc.compoundType != " + "2" + ") and ";
-        }
+        startQuery = QueryConstructor.addFilterMetabolitesTypeJPA(startQuery, metabolitesType);
 
         TheoreticalCompoundFactory tcf = new NewCompoundFactory();
         TheoreticalCompoundFactory tcfForGen = new NewCompoundGenFactory();
@@ -677,13 +532,9 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         List<TheoreticalCompounds> listToBeOrdered;
 //        List<TheoreticalCompounds> listToBeOrderedForGen;
         for (int i = 0; i < masses.size(); i++) {
+
             Double inputMass = masses.get(i);
-            Double mzInputMass = inputMass;
-            if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("positive")) {
-                mzInputMass = inputMass + Constantes.PROTON_WEIGHT;
-            } else if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("negative")) {
-                mzInputMass = inputMass - Constantes.PROTON_WEIGHT;
-            }
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
             //System.out.println("\n Compound: " + inputMass + " added simple charged");
             for (String s : adducts) {
                 listToBeOrdered = new LinkedList<TheoreticalCompounds>();
@@ -694,34 +545,18 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 sValueAdduct = provisionalMap.get(s);
                 adductValue = Double.parseDouble(sValueAdduct);
                 //System.out.println("ADDUCT: " + s);
-                massToSearch = getMassToSearch(mzInputMass, s, adductValue);
+                massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, s, adductValue);
                 // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
-                Double delta;
-                switch (toleranceMode) {
-                    // Case mDa
-                    case "mDa":
-                        delta = tolerance * 0.001d;
-                        break;
-                    // Case ppm
-                    case "ppm":
-                        delta = massToSearch * tolerance * 0.000001f;
-                        break;
-                    default:
-                        delta = massToSearch * tolerance * 0.000001f;
-                        break;
-                }
-                Double low = massToSearch - delta;
-                Double high = massToSearch + delta;
+
+                finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearch, toleranceMode, tolerance);
 
                 // Insert compounds
                 Query q1;
-                // Finish the query with the mass condition
-                finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-                finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearch + ")";
 
                 // Test for JPA left join
                 //finalQuery = "SELECT nc FROM NewCompounds nc WHERE (nc.ncKegg is not null or nc.ncHMDB is not null) and (nc.mass >= 236.08001738701788 and nc.mass <= 236.0941826129821)";
-                //finalQuery = "SELECT c FROM NewCompounds c LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
+                //finalQuery = "SELECT c FROM NewCompounds c LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId "
+                // + "left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
                 //System.out.println("Final query: " + finalQuery);
                 q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
                 results = q1.getResultList();
@@ -751,14 +586,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                             "",
                             compoundGroup,
                             true);
-
                 }
                 if (searchInMINE) {
-                    String startQueryForGen = "SELECT ncg FROM NewCompoundsGen ncg WHERE ";
+                    String aliasTableForGen = "ncg";
+                    String startQueryForGen = "SELECT " + aliasTableForGen + " FROM NewCompoundsGen "
+                            + aliasTableForGen + " WHERE ";
                     String finalQueryForGen;
 
-                    finalQueryForGen = startQueryForGen + "(ncg.mass >= " + low + " and ncg.mass <= " + high + ")";
-                    finalQueryForGen = finalQueryForGen + " order by ABS(ncg.mass - " + massToSearch + ")";
+                    finalQueryForGen = QueryConstructor.addFilterMassesJPA(aliasTableForGen, startQueryForGen, massToSearch, toleranceMode, tolerance);
                     Query q1forGen;
 //                Insert compounds
 //                System.out.println("Final query: " + finalQuery);
@@ -774,15 +609,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                                 results, inputMass, 0d,
                                 tcfForGen, massToSearch, s, false, "", compoundGroup, true);
                     }
-
                 }
                 Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
                 theoreticalCompoundList.addAll(listToBeOrdered);
                 listCompoundsGroup.add(compoundGroup);
-
-                // TODO
-                // Implement a method to order the compounds group
-                // Collections.sort(compoundGroup);
             }
         }
         /*
@@ -823,14 +653,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases) {
-        List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<TheoreticalCompounds>();
+        List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<>();
         Map<String, String> provisionalMap;
 
         // System.out.println("\nION MODE " + ionMode + " masses Mode: " + massesMode + "\n");
         // System.out.println("Adducts " + adducts);
         //System.out.println("Databases " + databases);
-        provisionalMap = chooseprovisionalMapAdducts(massesMode, ionMode, adducts);
-        adducts = chooseAdducts(ionMode, provisionalMap, adducts);
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
+        adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
         /*System.out.println("\nadducts\n" + adducts);
          */
@@ -838,7 +668,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         Double massToSearch;
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
-        String startQuery = "SELECT ncg FROM NewCompoundsGen ncg WHERE ";
+        String aliasTable = "ncg";
+        String startQuery = "SELECT " + aliasTable + " FROM NewCompoundsGen " + aliasTable + " WHERE ";
         String finalQuery;
 
         TheoreticalCompoundFactory tcfForGen = new NewCompoundGenFactory();
@@ -847,15 +678,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         List<TheoreticalCompounds> listToBeOrdered;
         for (int i = 0; i < masses.size(); i++) {
             Double inputMass = masses.get(i);
-            Double mzInputMass = inputMass;
-            if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("positive")) {
-                mzInputMass = inputMass + Constantes.PROTON_WEIGHT;
-            } else if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("negative")) {
-                mzInputMass = inputMass - Constantes.PROTON_WEIGHT;
-            }
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
             //System.out.println("\n Compound: " + inputMass + " added simple charged");
             for (String s : adducts) {
-                listToBeOrdered = new LinkedList<TheoreticalCompounds>();
+                listToBeOrdered = new LinkedList<>();
 //                    listToBeOrderedForGen = new ArrayList<TheoreticalCompounds>();
                 CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(inputMass, s);
                 Double adductValue;
@@ -863,32 +689,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 sValueAdduct = provisionalMap.get(s);
                 adductValue = Double.parseDouble(sValueAdduct);
                 //System.out.println("ADDUCT: " + s);
-                massToSearch = getMassToSearch(mzInputMass, s, adductValue);
+                massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, s, adductValue);
                 // System.out.println("\n \n adduct as parameter: " + adduct + " as string: " + s);
 
-                Double delta;
-                switch (toleranceMode) {
-                    // Case mDa
-                    case "mDa":
-                        delta = tolerance * 0.001d;
-                        break;
-                    // Case ppm
-                    case "ppm":
-                        delta = massToSearch * tolerance * 0.000001f;
-                        break;
-                    default:
-                        delta = massToSearch * tolerance * 0.000001f;
-                        break;
-                }
-                Double low = massToSearch - delta;
-                Double high = massToSearch + delta;
+                finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearch, toleranceMode, tolerance);
+                //System.out.println("Final query: " + finalQuery);
 
                 // Insert compounds
                 Query q1;
-                // Finish the query with the mass condition
-                finalQuery = startQuery + "(ncg.mass >= " + low + " and ncg.mass <= " + high + ")";
-                finalQuery = finalQuery + " order by ABS(ncg.mass - " + massToSearch + ")";
-                //System.out.println("Final query: " + finalQuery);
                 q1 = getEntityManager().createQuery(finalQuery, NewCompoundsGen.class);
                 results = q1.getResultList();
                 if (results.isEmpty()) {
@@ -904,12 +712,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
                 theoreticalCompoundList.addAll(listToBeOrdered);
                 listCompoundsGroup.add(compoundGroup);
-
-                // TODO
-                // Implement a method to order the compounds group
-                // Collections.sort(compoundGroup);
             }
-
         }
         /*
         System.out.println("\n \n GROUP OF compounds:");
@@ -960,6 +763,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases,
             String metabolitesType) {
+        long advancedJPA = 0;
+        long start = System.currentTimeMillis();
         List<TheoreticalCompounds> theoreticalCompoundList;
 
         // If the search is only in MINE, it goes directly to findRangeGeneratedAdvanced
@@ -993,6 +798,9 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     databases,
                     metabolitesType);
         }
+        long end = System.currentTimeMillis();
+        advancedJPA = (end - start);
+        System.out.println("ADVANCED JPA: " + advancedJPA);
         return theoreticalCompoundList;
     }
 
@@ -1049,8 +857,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         }
          */
         // Choose the adducts to perform the search
-        provisionalMap = chooseprovisionalMapAdducts(massesMode, ionMode, adducts);
-        adducts = chooseAdducts(ionMode, provisionalMap, adducts);
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
+        adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
         /*
         System.out.println("PROVISIONALMAP IN MAIN METHOD: " + provisionalMap);
@@ -1060,7 +868,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         Double massToSearch;
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
-        String startQuery = "SELECT nc FROM NewCompounds nc ";
+        String aliasTable = "nc";
+        String startQuery = "SELECT " + aliasTable + " FROM NewCompounds " + aliasTable + " ";
         String finalQuery;
         /*
 // For taking statistics for results
@@ -1156,58 +965,12 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 // LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId 
 // left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId 
 // where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
-        if (!(databases.contains("AllWM") || databases.contains("All")
-                || (databases.contains("Kegg") && databases.contains("HMDB")
-                && databases.contains("LipidMaps") && databases.contains("Metlin")))) {
-            if (databases.contains("Kegg")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsKegg ck on nc.compoundId=ck.compoundId ";
-            }
-            if (databases.contains("HMDB")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsHMDB ch on nc.compoundId=ch.compoundId ";
-            }
-            if (databases.contains("LipidMaps")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsLM cl on nc.compoundId=cl.compoundId ";
-            }
-            if (databases.contains("Metlin")) {
-                startQuery = startQuery + "LEFT JOIN NewCompoundsMetlin cm on nc.compoundId=cm.compoundId ";
-            }
-            startQuery = startQuery + " WHERE (";
-            if (databases.contains("Kegg")) {
-                startQuery = startQuery + "ck.keggId is not null or ";
-            }
-            if (databases.contains("HMDB")) {
-                startQuery = startQuery + "ch.hmdbId is not null or ";
-            }
-            if (databases.contains("LipidMaps")) {
-                startQuery = startQuery + "cl.lmId is not null or ";
-            }
-            if (databases.contains("Metlin")) {
-                startQuery = startQuery + "cm.agilentId is not null or ";
-            }
-
-            // delete the last or
-            startQuery = startQuery.substring(0, startQuery.length() - 4);
-            startQuery = startQuery + ") and ";
-        } else {
-            // add where condition for all databases
-            startQuery = startQuery + " WHERE ";
-        }
-// Add databases depending on the user selection
-        if (chemAlphabet.equals("CHNOPS")) {
-            startQuery = startQuery + "nc.formulaType = '" + chemAlphabet + "' and ";
-        } else if (chemAlphabet.equals("CHNOPSCL")) {
-            startQuery = startQuery + "(nc.formulaType = '" + chemAlphabet + "' or nc.formulaType = 'CHNOPS') and ";
-        }
+        startQuery = QueryConstructor.addFilterDatabasesJPA(startQuery, databases);
+// Add chemical alphabet
+        startQuery = QueryConstructor.addFilterIntegerFormulaTypeJPA(aliasTable, startQuery, chemAlphabet);
 
 // Add compound type for search
-        if (metabolitesType.equals("All including peptides")) {
-            // Then search in all compounds in the database
-        } else if (metabolitesType.equals("Only lipids")) {
-            startQuery = startQuery + "(nc.compoundType = " + "1" + ") and ";
-        } else {
-            // By default, searches includes all compounds but peptides (2)
-            startQuery = startQuery + "(nc.compoundType != " + "2" + ") and ";
-        }
+        startQuery = QueryConstructor.addFilterMetabolitesTypeJPA(startQuery, metabolitesType);
 
         TheoreticalCompoundFactory tcf = new NewCompoundFactory();
         TheoreticalCompoundFactory tcfForGen = new NewCompoundGenFactory();
@@ -1217,12 +980,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 //        List<TheoreticalCompounds> listToBeOrderedForGen;
         for (int i = 0; i < masses.size(); i++) {
             Double inputMass = masses.get(i);
-            Double mzInputMass = inputMass;
-            if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("positive")) {
-                mzInputMass = inputMass + Constantes.PROTON_WEIGHT;
-            } else if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("negative")) {
-                mzInputMass = inputMass - Constantes.PROTON_WEIGHT;
-            }
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
             Double inputRetentionTime = retentionTimes.get(i);
             Boolean isSignificative = isSignificativeCompound.get(i);
             Map<Double, Integer> inputCompositeSpectrum = compositeSpectra.get(i);
@@ -1236,7 +994,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             queryFinalMetlin = "(";
              */
 
-            String detectedAdduct = detectAdductBasedOnCompositeSpectrum(ionMode, mzInputMass, adducts, inputCompositeSpectrum);
+            String detectedAdduct = AdductProcessing.detectAdductBasedOnCompositeSpectrum(ionMode, mzInputMass, adducts, inputCompositeSpectrum);
             if (!detectedAdduct.equals("")) {
                 listToBeOrdered = new LinkedList<TheoreticalCompounds>();
 //                listToBeOrderedForGen = new LinkedList<TheoreticalCompounds>();
@@ -1253,27 +1011,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
 //                System.out.println("\n Compound: " + inputMass + " detected automatically adduct: " + detectedAdduct
 //                        + " value: " + sValueAdduct);
-                massToSearch = getMassToSearch(mzInputMass, detectedAdduct, adductValue);
-                Double delta;
-                switch (toleranceMode) {
-                    // Case mDa
-                    case "mDa":
-                        delta = tolerance * 0.001d;
-                        break;
-                    // Case ppm
-                    case "ppm":
-                        delta = massToSearch * tolerance * 0.000001f;
-                        break;
-                    default:
-                        delta = massToSearch * tolerance * 0.000001f;
-                        break;
-                }
-                Double low = massToSearch - delta;
-                Double high = massToSearch + delta;
-
-// Finish the query with the mass condition
-                finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-                finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearch + ")";
+                massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, detectedAdduct, adductValue);
+                finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearch, toleranceMode, tolerance);
                 /*
 // Take statistics about compounds without unifying                
                 queryFinalKEGG = queryFinalKEGG + "(mass >= " + low + " and mass <= " + high + ") or ";
@@ -1298,20 +1037,19 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                             tcf, massToSearch, detectedAdduct, false, "", compoundGroup, isSignificative);
                 }
                 if (searchInMINE) {
-
 // It could be done in a method, but the number of parameters is too long, so we will keep code here
-                    String startQueryForGen = "SELECT ncg FROM NewCompoundsGen ncg WHERE ";
+                    String aliasTableForGen = "ncg";
+                    String startQueryForGen = "SELECT " + aliasTableForGen
+                            + " FROM NewCompoundsGen " + aliasTableForGen
+                            + " WHERE ";
                     String finalQueryForGen;
-                    if (chemAlphabet.equals("CHNOPS")) {
-                        startQueryForGen = startQueryForGen + "ncg.formulaType = '" + chemAlphabet + "' and ";
-                    } else if (chemAlphabet.equals("CHNOPSCL")) {
-                        startQueryForGen = startQueryForGen + "(ncg.formulaType = '" + chemAlphabet + "' or ncg.formulaType = 'CHNOPS') and ";
-                    }
+                    startQueryForGen = QueryConstructor.addFilterIntegerFormulaTypeJPA(aliasTableForGen,
+                            startQueryForGen, chemAlphabet);
 
-                    finalQueryForGen = startQueryForGen + "(ncg.mass >= " + low + " and ncg.mass <= " + high + ")";
-                    finalQueryForGen = finalQueryForGen + " order by ABS(ncg.mass - " + massToSearch + ")";
+                    finalQueryForGen = QueryConstructor.addFilterMassesJPA(aliasTableForGen, startQueryForGen, massToSearch, toleranceMode, tolerance);
+
+                    // Insert compounds
                     Query q1forGen;
-// Insert compounds
 //                System.out.println("Final query: " + finalQuery);
                     q1forGen = getEntityManager().createQuery(finalQueryForGen, NewCompoundsGen.class);
                     results = q1forGen.getResultList();
@@ -1326,15 +1064,11 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                                 results, inputMass, inputRetentionTime,
                                 tcfForGen, massToSearch, detectedAdduct, false, "", compoundGroup, isSignificative);
                     }
-
                 }
                 Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
                 theoreticalCompoundList.addAll(listToBeOrdered);
                 listCompoundsGroup.add(compoundGroup);
 
-                // TODO
-                // Implement a method to order the compounds group
-                // Collections.sort(compoundGroup);
                 for (String s : adducts) {
                     // Include all adducts if we detect a double charge for 
                     // frontend presentation
@@ -1344,9 +1078,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     adductValue = Double.parseDouble(sValueAdduct);
                     //System.out.println("ADDUCT: " + s);
                     //System.out.println("ADDUCT: " + s);
-                    if (s.equals(detectedAdduct)) {
-// IT WAS ALREADY INCLUDED IN THE FIRST POSITION
-                    } else {
+                    if (!s.equals(detectedAdduct)) {
                         TheoreticalCompounds compound = tcf.construct(
                                 null, inputMass, inputRetentionTime, null, s, true, detectedAdduct, isSignificative);
                         listToBeOrdered.add(compound);
@@ -1356,15 +1088,9 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                         theoreticalCompoundList.addAll(listToBeOrdered);
                         listCompoundsGroup.add(compoundGroup);
                     }
-
-                    // TODO
-                    // Implement a method to order the compounds group
-                    // Collections.sort(compoundGroup);
                 }
-
             } else {
                 //System.out.println("\n Compound: " + inputMass + " added simple charged");
-
                 for (String s : adducts) {
                     listToBeOrdered = new LinkedList<TheoreticalCompounds>();
 //                    listToBeOrderedForGen = new LinkedList<TheoreticalCompounds>();
@@ -1372,30 +1098,11 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     sValueAdduct = provisionalMap.get(s);
                     adductValue = Double.parseDouble(sValueAdduct);
                     //System.out.println("ADDUCT: " + s);
-                    massToSearch = getMassToSearch(mzInputMass, s, adductValue);
+                    massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, s, adductValue);
                     //System.out.println("ADDUCT: " + s);
 
                     // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
-                    Double delta;
-                    switch (toleranceMode) {
-                        // Case mDa
-                        case "mDa":
-                            delta = tolerance * 0.001d;
-                            break;
-                        // Case ppm
-                        case "ppm":
-                            delta = massToSearch * tolerance * 0.000001f;
-                            break;
-                        default:
-                            delta = massToSearch * tolerance * 0.000001f;
-                            break;
-                    }
-                    Double low = massToSearch - delta;
-                    Double high = massToSearch + delta;
-
-// Finish the query with the mass condition
-                    finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-                    finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearch + ")";
+                    finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearch, toleranceMode, tolerance);
                     /*
 // Take statistics about compounds without unifying                
                     queryFinalKEGG = queryFinalKEGG + "(mass >= " + low + " and mass <= " + high + ") or ";
@@ -1404,10 +1111,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     queryFinalMetlin = queryFinalMetlin + "(mass >= " + low + " and mass <= " + high + ") or ";
                      */
                     Query q1;
-
                     // Test for JPA left join
                     //finalQuery = "SELECT nc FROM NewCompounds nc WHERE (nc.ncKegg is not null or nc.ncHMDB is not null) and (nc.mass >= 236.08001738701788 and nc.mass <= 236.0941826129821)";
-                    //finalQuery = "SELECT c FROM NewCompounds c LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
+                    //finalQuery = "SELECT c FROM NewCompounds c LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId where 
+                    //  + "(ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
                     //System.out.println("Final query: " + finalQuery);
                     q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
                     results = q1.getResultList();
@@ -1421,21 +1128,20 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                         addToTheoreticalCompoundList(listToBeOrdered,
                                 results, inputMass, inputRetentionTime,
                                 tcf, massToSearch, s, false, "", compoundGroup, isSignificative);
-
                     }
                     if (searchInMINE) {
-                        String startQueryForGen = "SELECT ncg FROM NewCompoundsGen ncg WHERE ";
+                        String aliasTableForGen = "ncg";
+                        String startQueryForGen = "SELECT " + aliasTableForGen
+                                + " FROM NewCompoundsGen " + aliasTableForGen
+                                + " WHERE ";
                         String finalQueryForGen;
-                        if (chemAlphabet.equals("CHNOPS")) {
-                            startQueryForGen = startQueryForGen + "ncg.formulaType = '" + chemAlphabet + "' and ";
-                        } else if (chemAlphabet.equals("CHNOPSCL")) {
-                            startQueryForGen = startQueryForGen + "(ncg.formulaType = '" + chemAlphabet + "' or ncg.formulaType = 'CHNOPS') and ";
-                        }
+                        startQueryForGen = QueryConstructor.addFilterIntegerFormulaTypeJPA(aliasTableForGen,
+                                startQueryForGen, chemAlphabet);
+                        finalQueryForGen = QueryConstructor.addFilterMassesJPA(aliasTableForGen,
+                                startQueryForGen, massToSearch, toleranceMode, tolerance);
 
-                        finalQueryForGen = startQueryForGen + "(ncg.mass >= " + low + " and ncg.mass <= " + high + ")";
-                        finalQueryForGen = finalQueryForGen + " order by ABS(ncg.mass - " + massToSearch + ")";
+                        // Insert compounds
                         Query q1forGen;
-//                Insert compounds
 //                System.out.println("Final query: " + finalQuery);
                         q1forGen = getEntityManager().createQuery(finalQueryForGen, NewCompoundsGen.class);
                         results = q1forGen.getResultList();
@@ -1445,22 +1151,15 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                             listToBeOrdered.add(compound);
                             compoundGroup.addCompound(compound);
                         } else {
-
                             addToTheoreticalCompoundList(listToBeOrdered,
                                     results, inputMass, inputRetentionTime,
                                     tcfForGen, massToSearch, s, false, "", compoundGroup, isSignificative);
                         }
-
                     }
                     Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
                     theoreticalCompoundList.addAll(listToBeOrdered);
                     listCompoundsGroup.add(compoundGroup);
-
-                    // TODO
-                    // Implement a method to order the compounds group
-                    // Collections.sort(compoundGroup);
                 }
-
             }
             /*
 // Write queries for statistics
@@ -1542,45 +1241,37 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         // System.out.println("Adducts " + adducts);
         //System.out.println("Databases " + databases);
         //System.out.println("Chemical Alphabet " + chemAlphabet);
-        provisionalMap = chooseprovisionalMapAdducts(massesMode, ionMode, adducts);
-        adducts = chooseAdducts(ionMode, provisionalMap, adducts);
-
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
+        adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
         /*System.out.println("\nadducts\n" + adducts);
          */
         List results;
         Double massToSearch;
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
-        String startQuery = "SELECT ncg FROM NewCompoundsGen ncg WHERE ";
-        String finalQuery;
-        if (chemAlphabet.equals("CHNOPS")) {
-            startQuery = startQuery + "ncg.formulaType = '" + chemAlphabet + "' and ";
-        } else if (chemAlphabet.equals("CHNOPSCL")) {
-            startQuery = startQuery + "(ncg.formulaType = '" + chemAlphabet + "' or ncg.formulaType = 'CHNOPS') and ";
-        }
+        String aliasTableForGen = "ncg";
+        String startQueryForGen = "SELECT " + aliasTableForGen
+                + " FROM NewCompoundsGen " + aliasTableForGen
+                + " WHERE ";
+        String finalQueryForGen;
+        startQueryForGen = QueryConstructor.addFilterIntegerFormulaTypeJPA(aliasTableForGen,
+                startQueryForGen, chemAlphabet);
 
         TheoreticalCompoundFactory tcfForGen = new NewCompoundGenFactory();
-
 // Create the list for ordering the compounds
         List<TheoreticalCompounds> listToBeOrdered;
 //        List<TheoreticalCompounds> listToBeOrderedForGen;
         for (int i = 0; i < masses.size(); i++) {
             Double inputMass = masses.get(i);
-            Double mzInputMass = inputMass;
-            if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("positive")) {
-                mzInputMass = inputMass + Constantes.PROTON_WEIGHT;
-            } else if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("negative")) {
-                mzInputMass = inputMass - Constantes.PROTON_WEIGHT;
-            }
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
             Double inputRetentionTime = retentionTimes.get(i);
             Boolean isSignificative = isSignificativeCompound.get(i);
             Map<Double, Integer> inputCompositeSpectrum = compositeSpectra.get(i);
-            String detectedAdduct = detectAdductBasedOnCompositeSpectrum(ionMode, mzInputMass, adducts, inputCompositeSpectrum);
-
+            String detectedAdduct = AdductProcessing.detectAdductBasedOnCompositeSpectrum(ionMode,
+                    mzInputMass, adducts, inputCompositeSpectrum);
             if (!detectedAdduct.equals("")) {
                 listToBeOrdered = new LinkedList<TheoreticalCompounds>();
 //                listToBeOrderedForGen = new LinkedList<TheoreticalCompounds>();
-// Check if the adduct is double charged.
 // At this moment only one adduct possible.
 
                 // System.out.println("Automaticall adduct detected: " + masses.get(i) + " Compos: " + inputCompositeSpectrum);
@@ -1592,32 +1283,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 sValueAdduct = provisionalMap.get(detectedAdduct);
                 adductValue = Double.parseDouble(sValueAdduct);
                 //System.out.println("ADDUCT: " + s);
-                massToSearch = getMassToSearch(mzInputMass, detectedAdduct, adductValue);
+                massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, detectedAdduct, adductValue);
 //                System.out.println("\n Compound: " + inputMass + " detected automatically adduct: " + detectedAdduct
 //                        + " value: " + sValueAdduct);
-                Double delta;
-                switch (toleranceMode) {
-                    // Case mDa
-                    case "mDa":
-                        delta = tolerance * 0.001d;
-                        break;
-                    // Case ppm
-                    case "ppm":
-                        delta = massToSearch * tolerance * 0.000001f;
-                        break;
-                    default:
-                        delta = massToSearch * tolerance * 0.000001f;
-                        break;
-                }
-                Double low = massToSearch - delta;
-                Double high = massToSearch + delta;
-// Finish the query with the mass condition
-                finalQuery = startQuery + "(ncg.mass >= " + low + " and ncg.mass <= " + high + ")";
-                finalQuery = finalQuery + " order by ABS(ncg.mass - " + massToSearch + ")";
+                finalQueryForGen = QueryConstructor.addFilterMassesJPA(aliasTableForGen, startQueryForGen, massToSearch, toleranceMode, tolerance);
                 Query q1;
 // Insert compounds
 //                System.out.println("Final query: " + finalQuery);
-                q1 = getEntityManager().createQuery(finalQuery, NewCompoundsGen.class);
+                q1 = getEntityManager().createQuery(finalQueryForGen, NewCompoundsGen.class);
                 results = q1.getResultList();
                 if (results.isEmpty()) {
                     TheoreticalCompounds compound = tcfForGen.construct(
@@ -1640,9 +1313,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     compoundGroup = new CompoundsGroupByMass(inputMass, inputRetentionTime, s, isSignificative);
                     listToBeOrdered = new LinkedList<TheoreticalCompounds>();
                     //System.out.println("ADDUCT: " + s);
-                    if (s.equals(detectedAdduct)) {
-
-                    } else {
+                    if (!s.equals(detectedAdduct)) {
                         TheoreticalCompounds compound = tcfForGen.construct(
                                 null, inputMass, inputRetentionTime, null, s, true, detectedAdduct, isSignificative);
                         listToBeOrdered.add(compound);
@@ -1652,10 +1323,6 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                         theoreticalCompoundList.addAll(listToBeOrdered);
                         listCompoundsGroup.add(compoundGroup);
                     }
-
-                    // TODO
-                    // Implement a method to order the compounds group
-                    // Collections.sort(compoundGroup);
                 }
             } else {
                 //System.out.println("\n Compound: " + inputMass + " added simple charged"
@@ -1669,32 +1336,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     sValueAdduct = provisionalMap.get(s);
                     adductValue = Double.parseDouble(sValueAdduct);
                     //System.out.println("ADDUCT: " + s);
-                    massToSearch = getMassToSearch(mzInputMass, s, adductValue);
-
-                    Double delta;
-                    switch (toleranceMode) {
-                        // Case mDa
-                        case "mDa":
-                            delta = tolerance * 0.001d;
-                            break;
-                        // Case ppm
-                        case "ppm":
-                            delta = massToSearch * tolerance * 0.000001f;
-                            break;
-                        default:
-                            delta = massToSearch * tolerance * 0.000001f;
-                            break;
-                    }
-                    Double low = massToSearch - delta;
-                    Double high = massToSearch + delta;
+                    massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, s, adductValue);
+                    finalQueryForGen = QueryConstructor.addFilterMassesJPA(aliasTableForGen,
+                            startQueryForGen, massToSearch, toleranceMode, tolerance);
 
                     // Insert compounds
                     Query q1;
-                    // Finish the query with the mass condition
-                    finalQuery = startQuery + "(ncg.mass >= " + low + " and ncg.mass <= " + high + ")";
-                    finalQuery = finalQuery + " order by ABS(ncg.mass - " + massToSearch + ")";
                     //System.out.println("Final query: " + finalQuery);
-                    q1 = getEntityManager().createQuery(finalQuery, NewCompoundsGen.class);
+                    q1 = getEntityManager().createQuery(finalQueryForGen, NewCompoundsGen.class);
                     results = q1.getResultList();
                     if (results.isEmpty()) {
                         TheoreticalCompounds compound = tcfForGen.construct(
@@ -1709,13 +1358,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
                     theoreticalCompoundList.addAll(listToBeOrdered);
                     listCompoundsGroup.add(compoundGroup);
-
-                    // TODO
-                    // Implement a method to order the compounds group
-                    // Collections.sort(compoundGroup);
                 }
             }
-
         }
         /*
         System.out.println("\n \n GROUP OF compounds:");
@@ -1732,213 +1376,6 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         return theoreticalCompoundList;
     }
 
-    /**
-     * process the provisional map to perform the search. Return provisional Map
-     * of adducts
-     *
-     * @param massesMode
-     * @param ionMode Ionization mode
-     * @param provisionalMap Map to get the value of adducts
-     * @param adducts Possible adducts
-     */
-    private Map<String, String> chooseprovisionalMapAdducts(String massesMode, String ionMode, List<String> adducts) {
-        Map<String, String> provisionalMap = null;
-        switch (massesMode) {
-            case "mz":
-                if (ionMode.equals("positive")) {
-                    provisionalMap = AdductsLists.MAPMZPOSITIVEADDUCTS;
-                } else if (ionMode.equals("negative")) {
-                    provisionalMap = AdductsLists.MAPMZNEGATIVEADDUCTS;
-                } else {
-                    provisionalMap = AdductsLists.MAPNEUTRALADDUCTS;
-                }
-                //System.out.println("MZ -> PROVISIONALMAP: " + provisionalMap);
-                return provisionalMap;
-            /*
-            case Constantes.NAME_FOR_RECALCULATED:
-                if (ionMode.equals("positive")) {
-                    provisionalMap = AdductsLists.MAPRECALCULATEDPOSITIVEADDUCTS;
-                } else if (ionMode.equals("negative")) {
-                    provisionalMap = AdductsLists.MAPRECALCULATEDNEGATIVEADDUCTS;
-                } else {
-                    provisionalMap = AdductsLists.MAPNEUTRALADDUCTS;
-                }
-                //System.out.println("NEUTRAL -> PROVISIONALMAP: " + provisionalMap);
-                return provisionalMap;
-             */
-            default:
-                if (ionMode.equals("positive")) {
-                    provisionalMap = AdductsLists.MAPMZPOSITIVEADDUCTS;
-                } else if (ionMode.equals("negative")) {
-                    provisionalMap = AdductsLists.MAPMZNEGATIVEADDUCTS;
-                } else {
-                    provisionalMap = AdductsLists.MAPNEUTRALADDUCTS;
-                }
-                //System.out.println("DEFAULT -> PROVISIONALMAP: " + provisionalMap);
-                return provisionalMap;
-        }
-    }
-
-    /**
-     * Detect the ionization adduct based on the relationships in the Composite
-     * Spectrum. The inputMass is handled as m/z
-     *
-     * @param ionMode positive or negative
-     * @param inputMass m/z
-     * @param adducts possible adducts to be formed
-     * @param compositeSpectrum Signals of CS
-     * @return
-     */
-    private String detectAdductBasedOnCompositeSpectrum(
-            String ionMode,
-            Double inputMass,
-            List<String> adducts,
-            Map<Double, Integer> compositeSpectrum) {
-//        System.out.println("DETECTING ADDUCT BASED ON COMPOSITE SPECTRUM. Masses Mode: " + massesMode + " ionMode: " + ionMode);
-//        System.out.println("FOR INPUT MASS: " + inputMass);
-// TODO MAYBE MANAGE ISOTOPES?
-        String adductDetected = "";
-        Map<String, String> mapAdducts;
-        double adductDouble;
-        double adductDoubleForCheckRelation;
-        double massToSearchInCompositeSpectrumForCheckRelation;
-        double differenceMassAndPeak;
-        List<String> allAdductsForCheckRelation;
-        boolean search = false;
-        switch (ionMode) {
-            case "positive": {
-                mapAdducts = AdductsLists.MAPMZPOSITIVEADDUCTS;
-                allAdductsForCheckRelation = new LinkedList<String>();
-                allAdductsForCheckRelation.addAll(AdductsLists.MAPMZPOSITIVEADDUCTS.keySet());
-                if (ionMode.equals("positive")) {
-                    search = true;
-                } else {
-                    System.out.println("ION MODE BAD SPECIFIED DETECTING AUTOMATIC ADDUCT BASED ON "
-                            + "COMPOSITE SPECTRUM: " + ionMode);
-                    return adductDetected;
-                }
-                break;
-            }
-            case "negative": {
-                mapAdducts = AdductsLists.MAPMZNEGATIVEADDUCTS;
-                allAdductsForCheckRelation = new LinkedList<String>();
-                allAdductsForCheckRelation.addAll(AdductsLists.MAPMZNEGATIVEADDUCTS.keySet());
-                if (ionMode.equals("negative")) {
-                    search = true;
-                } else {
-                    System.out.println("ION MODE BAD SPECIFIED DETECTING AUTOMATIC ADDUCT BASED ON "
-                            + "COMPOSITE SPECTRUM: " + ionMode);
-                }
-                break;
-            }
-            default: {
-                mapAdducts = null;
-                allAdductsForCheckRelation = null;
-            }
-        }
-        if (search) {
-
-            for (String adductName : adducts) {
-                // Hypothesis -> Adduct is adductName
-                String adductValue;
-
-                adductValue = mapAdducts.get(adductName);
-                adductDouble = Double.parseDouble(adductValue);
-                Double neutralMassBasedOnAdduct;
-                neutralMassBasedOnAdduct = getMassToSearch(inputMass, adductName, adductDouble);
-
-                //System.out.println("HYPOTHESIS -> ADDUCT = " + adductName + " value: " + neutralMassBasedOnAdduct);
-                // Hypothesis -> Peak is adductName
-                // Peak to search in Composite Spectrum is now in massToSearchInCompositeSpectrum
-                // So now is time to loop the composite spectrum searching the peak
-                for (String adductNameForCheckRelation : allAdductsForCheckRelation) {
-                    String adductValueForCheckRelation = mapAdducts.get(adductNameForCheckRelation);
-                    adductDoubleForCheckRelation = Double.parseDouble(adductValueForCheckRelation);
-                    if (!adductName.equals(adductNameForCheckRelation)) {
-
-                        massToSearchInCompositeSpectrumForCheckRelation
-                                = getAdductMass(neutralMassBasedOnAdduct, adductNameForCheckRelation, adductDoubleForCheckRelation);
-                        //System.out.println("  ADDUCT TO SEARCH IN CS: " + adductNameForCheckRelation
-                        //        + " VALUE:" + massToSearchInCompositeSpectrumForCheckRelation);
-                        // Peak to search in Composite Spectrum is now in massToSearchInCompositeSpectrum
-                        // So now is time to loop the composite spectrum searching the peak
-                        for (Double peakInCompositeSpectrum : compositeSpectrum.keySet()) {
-//                                    System.out.println("AdductName: " + adductNameForCheckRelation 
-//                                            + " value: " + adductValueForCheckRelation + 
-//                                            " PEAK COMPOSITE: " + peakInCompositeSpectrum + 
-//                                            " SEARCHING PEAK: " + massToSearchInCompositeSpectrumForCheckRelation);
-                            differenceMassAndPeak = Math.abs(peakInCompositeSpectrum - massToSearchInCompositeSpectrumForCheckRelation);
-//                                    System.out.println("PEAK IN COMPOSITE SPECTRUM: " + peakInCompositeSpectrum + 
-//                                            " DIFFERENCE: " + differenceMassAndPeak);
-                            if (differenceMassAndPeak < ADDUCT_AUTOMATIC_DETECTION_WINDOW) {
-                                adductDetected = adductName;
-                                //System.out.println("ADDUCT DETECTED: " + adductDetected + " RELATED TO: " + adductNameForCheckRelation);
-                                return adductDetected;
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-        return adductDetected;
-
-    }
-
-    /**
-     * Test for method detectAdductBasedOnCompositeSpectrum
-     *
-     * @param massesMode
-     * @param ionMode
-     * @param inputMass
-     * @param adducts
-     * @param compositeSpectrum
-     * @return
-     */
-    public String testDetectAdductBasedOnCompositeSpectrum(String massesMode,
-            String ionMode,
-            double inputMass,
-            List<String> adducts,
-            Map<Double, Integer> compositeSpectrum) {
-        Map<String, String> provisionalMap = chooseprovisionalMapAdducts(massesMode, ionMode, adducts);
-        adducts = chooseAdducts(ionMode, provisionalMap, adducts);
-
-        String adductDetected = detectAdductBasedOnCompositeSpectrum(ionMode, inputMass, adducts, compositeSpectrum);
-        return adductDetected;
-    }
-
-    /**
-     * process the list of adducts to perform the search. Return adducts to
-     * search
-     *
-     * @param massesMode
-     * @param ionMode Ionization mode
-     * @param provisionalMap Map to get the value of adducts
-     * @param adducts Possible adducts
-     */
-    private List<String> chooseAdducts(String ionMode,
-            Map<String, String> provisionalMap,
-            List<String> adducts) {
-
-        if (ionMode.equals("positive")) {
-            if (adducts.isEmpty() || adducts.get(0).equals("allPositives")) {
-                Set set = provisionalMap.keySet();
-                adducts = new LinkedList<String>(set);
-            }
-        } else if (ionMode.equals("negative")) {
-            if (adducts.isEmpty() || adducts.get(0).equals("allNegatives")) {
-                Set set = provisionalMap.keySet();
-                adducts = new LinkedList<String>(set);
-            }
-        } else {
-            Set set = provisionalMap.keySet();
-            adducts = new LinkedList<String>(set);
-        }
-        //System.out.println(" NEUTRAL -> ADDUCTS: " + adducts);
-        return adducts;
-
-    }
-
     // Methods for browse search
     /**
      * returns a list of compounds from the databases based on the name and/or
@@ -1946,7 +1383,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
      *
      * @param name
      * @param formula
-     * @param listCompoundsGroup
+     * @param exactName
      * @param databases Databases to search
      * @param metabolitesType metabolites Type to search
      * @return a List of theoreticalCompounds (SuperClass)
@@ -1955,10 +1392,9 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             String name,
             String formula,
             boolean exactName,
-            List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases,
             String metabolitesType) {
-        List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<TheoreticalCompounds>();
+        List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<>();
         boolean searchInMINE = databases.contains("All") || databases.contains("MINE (Only In Silico Compounds)");
         //System.out.println("Databases " + databases);
         //System.out.println("Chemicaal Alphabet " + chemAlphabet);
@@ -1970,7 +1406,6 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         System.out.println("ADDUCTS IN MAIN METHOD: " + adducts);
          */
         List results;
-        Double massToSearch;
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
         String startQuery = "SELECT nc FROM NewCompounds nc ";
@@ -1980,52 +1415,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 // LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId 
 // left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId 
 // where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
-        if (!(databases.contains("AllWM") || databases.contains("All")
-                || (databases.contains("Kegg") && databases.contains("HMDB")
-                && databases.contains("LipidMaps") && databases.contains("Metlin")))) {
-            if (databases.contains("Kegg")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsKegg ck on nc.compoundId=ck.compoundId ";
-            }
-            if (databases.contains("HMDB")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsHMDB ch on nc.compoundId=ch.compoundId ";
-            }
-            if (databases.contains("LipidMaps")) {
-                startQuery = startQuery + " LEFT JOIN NewCompoundsLM cl on nc.compoundId=cl.compoundId ";
-            }
-            if (databases.contains("Metlin")) {
-                startQuery = startQuery + "LEFT JOIN NewCompoundsMetlin cm on nc.compoundId=cm.compoundId ";
-            }
-            startQuery = startQuery + " WHERE (";
-            if (databases.contains("Kegg")) {
-                startQuery = startQuery + "ck.keggId is not null or ";
-            }
-            if (databases.contains("HMDB")) {
-                startQuery = startQuery + "ch.hmdbId is not null or ";
-            }
-            if (databases.contains("LipidMaps")) {
-                startQuery = startQuery + "cl.lmId is not null or ";
-            }
-            if (databases.contains("Metlin")) {
-                startQuery = startQuery + "cm.agilentId is not null or ";
-            }
-
-            // delete the last or
-            startQuery = startQuery.substring(0, startQuery.length() - 4);
-            startQuery = startQuery + ") and ";
-        } else {
-            // add where condition for all databases
-            startQuery = startQuery + " WHERE ";
-        }
+        startQuery = QueryConstructor.addFilterDatabasesJPA(startQuery, databases);
 
 // Add compound type for search
-        if (metabolitesType.equals("All including peptides")) {
-            // Then search in all compounds in the database
-        } else if (metabolitesType.equals("Only lipids")) {
-            startQuery = startQuery + "(nc.compoundType = " + "1" + ") and ";
-        } else {
-            // By default, searches includes all compounds but peptides (2)
-            startQuery = startQuery + "(nc.compoundType != " + "2" + ") and ";
-        }
+        startQuery = QueryConstructor.addFilterMetabolitesTypeJPA(startQuery, metabolitesType);
 
 //        List<TheoreticalCompounds> listToBeOrderedForGen;
         // Insert compounds
@@ -2072,9 +1465,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         }
         Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
         theoreticalCompoundList.addAll(listToBeOrdered);
-        listCompoundsGroup.add(compoundGroup);
 
         if (searchInMINE) {
+
+            listToBeOrdered = new LinkedList<TheoreticalCompounds>();
             String startQueryForGen = "SELECT ncg FROM NewCompoundsGen ncg WHERE ";
             String finalQueryForGen;
 
@@ -2107,14 +1501,12 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 listToBeOrdered.add(compound);
                 compoundGroup.addCompound(compound);
             } else {
-
                 addToTheoreticalCompoundList(listToBeOrdered,
                         results, 0d, 0d,
                         tcfForGen, null, "", false, "", compoundGroup, true);
             }
             Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
             theoreticalCompoundList.addAll(listToBeOrdered);
-            listCompoundsGroup.add(compoundGroup);
         }
 
         // TODO
@@ -2166,7 +1558,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
         FACompound nonOxidizedFA = null;
         FACompound oxidizedFA;
-        List<String> oxidations = chooseLCOxidations(possibleOxidations);
+        List<String> oxidations = OxidationProcessing.chooseLCOxidations(possibleOxidations);
         FACompoundFactory FAcFactory = new FACompoundFactory();
 
         int nonOxidizedFAPosition;
@@ -2215,27 +1607,20 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         }
 
         if (oxidizedFAPosition == 0 || oxidizedFAPosition == 1) {
-
             Double massToSearchForOxFA;
-
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
-            String startQuery;
-            startQuery = "SELECT nc FROM NewCompounds nc ";
+            String aliasTable = "nc";
+            String startQuery = "SELECT " + aliasTable + " FROM NewCompounds " + aliasTable;
             String finalQuery;
-// Add databases depending on the user selection
-// finalQuery = "SELECT c FROM NewCompounds c 
-// LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId 
-// left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId 
-// where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
 
-            startQuery = startQuery + " LEFT JOIN NewCompoundsInHouse ncih on nc.compoundId=ncih.compoundId ";
-            startQuery = startQuery + " LEFT JOIN NewLipidsClassification nlc on nc.compoundId=nlc.compoundId ";
+            startQuery = startQuery + " INNER JOIN NewCompoundsInHouse ncih on nc.compoundId=ncih.compoundId ";
+            startQuery = startQuery + " INNER JOIN NewLMClassification nlmc on nc.compoundId=nlmc.compoundId ";
             startQuery = startQuery + " WHERE (";
             startQuery = startQuery + "ncih.inHouseId is not null";
             startQuery = startQuery + ") and ";
 
             // Stablish the classification of Fatty Acids
-            startQuery = startQuery + "nlc.subClass in " + ConstantesForOxidation.FATTY_ACIDS_LM_CLASSIFICATION + " and ";
+            startQuery = startQuery + "nlmc.subClass in " + ConstantesForOxidation.FATTY_ACIDS_LM_CLASSIFICATION + " and ";
 
             String oxidationValue;
 
@@ -2254,29 +1639,12 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 //                    massToSearch = mzFattyAcidMass + oxidationDouble;
                     // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
 
-                    Double delta;
-                    switch (toleranceModeForFAs) {
-                        // Case mDa
-                        case "mDa":
-                            delta = toleranceForFAs * 0.001d;
-                            break;
-                        // Case ppm
-                        case "ppm":
-                            delta = massToSearchForOxFA * toleranceForFAs * 0.000001f;
-                            break;
-                        default:
-                            delta = massToSearchForOxFA * toleranceForFAs * 0.000001f;
-                            break;
-                    }
-                    Double low = massToSearchForOxFA - delta;
-                    Double high = massToSearchForOxFA + delta;
+                    finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery,
+                            massToSearchForOxFA, toleranceModeForFAs, toleranceForFAs);
 
                     // Insert compounds
                     List results;
                     Query q1;
-                    // Finish the query with the mass condition
-                    finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-                    finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearchForOxFA + ")";
 
                     q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
                     results = q1.getResultList();
@@ -2341,7 +1709,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
         FACompound nonOxidizedFA = null;
         FACompound oxidizedFA;
-        List<String> oxidations = chooseSCOxidations(possibleOxidations);
+        List<String> oxidations = OxidationProcessing.chooseSCOxidations(possibleOxidations);
         FACompoundFactory FAcFactory = new FACompoundFactory();
 
         int nonOxidizedFAPosition;
@@ -2359,7 +1727,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             nonOxidizedFAPosition = 0;
             mzNONOxidizedFAMass = FAsEM.get(nonOxidizedFAPosition);
             mzOxidizedFAMass = calculateFAEMFromPIandOtherFAEM(parentIonNeutralMass, mzNONOxidizedFAMass);
-            nonOxidizedFA = getNonOxidizedFA(mzNONOxidizedFAMass, 1);
+            nonOxidizedFA = getNonOxidizedFA(mzNONOxidizedFAMass, 0);
 
         } else if (FAsEM.size() == 2) {
 // Write in log. 
@@ -2383,8 +1751,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             Double massToSearchForOxFA;
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
-            String startQuery;
-            startQuery = "SELECT nc FROM NewCompounds nc ";
+            String aliasTable = "nc";
+            String startQuery = "SELECT " + aliasTable + " FROM NewCompounds " + aliasTable;
             String finalQuery;
 // Add databases depending on the user selection
 // finalQuery = "SELECT c FROM NewCompounds c 
@@ -2393,13 +1761,13 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 // where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
 
             startQuery = startQuery + " LEFT JOIN NewCompoundsInHouse ncih on nc.compoundId=ncih.compoundId ";
-            startQuery = startQuery + " LEFT JOIN NewLipidsClassification nlc on nc.compoundId=nlc.compoundId ";
+            startQuery = startQuery + " LEFT JOIN NewLMClassification nlmc on nc.compoundId=nlmc.compoundId ";
             startQuery = startQuery + " WHERE (";
             startQuery = startQuery + "ncih.inHouseId is not null";
             startQuery = startQuery + ") and ";
 
             // Stablish the classification of Fatty Acids
-            startQuery = startQuery + "nlc.subClass in " + ConstantesForOxidation.FATTY_ACIDS_LM_CLASSIFICATION + " and ";
+            startQuery = startQuery + "nlmc.subClass in " + ConstantesForOxidation.FATTY_ACIDS_LM_CLASSIFICATION + " and ";
 
             String oxidationValue;
 
@@ -2418,29 +1786,12 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 //                    massToSearch = mzFattyAcidMass + oxidationDouble;
                     // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
 
-                    Double delta;
-                    switch (toleranceModeForFA) {
-                        // Case mDa
-                        case "mDa":
-                            delta = toleranceForFA * 0.001d;
-                            break;
-                        // Case ppm
-                        case "ppm":
-                            delta = massToSearchForOxFA * toleranceForFA * 0.000001f;
-                            break;
-                        default:
-                            delta = massToSearchForOxFA * toleranceForFA * 0.000001f;
-                            break;
-                    }
-                    Double low = massToSearchForOxFA - delta;
-                    Double high = massToSearchForOxFA + delta;
+                    finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearchForOxFA,
+                            toleranceModeForFA, toleranceForFA);
 
                     // Insert compounds
                     List results;
                     Query q1;
-                    // Finish the query with the mass condition
-                    finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-                    finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearchForOxFA + ")";
 
                     q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
                     results = q1.getResultList();
@@ -2470,7 +1821,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
                         parentIonNeutralMass = parentIonEM + ConstantesForOxidation.PROTON_WEIGHT;
                         mzOxidizedFAMass = calculateFAEMFromPIandOtherFAEM(parentIonNeutralMass, mzNONOxidizedFAMass);
-                        nonOxidizedFA = getNonOxidizedFA(mzNONOxidizedFAMass, 1);
+                        nonOxidizedFA = getNonOxidizedFA(mzNONOxidizedFAMass, 0);
 
                         oxidationValue = MAPOXIDATIONS.get(oxid);
                         oxidationDouble = Double.parseDouble(oxidationValue);
@@ -2479,25 +1830,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 // Statistics
 //                    massToSearch = mzFattyAcidMass + oxidationDouble;
                         // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
-                        switch (toleranceModeForFA) {
-                            // Case mDa
-                            case "mDa":
-                                delta = toleranceForFA * 0.001d;
-                                break;
-                            // Case ppm
-                            case "ppm":
-                                delta = massToSearchForOxFA * toleranceForFA * 0.000001f;
-                                break;
-                            default:
-                                delta = massToSearchForOxFA * toleranceForFA * 0.000001f;
-                                break;
-                        }
-                        low = massToSearchForOxFA - delta;
-                        high = massToSearchForOxFA + delta;
-
-                        // Finish the query with the mass condition
-                        finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-                        finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearchForOxFA + ")";
+                        finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearchForOxFA,
+                                toleranceModeForFA, toleranceForFA);
 
                         q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
                         results = q1.getResultList();
@@ -2563,51 +1897,31 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             Double toleranceForFA,
             String toleranceModeForFA) {
 
-        Double massToSearch;
+        Double massToSearchForOxFA;
+
+        if (modeQuerymzFattyAcidMass == 0) {
+            massToSearchForOxFA = querymzFattyAcidMass + ConstantesForOxidation.PROTON_WEIGHT;
+        } else {
+            massToSearchForOxFA = querymzFattyAcidMass + ConstantesForOxidation.H_WEIGHT;
+        }
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
-        String startQuery;
-        startQuery = "SELECT nc FROM NewCompounds nc ";
+        String aliasTable = "nc";
+        String startQuery = "SELECT " + aliasTable + " FROM NewCompounds " + aliasTable;
         String finalQuery;
         startQuery = startQuery + " LEFT JOIN NewCompoundsInHouse ncih on nc.compoundId=ncih.compoundId ";
-        startQuery = startQuery + " LEFT JOIN NewLipidsClassification nlc on nc.compoundId=nlc.compoundId ";
+        startQuery = startQuery + " LEFT JOIN NewLMClassification nlmc on nc.compoundId=nlmc.compoundId ";
         startQuery = startQuery + " WHERE (";
         startQuery = startQuery + "ncih.inHouseId is not null";
         startQuery = startQuery + ") and ";
         // Stablish the classification of Fatty Acids
-        startQuery = startQuery + "nlc.subClass in " + ConstantesForOxidation.FATTY_ACIDS_LM_CLASSIFICATION + " and ";
+        startQuery = startQuery + "nlmc.subClass in " + ConstantesForOxidation.FATTY_ACIDS_LM_CLASSIFICATION + " and ";
 
-        if (modeQuerymzFattyAcidMass == 0) {
-            massToSearch = querymzFattyAcidMass + ConstantesForOxidation.PROTON_WEIGHT;
-        } else {
-            massToSearch = querymzFattyAcidMass + ConstantesForOxidation.H_WEIGHT;
-        }
-// Statistics
-//                    massToSearch = mzFattyAcidMass + oxidationDouble;
         // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
-
-        Double delta;
-        switch (toleranceModeForFA) {
-            // Case mDa
-            case "mDa":
-                delta = toleranceForFA * 0.001d;
-                break;
-            // Case ppm
-            case "ppm":
-                delta = massToSearch * toleranceForFA * 0.000001f;
-                break;
-            default:
-                delta = massToSearch * toleranceForFA * 0.000001f;
-                break;
-        }
-        Double low = massToSearch - delta;
-        Double high = massToSearch + delta;
+        finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearchForOxFA,
+                toleranceModeForFA, toleranceForFA);
 
         // Insert compounds
         Query q1;
-        // Finish the query with the mass condition
-        finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-        finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearch + ")";
-
         q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
         List results;
         results = q1.getResultList();
@@ -2628,9 +1942,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
      * calculated mass
      * @return if mass querymzFattyAcidMass corresponds to a Fatty Acid
      */
-    private FACompound getNonOxidizedFA(
-            Double querymzFattyAcidMass,
-            int modeQuerymzFattyAcidMass) {
+    private FACompound getNonOxidizedFA(Double querymzFattyAcidMass, int modeQuerymzFattyAcidMass) {
         double toleranceForFA = 10;
         String toleranceModeForFA = "mDa";
         return getNonOxidizedFA(querymzFattyAcidMass, modeQuerymzFattyAcidMass, toleranceForFA, toleranceModeForFA);
@@ -2653,60 +1965,34 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             Double toleranceForFA,
             String toleranceModeForFA) {
         FACompound FAcompound;
-        Double massToSearch;
-// Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
-        String startQuery;
-        startQuery = "SELECT nc FROM NewCompounds nc ";
-        String finalQuery;
-// Add databases depending on the user selection
-// finalQuery = "SELECT c FROM NewCompounds c 
-// LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId 
-// left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId 
-// where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
+        Double massToSearchForOxFA;
 
-        startQuery = startQuery + " LEFT JOIN NewCompoundsInHouse ncih on nc.compoundId=ncih.compoundId ";
-        startQuery = startQuery + " LEFT JOIN NewLipidsClassification nlc on nc.compoundId=nlc.compoundId ";
+        if (modeQuerymzFattyAcidMass == 0) {
+            massToSearchForOxFA = querymzFattyAcidMass + ConstantesForOxidation.PROTON_WEIGHT;
+        } else {
+            massToSearchForOxFA = querymzFattyAcidMass + ConstantesForOxidation.H_WEIGHT;
+        }
+// Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
+        String aliasTable = "nc";
+        String startQuery = "SELECT " + aliasTable + " FROM NewCompounds " + aliasTable;
+        String finalQuery;
+        startQuery = startQuery + " INNER JOIN NewCompoundsInHouse ncih on nc.compoundId=ncih.compoundId ";
+        startQuery = startQuery + " INNER JOIN NewLMClassification nlmc on nc.compoundId=nlmc.compoundId ";
         startQuery = startQuery + " WHERE (";
         startQuery = startQuery + "ncih.inHouseId is not null";
         startQuery = startQuery + ") and ";
 
         // Stablish the classification of Fatty Acids
-        startQuery = startQuery + "nlc.subClass in " + ConstantesForOxidation.FATTY_ACIDS_LM_CLASSIFICATION + " and ";
+        startQuery = startQuery + "nlmc.subClass in " + ConstantesForOxidation.FATTY_ACIDS_LM_CLASSIFICATION + " and ";
 
         FACompoundFactory FACompoundFactory = new FACompoundFactory();
 
-        if (modeQuerymzFattyAcidMass == 0) {
-            massToSearch = querymzFattyAcidMass + ConstantesForOxidation.PROTON_WEIGHT;
-        } else {
-            massToSearch = querymzFattyAcidMass + ConstantesForOxidation.H_WEIGHT;
-        }
-// Statistics
-//                    massToSearch = mzFattyAcidMass + oxidationDouble;
         // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
+        finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearchForOxFA,
+                toleranceModeForFA, toleranceForFA);
 
-        Double delta;
-        switch (toleranceModeForFA) {
-            // Case mDa
-            case "mDa":
-                delta = toleranceForFA * 0.001d;
-                break;
-            // Case ppm
-            case "ppm":
-                delta = massToSearch * toleranceForFA * 0.000001f;
-                break;
-            default:
-                delta = massToSearch * toleranceForFA * 0.000001f;
-                break;
-        }
-        Double low = massToSearch - delta;
-        Double high = massToSearch + delta;
-
-        // Insert compounds
+// Insert compounds
         Query q1;
-        // Finish the query with the mass condition
-        finalQuery = startQuery + "(nc.mass >= " + low + " and nc.mass <= " + high + ")";
-        finalQuery = finalQuery + " order by ABS(nc.mass - " + massToSearch + ")";
-
         q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
         List results;
         results = q1.getResultList();
@@ -2714,36 +2000,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         if (results.isEmpty()) {
             FAcompound = null;
         } else {
-            FAcompound = getFirstFACompoundFromQuery(results, FACompoundFactory, querymzFattyAcidMass, massToSearch, "");
+            FAcompound = getFirstFACompoundFromQuery(results,
+                    FACompoundFactory, querymzFattyAcidMass, massToSearchForOxFA, "");
         }
         return FAcompound;
     }
 
-    /**
-     * process the list of LC oxidations to perform the search. Return LC
-     * oxidations to search
-     *
-     * @param oxidations Possible oxidations
-     */
-    private List<String> chooseLCOxidations(List<String> oxidations) {
-        if (oxidations.isEmpty() || oxidations.get(0).equals("allOxidations")) {
-            oxidations = OxidationLists.LIST_LONG_CHAIN_OXIDATION_TYPES;
-        }
-        //System.out.println("DEFAULT -> ADDUCTS: " + adducts);
-        return oxidations;
-    }
-
-    /**
-     * process the list of SC oxidations to perform the search. Return SC
-     * oxidations to search
-     *
-     * @param oxidations Possible oxidations
-     */
-    private List<String> chooseSCOxidations(List<String> oxidations) {
-        if (oxidations.isEmpty() || oxidations.get(0).equals("allOxidations")) {
-            oxidations = OxidationLists.LIST_SHORT_CHAIN_OXIDATION_TYPES;
-        }
-        //System.out.println("DEFAULT -> ADDUCTS: " + adducts);
-        return oxidations;
-    }
 }

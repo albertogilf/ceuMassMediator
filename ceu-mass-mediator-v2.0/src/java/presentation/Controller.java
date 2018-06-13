@@ -17,10 +17,6 @@ public interface Controller<T> {
     
     List<T> getItemsGroupedWithoutSignificative();
     
-    //Deprecated
-    String next();
-    //Deprecated
-    String previous();
     
-    PaginationHelper getPagination();
+    
 }

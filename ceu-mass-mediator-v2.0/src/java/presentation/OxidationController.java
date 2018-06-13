@@ -1,14 +1,10 @@
 package presentation;
 
-import exporters.CompoundExcelExporter;
+import facades.TheoreticalCompoundsFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -17,10 +13,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
-import persistence.theoreticalCompound.TheoreticalCompounds;
-import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
-import presentation.paginationHelpers.MyPaginationHelper;
-import presentation.paginationHelpers.PaginationHelper;
 import utilities.Cadena;
 import static utilities.Constantes.TOLERANCE_MODE_INICITAL_VALUE;
 import utilities.ConstantesForOxidation;
@@ -39,8 +31,7 @@ import persistence.oxidizedTheoreticalCompound.OxidizedTheoreticalCompound;
 public class OxidationController implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private MyPaginationHelper pagination;
+    
     private String queryInputParentIonMass;
     private String queryInputFattyAcidMass1;
     private String queryInputFattyAcidMass2;
@@ -49,6 +40,8 @@ public class OxidationController implements Serializable {
     private String inputModeToleranceForFA;
     private String inputToleranceForPI;
     private String inputModeToleranceForPI;
+    
+    // Oxidation occurs always in negative mode
     private final String ionMode;
 
     private Double queryParentIonMass;
@@ -57,15 +50,16 @@ public class OxidationController implements Serializable {
     private List<String> oxidations;
     private List<SelectItem> oxidationsCandidates;
 
+    // Not used now, if the user want to filter annotations by database
     private List<String> databasesForPISearch;
     private List<SelectItem> DBcandidates;
 
     // NOT USED
-    // private boolean thereAreTheoreticalCompounds;
+    // List of oxidized compounds as a result
     private List<OxidizedTheoreticalCompound> oxidizedCompoundsList;
 
     @EJB
-    private presentation.TheoreticalCompoundsFacade ejbFacade;
+    private facades.TheoreticalCompoundsFacade ejbFacade;
 
     public OxidationController() {
         this.inputToleranceForFA = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
@@ -165,28 +159,18 @@ public class OxidationController implements Serializable {
     public void exportToExcel() {
         // All pages display the number of input compounds defined in ITEMS_PER_PAGE_IN_EXCEL
 
-        if (pagination == null) {
-            pagination = new MyPaginationHelper(ITEMS_PER_PAGE_IN_EXCEL,
-                    items.size());
-        }
         CompoundExcelExporter compoundExcelExporter = new CompoundExcelExporter();
-        compoundExcelExporter.generateWholeExcelCompound(items, pagination);
+        compoundExcelExporter.generateWholeExcelCompound(items, 0);
     }
      */
-    /**
-     *
-     */
-    public void submit() {
-        System.out.println("Working on it..");
-    }
+    
 
     /**
-     * Method to reset all the items that are instantiated in the class Reset
-     * all the compounds obtained by the mediator.
+     * Method to submit Data for the search of long chain oxidations
      */
     public void submitLCOxidationCompounds() {
         this.oxidizedCompoundsList = null;
-        int numFattyAcidInputMasses;
+        
         this.queryInputParentIonMass = this.queryInputParentIonMass.replace(",", ".");
         this.queryInputFattyAcidMass1 = this.queryInputFattyAcidMass1.replace(",", ".");
         this.queryInputFattyAcidMass2 = this.queryInputFattyAcidMass2.replace(",", ".");
@@ -203,24 +187,19 @@ public class OxidationController implements Serializable {
         // System.out.println("INPUT: " + queryInputParentIonMass + " \n ARRAY: " + massesAux);
 
         this.setQueryFattyAcidMasses(fattyAcidMassesAux);
-        numFattyAcidInputMasses = fattyAcidMassesAux.size();
         // System.out.println("INPUT: " + queryInputParentIonMasses + " \n ARRAY: " + massesAux);
 
         this.setQueryParentIonMass(Cadena.extractFirstDouble(this.queryInputParentIonMass));
 
-        // Change for ALL
-        pagination = new MyPaginationHelper(ConstantesForOxidation.ITEMS_PER_PAGE_IN_EXCEL, 1);
         processLCOxidationCompounds();
     }
 
     /**
-     * Method to reset all the items that are instantiated in the class Reset
-     * all the compounds obtained by the mediator.
+     * Method to submit Data for the search of short chain oxidations
      */
     public void submitSCOxidationCompounds() {
         this.oxidizedCompoundsList = null;
 
-        int numFattyAcidInputMasses;
         this.queryInputParentIonMass = this.queryInputParentIonMass.replace(",", ".");
         List<Double> fattyAcidMassesAux; // auxiliar List for input Masses
         fattyAcidMassesAux = new ArrayList<Double>();
@@ -230,16 +209,16 @@ public class OxidationController implements Serializable {
         }
 
         this.setQueryFattyAcidMasses(fattyAcidMassesAux);
-        numFattyAcidInputMasses = fattyAcidMassesAux.size();
         // System.out.println("INPUT: " + queryInputParentIonMasses + " \n ARRAY: " + massesAux);
 
         this.setQueryParentIonMass(Cadena.extractFirstDouble(this.queryInputParentIonMass));
 
-        // Change for ALL
-        //pagination = new MyPaginationHelper(ConstantesForOxidation.ITEMS_PER_PAGE_IN_EXCEL, 1);
         processSCOxidationCompounds();
     }
 
+    /**
+     * Method to reset the result. Not used
+     */
     public void resetOxidizedCompound() {
         this.oxidizedCompoundsList = null;
     }
@@ -384,12 +363,6 @@ public class OxidationController implements Serializable {
         return false;
     }
 
-    /**
-     * @param pagination the pagination to set
-     */
-    public void setPagination(MyPaginationHelper pagination) {
-        this.pagination = pagination;
-    }
 
     /**
      * @return The ionization mode
@@ -397,27 +370,6 @@ public class OxidationController implements Serializable {
     public String getIonMode() {
         // System.out.println("ION MODE RETURNED: " + ionMode);
         return ionMode;
-    }
-    /**
-     * @return the databasesForPISearch to search
-     */
-    public List<String> getDatabasesForPISearch() {
-        return databasesForPISearch;
-    }
-
-    /**
-     * Set the databasesForPISearch to the object
-     *
-     * @param databasesForPISearch the databasesForPISearch to search
-     */
-    public void setDatabasesForPISearch(List<String> databasesForPISearch) {
-        this.databasesForPISearch = databasesForPISearch;
-        /*
-        for(String s : databasesForPISearch)
-        {
-            System.out.println("\n \n Database: " + s + "\n \n");
-        }
-         */
     }
 
     /**
@@ -456,6 +408,28 @@ public class OxidationController implements Serializable {
 
     public void setDBcandidates(List<SelectItem> DBcandidates) {
         this.DBcandidates = DBcandidates;
+    }
+    
+    /**
+     * @return the databasesForPISearch to search
+     */
+    public List<String> getDatabasesForPISearch() {
+        return databasesForPISearch;
+    }
+
+    /**
+     * Set the databasesForPISearch to the object
+     *
+     * @param databasesForPISearch the databasesForPISearch to search
+     */
+    public void setDatabasesForPISearch(List<String> databasesForPISearch) {
+        this.databasesForPISearch = databasesForPISearch;
+        /*
+        for(String s : databasesForPISearch)
+        {
+            System.out.println("\n \n Database: " + s + "\n \n");
+        }
+         */
     }
 
     public List<OxidizedTheoreticalCompound> getOxidizedCompoundsList() {
@@ -650,34 +624,6 @@ public class OxidationController implements Serializable {
             throw new ValidatorException(new FacesMessage("Fatty acid mass should be between 0 and 10000"));
         }
     }
-
-
-    /**
-     * Deprecated. Not used Validates the input Tolerance to be a float between
-     * 0 and 10000
-     *
-     * @param arg0 FacesContext of the form
-     * @param arg1 Component of the form
-     * @param arg2 Input of the user in the component arg1
-     *
-     */
-    /* Commented because it is not useful his use
-    public void validateInputMasses(FacesContext arg0, UIComponent arg1, Object arg2)
-         throws ValidatorException {
-        String queryInputParentIonMass=(String)arg2;
-        List<Float> listInput = new LinkedList<Float>();
-        try 
-        {
-            listInput = Cadena.extraerMasas(queryInputParentIonMass);
-        }
-        catch(NumberFormatException nfe)
-        {
-            throw new ValidatorException(new FacesMessage("The Masses should be numbers"));
-        }
-        if(queryInputParentIonMass.contains("[a-zA-Z]+"))
-        {
-            throw new ValidatorException(new FacesMessage("The Masses should be numbers AA"));
-        }
-   }
-     */
+    
+    
 }

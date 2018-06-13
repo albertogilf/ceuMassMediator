@@ -1250,6 +1250,72 @@
         }
         
         /* PrimeFaces List */
+        /* For new interface and data model */ 
+        .ui-datatable-tablewrapper .ui-column-title a {
+            color: black;
+        }
+        
+        .ui-datatable-tablewrapper .ui-datatable-even a {
+            color: black;
+        }
+        
+        .ui-datatable-tablewrapper .ui-datatable-odd a {
+            color: black;
+        }
+        
+        .ui-datatable-tablewrapper .ui-datatable-even .ui-datalist .ui-datalist-content {
+                background: white;
+                border: 0px none;
+                font-size: 0.85em;
+        }
+        
+        .ui-datatable-tablewrapper .ui-datatable-odd .ui-datalist .ui-datalist-content {
+                background: #f2f5f9;
+                border: 0px none;
+                font-size: 0.85em;
+        }
+        
+        .ui-datatable-tablewrapper .ui-datalist .empty_list {
+                background: white;
+                border: 0px none;
+                font-size: 0.85em;
+        }
+        
+        .ui-datatable-tablewrapper .ui-datatable-even .ui-datalist .ui-datalist-data{
+        	background: white;
+                border: 0px none;
+                list-style-type: decimal;
+                padding:10px;
+        }
+        
+        .ui-datatable-tablewrapper .ui-datatable-odd .ui-datalist .ui-datalist-data  {
+        	background: #f2f5f9;
+                border: 0px none;
+                list-style-type: decimal;
+                padding:10px;
+        }
+        
+        .annotationdatalist > .ui-datalist-item {
+            background: #003946;
+        }
+        
+        .annotationdatalist > .ui-datalist-content {
+            background: #003946;
+        }
+        
+        
+        /* For old interface and data model */ 
+        #datalistresults.ui-datalist .ui-datalist-data .ui-datalist-item .ui-column-title a  {
+            color: black;
+        }
+        
+        #datalistresults.ui-datalist .ui-datalist-data .ui-datalist-item .ui-datatable-even a  {
+            color: black;
+        }
+        #datalistresults.ui-datalist .ui-datalist-data .ui-datalist-item .ui-datatable-odd a  {
+            color: black;
+        }
+        
         /* pathways id */
         #datalistpathways.ui-datalist {
             /*background: white;*/
@@ -1290,14 +1356,14 @@
                 font-size: 0.85em;
         }
         
-        #datalistresults.ui-datalist .empty_list {
-                background: white;
+        #datalistresults.ui-datalist .ui-datatable-odd .ui-datalist .ui-datalist-content {
+                background: #f2f5f9;
                 border: 0px none;
                 font-size: 0.85em;
         }
         
-        #datalistresults.ui-datalist .ui-datatable-odd .ui-datalist .ui-datalist-content {
-                background: #f2f5f9;
+        #datalistresults.ui-datalist .empty_list {
+                background: white;
                 border: 0px none;
                 font-size: 0.85em;
         }
@@ -1358,11 +1424,14 @@
         
         /* PrimeFaces table */
         .compoundresults.ui-datatable .ui-datatable-header{
-                background: #003946 !important;
-                font-size: 0.5em;
+                background: #003946;
+                font-size: 1em;
+                color:white;
         }
+        
+        
+        
         .compoundresults.ui-datatable .ui-datatable-header a{
-                background-color: none;
                 color: grey;
                 text-decoration:none;
         }
@@ -1401,7 +1470,6 @@
         }
         
         .ui-datatable.compoundresults th {
-                background: EAAB00;
                 font-family: verdana;
                 font-size: 0.75em;
         }

@@ -9,7 +9,8 @@ public interface Constantes {
 
     public static final double PROTON_WEIGHT = 1.0073d;
     public static double RT_WINDOW = 0.05D;
-    public static double ADDUCT_AUTOMATIC_DETECTION_WINDOW = 0.005D;
+    public static double ADDUCT_AUTOMATIC_DETECTION_WINDOW = 0.05D;
+    public static double TOLERANCE_SAME_MASS_WITHIN_FEATUREGROUPEDBYRT = 0.00001; 
     public static final String TOLERANCE_INICITAL_VALUE = "10";
     public static final String TOLERANCE_MODE_INICITAL_VALUE = "ppm";
     public static final String WEB_COMPUESTO_KEGG = "http://www.genome.jp/dbget-bin/www_bget?cpd:";
@@ -23,9 +24,14 @@ public interface Constantes {
     public static final String WEB_LIPID_MAPS = "http://www.lipidmaps.org";
     public static final String WEB_HMDB = "http://www.hmdb.ca";
     public static final String WEB_PUBCHEMICHAL = "https://pubchem.ncbi.nlm.nih.gov";
+    public static final String WEB_COMPOUND_MINE_START = "http://minedatabase.mcs.anl.gov/#/acompound";
+    public static final String WEB_COMPOUND_MINE_SUFFIX = "/overview";
+    public static final String WEB_MINE = "http://minedatabase.mcs.anl.gov";
     public static final int ITEMS_PER_PAGE = 6500;
     public static final int ITEMS_PER_PAGE_IN_EXCEL = 6500;
     public static final float MIN_RETENTION_TIME_SCORE = 0.05F;
+    public static final float MIN_SCORE_FOR_EUCLIDEAN_DISTANCE = 0.000001F;
+    
 
     public static final String FILE_FOR_ANALYTICS_PATH = "/home/alberto/PHD/statistics_mediator/";
 
@@ -35,7 +41,7 @@ public interface Constantes {
     public static final String EXPERIMENTAL_MASS_HEADER = "Experimental mass";
     public static final String RT_HEADER = "Retention Time";
     public static final String CAS_HEADER = "CAS";
-    public static final String IDENTIFIER_HEADER = "Identifier";
+    public static final String COMPOUND_ID_HEADER = "Identifier";
     public static final String PPM_INCREMENT_HEADER = "PPM Error";
     public static final String IONIZATION_SCORE_HEADER = "Score 1"; // Ionization Score
     //Deleted temporaly
@@ -54,6 +60,7 @@ public interface Constantes {
     public static final String METLIN_HEADER = "Metlin";
     public static final String PUBHCEMICAL_HEADER = "PubChem";
     public static final String INCHIKEY_HEADER = "InChIKey";
+    public static final String SMILES_HEADER = "SMILES";
     public static final String PATHWAYS_HEADER = "Pathways";
 
     // Strings to titles in Excel Files
@@ -61,8 +68,8 @@ public interface Constantes {
     public static final String COMPOUNDSEXCELFILETITLE = "LIST OF COMPOUNDS";
 
     //New constants for the paths of the server
-    //public static final String UPLOADPATH ="C:\\Users\\Pablo\\Desktop\\loads\\"; // \"/var/mediatorloader\";//
-    public static final String UPLOADPATH = "/var/mediatorloader/";
+    //public static final String UPLOADPATH ="C:\\Users\\ceu\\Desktop\\alberto\\CMM\\mediatorLoaderPathways"; 
+    public static final String UPLOADPATH = "/var/mediatorloader";
 
     /**
      * Unique Sample mass
@@ -134,100 +141,100 @@ public interface Constantes {
      */
     public static final String NEWDEMOMASSES
             = "399.3367"
-              + "\n421.31686"
-              + "\n315.2424"
-              + "\n337.2234"
-              + "\n280.2402"
-              + "\n287.2104"
-              + "\n495.3352"
-              + "\n517.3172"
-              + "\n547.3635"
-              + "\n571.3644"
-              + "\n569.3479"
-              + "\n567.3328"
-              + "\n589.3148"
-              + "\n481.3167"
-              + "\n477.2858"
-              + "\n499.2672"
-              + "\n501.286"
-              + "\n525.2853"
-              + "\n547.2667"
-              + "\n511.3265"
-              + "\n533.3079"
-              + "\n539.3571"
-              + "\n356.2923"
-              + "\n129.1515"
-              + "\n281.2722"
-              + "\n282.2563"
-              + "\n264.2458"
-              + "\n256.2406"
-              + "\n255.2571"
-              + "\n648.5165"
-              + "\n646.5048"
-              + "\n672.5205"
-              + "\n694.5019"
-              + "\n425.3504"
-              + "\n267.0966"
-              + "\n183.0882"
-              + "\n174.1109"
-              + "\n584.263"
-              + "\n194.0804"
-              + "\n161.1059"
-              + "\n362.2094"
-              + "\n113.059"
-              + "\n155.0689"
-              + "\n165.078"
-              + "\n430.3773";
+            + "\n421.31686"
+            + "\n315.2424"
+            + "\n337.2234"
+            + "\n280.2402"
+            + "\n287.2104"
+            + "\n495.3352"
+            + "\n517.3172"
+            + "\n547.3635"
+            + "\n571.3644"
+            + "\n569.3479"
+            + "\n567.3328"
+            + "\n589.3148"
+            + "\n481.3167"
+            + "\n477.2858"
+            + "\n499.2672"
+            + "\n501.286"
+            + "\n525.2853"
+            + "\n547.2667"
+            + "\n511.3265"
+            + "\n533.3079"
+            + "\n539.3571"
+            + "\n356.2923"
+            + "\n129.1515"
+            + "\n281.2722"
+            + "\n282.2563"
+            + "\n264.2458"
+            + "\n256.2406"
+            + "\n255.2571"
+            + "\n648.5165"
+            + "\n646.5048"
+            + "\n672.5205"
+            + "\n694.5019"
+            + "\n425.3504"
+            + "\n267.0966"
+            + "\n183.0882"
+            + "\n174.1109"
+            + "\n584.263"
+            + "\n194.0804"
+            + "\n161.1059"
+            + "\n362.2094"
+            + "\n113.059"
+            + "\n155.0689"
+            + "\n165.078"
+            + "\n430.3773";
 
     /**
      * String for the sample of retention time
      */
     public static final String NEWDEMORETENTIONTIME
             = "18.842525"
-              + "\n18.842525"
-              + "\n8.144917"
-              + "\n8.144917"
-              + "\n28.269503"
-              + "\n4.021555"
-              + "\n19.46886"
-              + "\n19.46886"
-              + "\n21.503885"
-              + "\n20.90083"
-              + "\n18.852442"
-              + "\n17.863642"
-              + "\n17.863642"
-              + "\n17.41639"
-              + "\n16.68847"
-              + "\n16.68847"
-              + "\n17.76522"
-              + "\n17.698446"
-              + "\n17.698446"
-              + "\n16.254662"
-              + "\n16.254662"
-              + "\n20.272083"
-              + "\n24.690693"
-              + "\n1.9077333"
-              + "\n27.716194"
-              + "\n31.261553"
-              + "\n31.261553"
-              + "\n30.816559"
-              + "\n26.94"
-              + "\n31.910034"
-              + "\n30.488884"
-              + "\n32.697334"
-              + "\n32.697334"
-              + "\n19.546305"
-              + "\n0.80008334"
-              + "\n0.70422226"
-              + "\n1.1756389"
-              + "\n7.2901664"
-              + "\n1.0755279"
-              + "\n0.6985555"
-              + "\n4.0684447"
-              + "\n0.7552286"
-              + "\n0.6092778"
-              + "\n1.0322223"
-              + "\n30.569942";
+            + "\n18.842525"
+            + "\n8.144917"
+            + "\n8.144917"
+            + "\n28.269503"
+            + "\n4.021555"
+            + "\n19.46886"
+            + "\n19.46886"
+            + "\n21.503885"
+            + "\n20.90083"
+            + "\n18.852442"
+            + "\n17.863642"
+            + "\n17.863642"
+            + "\n17.41639"
+            + "\n16.68847"
+            + "\n16.68847"
+            + "\n17.76522"
+            + "\n17.698446"
+            + "\n17.698446"
+            + "\n16.254662"
+            + "\n16.254662"
+            + "\n20.272083"
+            + "\n24.690693"
+            + "\n1.9077333"
+            + "\n27.716194"
+            + "\n31.261553"
+            + "\n31.261553"
+            + "\n30.816559"
+            + "\n26.94"
+            + "\n31.910034"
+            + "\n30.488884"
+            + "\n32.697334"
+            + "\n32.697334"
+            + "\n19.546305"
+            + "\n0.80008334"
+            + "\n0.70422226"
+            + "\n1.1756389"
+            + "\n7.2901664"
+            + "\n1.0755279"
+            + "\n0.6985555"
+            + "\n4.0684447"
+            + "\n0.7552286"
+            + "\n0.6092778"
+            + "\n1.0322223"
+            + "\n30.569942";
 
     /**
      * DEMO NAME
@@ -239,4 +246,27 @@ public interface Constantes {
      */
     public static final String DEMOFORMULA = "C5H14NO";
 
+    /**
+     * DEMO PEAKS FOR THE MSMS SEARCH
+     */
+    public static final String DEMOPEAKS
+            = "40.948 0.174\n"
+            + "56.022 0.424\n"
+            + "84.37 53.488\n"
+            + "101.50 8.285\n"
+            + "102.401 0.775\n"
+            + "129.670 100.000\n"
+            + "146.966 20.070";
+    /**
+     * DEMO PARENT ION MASS FOR THE MSMS SEARCH
+     */
+    public static final String DEMOPARENTIONMASS="147.0";
+    /**
+     * DEMO PARENT ION MASS TOLERANCE FOR THE MSMS SEARCH
+     */
+    public static final String DEMOPARENTIONMASSTOLERANCE="0.1";
+    /**
+     * DEMO MZ TOLERANCE FOR THE MSMS SEARCH
+     */
+    public static final String DEMOMZTOLERANCE="0.5";
 }

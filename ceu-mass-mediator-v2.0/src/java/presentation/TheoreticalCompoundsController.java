@@ -1,11 +1,11 @@
 package presentation;
 
+import facades.TheoreticalCompoundsFacade;
 import exporters.CompoundExcelExporter;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,26 +13,22 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
-import org.primefaces.event.FileUploadEvent;
 import persistence.theoreticalCompound.TheoreticalCompounds;
 import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
-import presentation.paginationHelpers.MyPaginationHelper;
 import utilities.Cadena;
 import utilities.AdductsLists;
 import static utilities.Constantes.*;
-import presentation.paginationHelpers.PaginationHelper;
 import ruleengine.ConfigFilter;
 import ruleengine.RuleProcessor;
 import utilities.Constantes;
-import org.primefaces.model.UploadedFile;
+import static utilities.AdductsLists.DEFAULT_ADDUCTS_POSITIVE;
+import utilities.DataFromInterfacesUtilities;
+import static utilities.DataFromInterfacesUtilities.MAPDATABASES;
 
 /**
  * Controller (Bean) of the application
@@ -46,21 +42,33 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     private static final long serialVersionUID = 1L;
 
-    private MyPaginationHelper pagination;
     private String queryInputMasses;
     private String queryInputRetentionTimes;
     private String queryInputCompositeSpectra;
-
     private String allInputMasses;
     private String allInputRetentionTimes;
     private String allInputCompositeSpectra;
 
     private String inputTolerance;
     private String inputModeTolerance;
+    private String chemAlphabet;
+    private boolean includeDeuterium;
+    private String modifier;
+    private List<SelectItem> modifierCandidates;
+    private List<String> databases;
+    private final List<SelectItem> DBcandidates;
+    private String metabolitesType;
+    private final List<SelectItem> metabolitesTypecandidates;
+
     private String massesMode;
     private String ionMode;
-    private String chemAlphabet;
-    private int flag;
+    private List<SelectItem> ionizationModeCandidates;
+    private List<String> adducts;
+    private List<SelectItem> adductsCandidates;
+    // to Improve efficiency. They are assigned to adductsCandidates
+    private final List<SelectItem> positiveCandidates;
+    private final List<SelectItem> negativeCandidates;
+    private final List<SelectItem> neutralCandidates;
 
     // Declared as a variable because JSF needs that even Framework marks as not used.
     private int numAdducts;
@@ -70,44 +78,15 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     private List<Map<Double, Integer>> queryCompositeSpectrum;
     private List<Boolean> isSignificativeCompound;
 
-    /*
-    private List<Double> allFirstPeakCompositeSpectrum;
-    private List<Double> allMasses;
-    private List<Double> allRetentionTimes;
-    private List<Map<Double, Integer>> allCompositeSpectrum;
-     */
-    private List<SelectItem> ionizationModeCandidates;
-    private List<String> adducts;
-    private List<SelectItem> adductsCandidates;
-    private final List<SelectItem> positiveCandidates;
-    private final List<SelectItem> negativeCandidates;
-    private final List<SelectItem> neutralCandidates;
-
-    private List<String> databases;
-    private List<SelectItem> DBcandidates;
-
-    private String metabolitesType;
-    private List<SelectItem> metabolitesTypecandidates;
-
-    private String modifier;
-    private List<SelectItem> modifierCandidates;
-
-    // NOT USED
-    // private boolean thereAreTheoreticalCompounds;
     private List<TheoreticalCompoundsGroup> itemsGrouped;
     private List<TheoreticalCompoundsGroup> itemsGroupedWithoutSignificative;
     private List<TheoreticalCompounds> items;
     private boolean allCompounds;
 
-    //atributtes for browse search (name and formula search)
-    private String queryName;
-    private String queryFormula;
-    private boolean exactName;
-
     private int maxNumberOfRTScoresApplied;
 
     @EJB
-    private presentation.TheoreticalCompoundsFacade ejbFacade;
+    private facades.TheoreticalCompoundsFacade ejbFacade;
 
     public TheoreticalCompoundsController() {
         this.inputTolerance = TOLERANCE_INICITAL_VALUE;
@@ -115,53 +94,52 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         //String version = FacesContext.class.getPackage().getImplementationVersion();
         //System.out.println("\n\n  VERSION DE JSF: " + version + "\n\n");
         this.items = null;
-        this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
-        this.itemsGroupedWithoutSignificative = new LinkedList<TheoreticalCompoundsGroup>();
-        this.DBcandidates = new LinkedList<SelectItem>();
+        this.itemsGrouped = new LinkedList<>();
+        this.itemsGroupedWithoutSignificative = new LinkedList<>();
+        this.DBcandidates = new LinkedList<>();
         this.DBcandidates.add(new SelectItem("AllWM", "All except MINE"));
         this.DBcandidates.add(new SelectItem("All", "All (Including In Silico Compounds)"));
-        for (String db : AdductsLists.LISTDB) {
-            this.DBcandidates.add(new SelectItem(db, db));
-        }
-        this.databases = new LinkedList<String>();
+        MAPDATABASES.entrySet().forEach((e) -> {
+            this.DBcandidates.add(new SelectItem(e.getKey(), (String) e.getKey()));
+        });
+        this.databases = new LinkedList<>();
         this.databases.add("AllWM");
 
         // MODIFIERS
-        this.modifierCandidates = new LinkedList<SelectItem>();
-        this.modifierCandidates.add(new SelectItem("None", "None"));
-        for (String modifierForCandidate : AdductsLists.MODIFIERS) {
-            this.modifierCandidates.add(new SelectItem(modifierForCandidate, modifierForCandidate));
-        }
+        this.modifierCandidates = new LinkedList<>();
+        DataFromInterfacesUtilities.MODIFIERS.entrySet().forEach((e) -> {
+            this.modifierCandidates.add(new SelectItem(e.getKey(), (String) e.getKey()));
+        });
         this.modifier = "None";
 
-        this.metabolitesTypecandidates = new LinkedList<SelectItem>();
-        for (String metaboliteType : AdductsLists.METABOLITESTYPES) {
-            this.metabolitesTypecandidates.add(new SelectItem(metaboliteType, metaboliteType));
-        }
-        this.metabolitesType = AdductsLists.METABOLITESTYPES.get(0);
+        this.metabolitesTypecandidates = new LinkedList<>();
+        DataFromInterfacesUtilities.METABOLITESTYPES.entrySet().forEach((e) -> {
+            this.metabolitesTypecandidates.add(new SelectItem(e.getKey(), (String) e.getKey()));
+        });
+        this.metabolitesType = "All except peptides";
 
-        this.positiveCandidates = new LinkedList<SelectItem>();
+        this.positiveCandidates = new LinkedList<>();
         this.positiveCandidates.add(new SelectItem("allPositives", "All"));
-        for (Map.Entry e : (AdductsLists.MAPMZPOSITIVEADDUCTS).entrySet()) {
+        (AdductsLists.MAPMZPOSITIVEADDUCTS).entrySet().forEach((e) -> {
             this.positiveCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
-        }
+        });
 
-        this.negativeCandidates = new LinkedList<SelectItem>();
+        this.negativeCandidates = new LinkedList<>();
         this.negativeCandidates.add(new SelectItem("allNegatives", "All"));
-        for (Map.Entry e : (AdductsLists.MAPMZNEGATIVEADDUCTS).entrySet()) {
+        (AdductsLists.MAPMZNEGATIVEADDUCTS).entrySet().forEach((e) -> {
             this.negativeCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
-        }
+        });
 
-        this.neutralCandidates = new LinkedList<SelectItem>();
+        this.neutralCandidates = new LinkedList<>();
         this.neutralCandidates.add(new SelectItem("allNeutral", "All"));
-        for (Map.Entry e : (AdductsLists.MAPNEUTRALADDUCTS).entrySet()) {
+        (AdductsLists.MAPNEUTRALADDUCTS).entrySet().forEach((e) -> {
             this.neutralCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
-        }
+        });
         this.massesMode = "neutral";
         this.ionizationModeCandidates = AdductsLists.LISTNEUTRALMODES;
         this.ionMode = "neutral";
         this.adductsCandidates = neutralCandidates;
-        this.adducts = new LinkedList<String>();
+        this.adducts = new LinkedList<>();
         this.adducts.add("allNeutral");
         this.queryInputMasses = "";
         this.queryInputRetentionTimes = "";
@@ -169,8 +147,9 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.allInputMasses = "";
         this.allInputRetentionTimes = "";
         this.allInputCompositeSpectra = "";
-        this.chemAlphabet = "ALL";
+        this.chemAlphabet = "CHNOPS";
         this.maxNumberOfRTScoresApplied = 0;
+        this.includeDeuterium = false;
     }
 
     /**
@@ -179,6 +158,10 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      */
     public void setDemoMass() {
         this.setQueryInputMasses(ONEDEMOMASS);
+        this.ionMode = "positive";
+        this.adductsCandidates = positiveCandidates;
+        this.adducts.clear();
+        this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
         //System.out.println(demoMasses);
     }
 
@@ -190,15 +173,12 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.setQueryInputMasses(ONEDEMOMASS);
         this.setQueryInputRetentionTimes(ONERETENTIONTIME);
         this.setQueryInputCompositeSpectra(ONECOMPOSITESPECTRUM);
+        this.chemAlphabet = "CHNOPS";
+        this.includeDeuterium = false;
         this.ionMode = "positive";
         this.adductsCandidates = positiveCandidates;
         this.adducts.clear();
-        this.adducts.add("M+H");
-        this.adducts.add("M+2H");
-        this.adducts.add("M+Na");
-        this.adducts.add("M+K");
-        this.adducts.add("M+NH4");
-        this.adducts.add("M+H-H2O");
+        this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
         //System.out.println(demoMasses);
     }
 
@@ -208,6 +188,10 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      */
     public void setDemoMasses() {
         this.setQueryInputMasses(NEWDEMOMASSES);
+        this.ionMode = "positive";
+        this.adductsCandidates = positiveCandidates;
+        this.adducts.clear();
+        this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
         //System.out.println(demoMasses);
     }
 
@@ -219,15 +203,12 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.setQueryInputMasses(NEWDEMOMASSES);
         this.setQueryInputRetentionTimes(NEWDEMORETENTIONTIME);
         this.setQueryInputCompositeSpectra(NEWDEMOSPECTRUM);
+        this.chemAlphabet = "CHNOPS";
+        this.includeDeuterium = false;
         this.ionMode = "positive";
         this.adductsCandidates = positiveCandidates;
         this.adducts.clear();
-        this.adducts.add("M+H");
-        this.adducts.add("M+2H");
-        this.adducts.add("M+Na");
-        this.adducts.add("M+K");
-        this.adducts.add("M+NH4");
-        this.adducts.add("M+H-H2O");
+        this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
         //System.out.println(demoMasses);
         // TODO Set All Masses,RTs and Composites
 
@@ -245,6 +226,9 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.allInputCompositeSpectra = "";
         this.inputTolerance = TOLERANCE_INICITAL_VALUE;
         this.inputModeTolerance = TOLERANCE_MODE_INICITAL_VALUE;
+
+        this.chemAlphabet = "CHNOPS";
+        this.includeDeuterium = false;
         /*this.massesMode = "neutral";
         this.ionizationModeCandidates = AdductsLists.LISTNEUTRALMODES;
         this.ionMode = "neutral";
@@ -252,53 +236,35 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.adducts.clear();
         this.adducts.add("allNeutral");
          */
-        setItems(null);
+        resetItems();
+    }
+
+    private void resetItems() {
+        this.items = null;
         this.itemsGrouped.clear();
         this.itemsGroupedWithoutSignificative.clear();
-        this.pagination = null;
-
-        // clear form for browse search
-        this.queryName = "";
-        this.queryFormula = "";
     }
 
     /**
-     * Method that permits to create a excel from the current results.
+     * Method that permits to create a excel from the current results. Flag
+     * indicates if the excel generated contains RT field or not. 1 yes 0 no
+     *
+     * @param flag
      */
-    public void exportToExcel() {
-        // All pages display the number of input compounds defined in ITEMS_PER_PAGE_IN_EXCEL
+    public void exportToExcel(int flag) {
         // Only export to Excel no significative compounds
-        List<TheoreticalCompounds> itemsWithoutSignificative = new LinkedList<TheoreticalCompounds>();
+        if (this.items != null && !this.items.isEmpty()) {
 
-        for (TheoreticalCompounds tc : this.items) {
-            if (tc.isSignificativeCompound()) {
-                itemsWithoutSignificative.add(tc);
+            List<TheoreticalCompounds> itemsWithoutSignificative = new LinkedList<>();
+
+            for (TheoreticalCompounds tc : this.items) {
+                if (tc.isSignificativeCompound()) {
+                    itemsWithoutSignificative.add(tc);
+                }
             }
+            CompoundExcelExporter compoundExcelExporter = new CompoundExcelExporter();
+            compoundExcelExporter.generateWholeExcelCompound(itemsWithoutSignificative, flag);
         }
-        if (pagination == null) {
-
-            pagination = new MyPaginationHelper(ITEMS_PER_PAGE_IN_EXCEL,
-                    itemsWithoutSignificative.size());
-        }
-        CompoundExcelExporter compoundExcelExporter = new CompoundExcelExporter();
-        compoundExcelExporter.generateWholeExcelCompound(itemsWithoutSignificative, pagination, flag);
-    }
-
-    @Override
-    /**
-     * Deprecated. Not used
-     * <p>
-     * Gets the object MyPaginationHelper pagination. </p>
-     * In case that the PaginatorHelper is null, this getter provides a new
-     * instance.
-     */
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            // pagination = new MyPaginationHelper(ITEMS_PER_PAGE, ejbFacade, queryMasses,queryRetentionTimes, inputTolerance);
-            pagination = new MyPaginationHelper(ITEMS_PER_PAGE_IN_EXCEL,
-                    items.size());
-        }
-        return pagination;
     }
 
     /**
@@ -311,22 +277,19 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         List<Double> massesAux; // auxiliar List for input Masses
         int numInputMasses;
         List<Double> retAux; // Auxiliar List for Retention Times
-        List<Double> firstSpectrumAux; // Auxiliar List for raw Composite Spectra
         List<Map<Double, Integer>> spectrumAux;  // Auxiliar List for Composite Spectra processed
         List<Boolean> isSignifativeCompoundAux;
         // CHANGE THE INPUT ELEMENTS FOR THE ALL INPUT ELEMENTS
         List<Double> allMassesAux;
         List<Double> allRetAux;
-        List<Double> allFirstSpectrumAux;
         List<Map<Double, Integer>> AllSpectrumAux;
-
         if (this.allInputMasses.equals("")) {
             this.allCompounds = false;
             //Method returns an ArrayList because it is acceded by index
             massesAux = Cadena.extractDoubles(this.queryInputMasses);
             numInputMasses = massesAux.size();
             retAux = Cadena.getListOfDoubles(this.queryInputRetentionTimes, numInputMasses);
-            isSignifativeCompoundAux = new ArrayList<Boolean>(Collections.nCopies(numInputMasses, true));
+            isSignifativeCompoundAux = new ArrayList<>(Collections.nCopies(numInputMasses, true));
             spectrumAux = getListOfCompositeSpectra(this.queryInputCompositeSpectra, numInputMasses);
             // System.out.println("INPUT: " + queryInputMasses + " \n ARRAY: " + massesAux);
             // System.out.println("INPUT RETENTION TIME: " + this.queryInputRetentionTimes);
@@ -364,12 +327,10 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             this.setIsSignificativeCompound(isSignifativeCompoundAux);
         }
 
-        // Change for ALL
-        pagination = new MyPaginationHelper(ITEMS_PER_PAGE_IN_EXCEL,
-                this.queryMasses.size());
         processGroupedCompoundsAdvanced();
         calculateScores();
         getOnlySignificativeCompounds();
+        
     }
 
     /**
@@ -387,17 +348,8 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         // System.out.println("INPUT: " + queryInputMasses + " \n ARRAY: " + massesAux);
         this.setQueryMasses(massesAux);
 
-        // Change for ALL
-        pagination = new MyPaginationHelper(ITEMS_PER_PAGE_IN_EXCEL,
-                this.queryMasses.size());
         processGroupedCompoundsSimple();
         this.itemsGroupedWithoutSignificative = this.itemsGrouped;
-    }
-
-    public void resetItems() {
-        this.items = null;
-        this.itemsGrouped.clear();
-        this.itemsGroupedWithoutSignificative.clear();
     }
 
     /**
@@ -535,41 +487,6 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.queryCompositeSpectrum = queryCompositeSpectrum;
     }
 
-    /*
-
-    public List<Double> getAllFirstPeakCompositeSpectrum() {
-        return allFirstPeakCompositeSpectrum;
-    }
-
-    public void setAllFirstPeakCompositeSpectrum(List<Double> allFirstPeakCompositeSpectrum) {
-        this.allFirstPeakCompositeSpectrum = allFirstPeakCompositeSpectrum;
-    }
-
-    public List<Double> getAllMasses() {
-        return allMasses;
-    }
-
-    public void setAllMasses(List<Double> allMasses) {
-        this.allMasses = allMasses;
-    }
-
-    public List<Double> getAllRetentionTimes() {
-        return allRetentionTimes;
-    }
-
-    public void setAllRetentionTimes(List<Double> allRetentionTimes) {
-        this.allRetentionTimes = allRetentionTimes;
-    }
-
-    public List<Map<Double, Integer>> getAllCompositeSpectrum() {
-        return allCompositeSpectrum;
-    }
-
-    public void setAllCompositeSpectrum(List<Map<Double, Integer>> allCompositeSpectrum) {
-        this.allCompositeSpectrum = allCompositeSpectrum;
-    }
-    
-     */
     private TheoreticalCompoundsFacade getFacade() {
         return this.ejbFacade;
     }
@@ -592,7 +509,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      *
      */
     public List<TheoreticalCompoundsGroup> getItemsGrouped() {
-        return itemsGrouped;
+        return this.itemsGrouped;
     }
 
     @Override
@@ -643,19 +560,20 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         return false;
     }
 
-    /**
-     * @param pagination the pagination to set
-     */
-    public void setPagination(MyPaginationHelper pagination) {
-        this.pagination = pagination;
-    }
-
     public String getChemAlphabet() {
         return chemAlphabet;
     }
 
     public void setChemAlphabet(String chemAlphabet) {
         this.chemAlphabet = chemAlphabet;
+    }
+
+    public boolean isIncludeDeuterium() {
+        return this.includeDeuterium;
+    }
+
+    public void setIncludeDeuterium(boolean includeDeuterium) {
+        this.includeDeuterium = includeDeuterium;
     }
 
     public String getMassesMode() {
@@ -678,13 +596,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                 this.ionMode = "positive";
                 this.adductsCandidates = positiveCandidates;
                 this.adducts.clear();
-
-                this.adducts.add("M+H");
-                this.adducts.add("M+2H");
-                this.adducts.add("M+Na");
-                this.adducts.add("M+K");
-                this.adducts.add("M+NH4");
-                this.adducts.add("M+H-H2O");
+                this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
                 break;
             /*
             case Constantes.NAME_FOR_RECALCULATED:
@@ -692,13 +604,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                 this.ionMode = "positive";
                 this.adductsCandidates = positiveCandidates;
                 this.adducts.clear();
-                
-                this.adducts.add("M+H");
-                this.adducts.add("M+2H");
-                this.adducts.add("M+Na");
-                this.adducts.add("M+K");
-                this.adducts.add("M+NH4");
-                this.adducts.add("M+H-H2O");
+                this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
                 break;
              */
             default:
@@ -730,23 +636,13 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                 this.ionMode = ionMode;
                 this.adductsCandidates = positiveCandidates;
                 this.adducts.clear();
-
-                this.adducts.add("M+H");
-                this.adducts.add("M+2H");
-                this.adducts.add("M+Na");
-                this.adducts.add("M+K");
-                this.adducts.add("M+NH4");
-                this.adducts.add("M+H-H2O");
+                this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
                 break;
             case "negative":
                 this.ionMode = ionMode;
                 this.adductsCandidates = negativeCandidates;
                 this.adducts.clear();
-
-                this.adducts.add("M-H");
-                this.adducts.add("M+Cl");
-                this.adducts.add("M+FA-H");
-                this.adducts.add("M-H-H2O");
+                this.adducts.addAll(AdductsLists.DEFAULT_ADDUCTS_NEGATIVE);
                 break;
             // If there is not any of these 3 (It should not occur) The assigned mode is neutral
             case "neutral":
@@ -764,18 +660,6 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         }
     }
 
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-
-    public void setFlag(String flag) {
-        this.flag = Integer.parseInt(flag);
-    }
-
     /**
      * @return the databases to search
      */
@@ -790,12 +674,6 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      */
     public void setDatabases(List<String> databases) {
         this.databases = databases;
-        /*
-        for(String s : databases)
-        {
-            System.out.println("\n \n Database: " + s + "\n \n");
-        }
-         */
     }
 
     /**
@@ -851,16 +729,6 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      */
     public List<SelectItem> getMetabolitesTypecandidates() {
         return this.metabolitesTypecandidates;
-    }
-
-    /**
-     * Set the metabolites types for searching to the object
-     *
-     * @param _metabolitesTypecandidates the metabolites types candidates
-     * available
-     */
-    public void setMetabolitesTypecandidates(List<SelectItem> _metabolitesTypecandidates) {
-        this.metabolitesTypecandidates = _metabolitesTypecandidates;
     }
 
     /**
@@ -938,10 +806,6 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         return this.DBcandidates;
     }
 
-    public void setDBcandidates(List<SelectItem> DBcandidates) {
-        this.DBcandidates = DBcandidates;
-    }
-
     public List<SelectItem> getIonizationModeCandidates() {
         // System.out.println("GET CANDIDATES: "+ ionizationModeCandidates);
         return ionizationModeCandidates;
@@ -962,7 +826,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                 firstSpectrumAux.add(0d);
             }
         } else {
-            firstSpectrumAux = new ArrayList<Double>();
+            firstSpectrumAux = new ArrayList<>();
             for (int i = 0; i < numInputMasses; i++) {
                 firstSpectrumAux.add(0d);
             }
@@ -976,13 +840,13 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
             spectrumAux = Cadena.extractDataSpectrum(input);
             // If there is no time for all queryMasses, fill with 0
             for (int i = spectrumAux.size(); i < numInputMasses; i++) {
-                spectrumAux.add(new HashMap<Double, Integer>());
+                spectrumAux.add(new LinkedHashMap<Double, Integer>());
             }
         } else {
             spectrumAux = new ArrayList<Map<Double, Integer>>();
             // If there is no time for all queryMasses, fill with 0
             for (int i = 0; i < numInputMasses; i++) {
-                spectrumAux.add(new HashMap<Double, Integer>());
+                spectrumAux.add(new LinkedHashMap<Double, Integer>());
             }
 
         }
@@ -997,32 +861,10 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         }
     }
 
-    private void processCompounds() {
-        if (this.itemsGrouped == null) {
-            this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
-        }
-        if (this.items == null || this.itemsGrouped.isEmpty()) {
-            this.items = this.ejbFacade.findCompoundsAdvanced(
-                    this.queryMasses,
-                    this.queryRetentionTimes,
-                    this.queryCompositeSpectrum,
-                    this.isSignificativeCompound,
-                    this.inputModeTolerance,
-                    Double.parseDouble(this.inputTolerance),
-                    this.chemAlphabet,
-                    this.ionMode,
-                    this.massesMode,
-                    this.adducts,
-                    this.itemsGrouped,
-                    this.databases,
-                    this.metabolitesType
-            );
-
-            processAllRules();
-        }
-    }
-
     private void processGroupedCompoundsAdvanced() {
+        
+        String chemAlphabetWithDeuterium = DataFromInterfacesUtilities.getChemAlphabet(this.chemAlphabet, this.includeDeuterium);
+        int chemAlphabetForSearch = DataFromInterfacesUtilities.getIntChemAlphabet(chemAlphabetWithDeuterium);
         if (this.itemsGrouped == null) {
             this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
         }
@@ -1034,7 +876,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                     this.isSignificativeCompound,
                     this.inputModeTolerance,
                     Double.parseDouble(this.inputTolerance),
-                    this.chemAlphabet,
+                    chemAlphabetWithDeuterium,
                     this.ionMode,
                     this.massesMode,
                     this.adducts,
@@ -1059,7 +901,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     private void processGroupedCompoundsSimple() {
         if (this.itemsGrouped == null) {
-            this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
+            this.itemsGrouped = new LinkedList<>();
         }
         if (this.items == null || this.itemsGrouped.isEmpty()) {
             this.items = this.ejbFacade.findCompoundsSimple(
@@ -1096,7 +938,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         configFilter.setIonMode(this.ionMode);
         configFilter.setAllCompounds(this.allCompounds);
         // Execute rules.
-        this.items = RuleProcessor.processCompounds(this.items, configFilter);
+        RuleProcessor.processRulesTC(this.items, configFilter);
 
     }
 
@@ -1108,19 +950,19 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         configFilter.setIonMode(this.ionMode);
         configFilter.setAllCompounds(this.allCompounds);
         // Execute rules.
-        this.items = RuleProcessor.processIonizationRules(this.items, configFilter);
+        RuleProcessor.processSimpleSearchTC(this.items, configFilter);
         // Write tags for colors
-        for (TheoreticalCompounds tc : this.items) {
+        this.items.forEach((tc) -> {
             tc.createColorIonizationScore();
-        }
+        });
     }
 
     private void getOnlySignificativeCompounds() {
         if (this.itemsGroupedWithoutSignificative == null) {
-            this.itemsGroupedWithoutSignificative = new LinkedList<TheoreticalCompoundsGroup>();
+            this.itemsGroupedWithoutSignificative = new LinkedList<>();
         } else if (this.itemsGroupedWithoutSignificative.isEmpty()) {
         } else {
-            this.itemsGroupedWithoutSignificative = new LinkedList<TheoreticalCompoundsGroup>();
+            this.itemsGroupedWithoutSignificative = new LinkedList<>();
         }
         int i = 0;
         int localNumAdducts = getNumAdducts();
@@ -1229,28 +1071,28 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     public void validateSingleRT(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
         // int inputTol =-1;
-        String flagString = (String) arg2;
-        flagString = flagString.replace(",", ".");
-        float flag;
+        String RTString = (String) arg2;
+        RTString = RTString.replace(",", ".");
+        float RT;
         try {
-            if (flagString.equals("")) {
+            if (RTString.equals("")) {
 
             } else {
-                flag = Float.parseFloat(flagString);
-                if (flag <= 0) {
+                RT = Float.parseFloat(RTString);
+                if (RT <= 0) {
                     throw new ValidatorException(new FacesMessage("RT should be between 0 and 1000"));
-                } else if (flag > 1000) {
+                } else if (RT > 1000) {
                     throw new ValidatorException(new FacesMessage("RT should be between 0 and 1000"));
                 }
             }
         } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("Flag should be a number between 0 and 1000"));
+            throw new ValidatorException(new FacesMessage("RT should be a number between 0 and 1000"));
         }
     }
 
     /**
-     * Deprecated. Not used Validates the input Tolerance to be a float between
-     * 0 and 10000
+     * Deprecated. Not used Validates the input masses to be a float between 0
+     * and 10000
      *
      * @param arg0 FacesContext of the form
      * @param arg1 Component of the form
@@ -1276,178 +1118,4 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         }
    }
      */
-    /**
-     * Deprecated
-     *
-     * @return
-     */
-    @Override
-    public String next() {
-        getPagination().nextPage();
-        resetItems();
-        return "List";
-    }
-
-    /**
-     * Deprecated
-     *
-     * @return
-     */
-    @Override
-    public String previous() {
-        getPagination().previousPage();
-        resetItems();
-        return "List";
-    }
-
-    // Methods for browse search
-    /**
-     *
-     * @return
-     */
-    public String getQueryName() {
-        return queryName;
-    }
-
-    /**
-     *
-     * @param queryName
-     */
-    public void setQueryName(String queryName) {
-        this.queryName = queryName;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getQueryFormula() {
-        return queryFormula;
-    }
-
-    public boolean isExactName() {
-        return exactName;
-    }
-
-    public void setExactName(boolean exactName) {
-        this.exactName = exactName;
-    }
-
-    /**
-     *
-     * @param queryFormula
-     */
-    public void setQueryFormula(String queryFormula) {
-        this.queryFormula = queryFormula;
-    }
-
-    /**
-     * This method is used to load a list of queryMasses declared in the class
-     * Constantes
-     */
-    public void setDemoNameFormula() {
-        this.setQueryName(DEMONAME);
-        this.setQueryFormula(DEMOFORMULA);
-    }
-
-    /**
-     * Method to reset all the items that are instantiated in the class Reset
-     * all the compounds obtained by the mediator.
-     */
-    public void submitBrowseSearch() {
-        this.items = null;
-        this.itemsGrouped.clear();
-        this.itemsGroupedWithoutSignificative.clear();
-
-        this.allCompounds = false;
-
-        // Change for ALL
-        pagination = null;
-
-        processBrowseSearch();
-        //this.itemsGroupedWithoutSignificative = this.itemsGrouped;
-
-    }
-
-    private void processBrowseSearch() {
-        if (this.itemsGrouped == null) {
-            this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
-        }
-        if (this.items == null || this.itemsGrouped.isEmpty()) {
-            this.items = this.ejbFacade.findCompoundsBrowseSearch(
-                    this.queryName,
-                    this.queryFormula,
-                    this.exactName,
-                    this.itemsGrouped,
-                    this.databases,
-                    this.metabolitesType
-            );
-            this.queryMasses = new LinkedList<>();
-            queryMasses.add(0d);
-        }
-    }
-
-    /**
-     * Validates the retention Time to be a float between 0 and 1000
-     *
-     * @param arg0 FacesContext of the form
-     * @param arg1 Component of the form
-     * @param arg2 Input of the user in the component arg1
-     *
-     */
-    public void validateNameAndFormula(FacesContext arg0, UIComponent arg1, Object arg2)
-            throws ValidatorException {
-
-        String formula = (String) arg2;
-        UIInput uiInputFormula = (UIInput) arg1.getAttributes()
-                .get("name");
-        String name = uiInputFormula.getSubmittedValue()
-                .toString();
-        try {
-            if (name.length() > 3) {
-
-            } else if (formula.length() > 3) {
-
-            } else {
-                throw new ValidatorException(new FacesMessage("Name or formula length should be larger than 4 characters"));
-            }
-
-        } catch (NullPointerException npe) {
-            throw new ValidatorException(new FacesMessage("Null pointer exception validating name"));
-        }
-    }
-
-    UploadedFile fileUploaded;
-
-    public UploadedFile getFileUploaded() {
-        return fileUploaded;
-    }
-
-    public void setFileUploaded(UploadedFile fileUploaded) {
-        this.fileUploaded = fileUploaded;
-    }
-
-    
-    /* Start the code for the uploaded file */
-    /*
-    public void handleFileUpload() {
-        System.out.println("FILE: " + fileUploaded.getFileName() + " SIZE: " + fileUploaded.getSize());
-        System.out.println("TYPE: " + fileUploaded.getContentType());
-    }
-    */
-    
-    public void handleFileUpload(FileUploadEvent event) throws IOException {
-
-    UploadedFile file = event.getFile();
-    System.out.println(file.getFileName());
- //application code
-}
-
-    public void upload(ActionEvent event) {
-        String fileName = fileUploaded.getFileName();
-        byte[] content = fileUploaded.getContents();
-        String contentType = fileUploaded.getContentType();
-        FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage("Successful! " + fileUploaded.getSize() + " is uploaded."));
-}
-
 }

@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-
 /**
  * JPA definition for compounds extracted in CEMBIO
  *
@@ -37,6 +36,16 @@ public class NewCompoundsInHouse implements Serializable {
     @Column(name = "in_house_id")
     private String inHouseId;
 
+    @NotNull
+    @Size(max = 20)
+    @Column(name = "source_data")
+    private String sourceData;
+
+    @NotNull
+    @Size(max = 200)
+    @Column(name = "description")
+    private String description;
+
     public NewCompoundsInHouse() {
     }
 
@@ -54,6 +63,22 @@ public class NewCompoundsInHouse implements Serializable {
 
     public void setInHouseId(String inHouseId) {
         this.inHouseId = inHouseId;
+    }
+
+    public String getSourceData() {
+        return sourceData;
+    }
+
+    public void setSourceData(String sourceData) {
+        this.sourceData = sourceData;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

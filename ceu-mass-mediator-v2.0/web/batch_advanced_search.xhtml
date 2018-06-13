@@ -192,6 +192,12 @@
                                     <f:selectItem itemLabel="CHNOPS" itemValue="CHNOPS" />
                                     <f:selectItem itemLabel="CHNOPS + Cl" itemValue="CHNOPSCL" />
                                 </p:selectOneListbox>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <p:outputLabel for="@next" value="Deuterium: " />
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <p:selectBooleanCheckbox id="checkboxdeuterium" value="#{theoreticalCompoundsController.includeDeuterium}" />
+                                </div>
                             </p:row>
                             <p:row></p:row>
 
@@ -361,6 +367,21 @@
                         });
                         return csvFile;
                     }
+                    function detectSeparator(firstLine) {
+                        var firstLine = firstLine.split('\n')[0];
+                        if (firstLine.includes(",")){
+                            return ",";
+                        }
+                        if (firstLine.includes(";")){
+                            return ";";
+                        }
+                        if (firstLine.includes("|")){
+                            return "|";
+                        }
+                        if (firstLine.includes("\t")){
+                            return "\t";
+                        }
+                    }
                     function handleFileSelect(evt) {
                         async:false
                         var files = evt.target.files; // FileList object
@@ -376,6 +397,8 @@
                                     case 'txt':
                                     case 'csv':
                                         var csvFile = e.target.result;
+                                        var delimiter = detectSeparator(csvFile);
+                                        var options={"separator" : delimiter};
                                         var rows = $.csv.toArrays(csvFile);
                                         break;
                                     case 'xls':

@@ -1,9 +1,12 @@
 package exporters;
 
 import exporters.compoundsColumns.CompoundColumns;
+import exporters.compoundsColumns.CompoundColumnsBrowseSearch;
+import exporters.compoundsColumns.PathwayColumns;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,13 +21,12 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
-import persistence.NewPathways;
-import persistence.theoreticalCompound.TheoreticalCompounds;
+import presentation.paginationHelpers.MyPaginationHelper;
 import utilities.Downloader;
 import presentation.paginationHelpers.PaginationHelper;
 import utilities.Constantes;
+import static utilities.Constantes.ITEMS_PER_PAGE_IN_EXCEL;
 
 /**
  * Abstract Class for exporting the compounds into excel file
@@ -32,7 +34,7 @@ import utilities.Constantes;
  * @author alberto Gil de la Fuente. San Pablo-CEU
  * @version: 3.1, 17/02/2016
  */
-public abstract class ExcelExporter<T> {
+public abstract class ExcelExporter {
 
     private String initialTitle;
     private String fileName;
@@ -60,6 +62,8 @@ public abstract class ExcelExporter<T> {
     private HSSFCellStyle not_probable_style;
     private HSSFCellStyle not_expected_style;
 
+    private PaginationHelper ph;
+
     /**
      * Constructor
      *
@@ -73,9 +77,8 @@ public abstract class ExcelExporter<T> {
         realFileName = ec.getRealPath("resources/" + fileName);
 
         // creates bppl and creationhelper
-        book = new HSSFWorkbook();
-        ch = book.getCreationHelper();
-
+        this.book = new HSSFWorkbook();
+        this.ch = book.getCreationHelper();
         setStyle();
     }
 
@@ -122,7 +125,7 @@ public abstract class ExcelExporter<T> {
         probable_style.setFont(score_font);
         probable_style.setFillForegroundColor(HSSFColor.YELLOW.index);
         probable_style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        
+
         not_probable_style = book.createCellStyle();
         not_probable_style.setFont(score_font);
         not_probable_style.setFillForegroundColor(HSSFColor.ORANGE.index);
@@ -138,15 +141,17 @@ public abstract class ExcelExporter<T> {
     /**
      *
      * Generates the excel file from the elements passed as an argument in the
-     * param flag
+     * param elements. Flag indicates if elements contains RT or they do not
+     * Flag may be 0 1 or 2
      *
      * @param elements
-     * @param ph. Pagination Helper
-     * @param flag
+     * @param flag 0 for LCMS without RT, 1 for LCMS with RT. 2 for Browse
+     * Search
      */
-    public void generateWholeExcelCompound(List elements, PaginationHelper ph, int flag) {
+    public void generateWholeExcelCompound(List elements, int flag) {
         System.out.println("Exporting into Excel");
-
+        this.ph = new MyPaginationHelper(ITEMS_PER_PAGE_IN_EXCEL, elements.size()
+        );
         try {
             setElFichero(new FileOutputStream(getRealFileName()));
             boolean hasNext = true;
@@ -154,11 +159,10 @@ public abstract class ExcelExporter<T> {
             this.setCurrentSheetNumber(0);
 
             while (hasNext) {
-                System.out.println("Generating sheet " + this.getCurrentSheetNumber());
                 generateSheetCompound(elements, flag);
 
-                hasNext = ph.isHasNextPage();
-                ph.nextPage();
+                hasNext = this.ph.isHasNextPage();
+                this.ph.nextPage();
                 this.setCurrentSheetNumber(this.getCurrentSheetNumber() + 1);
             }
             getBook().write(getElFichero());
@@ -178,10 +182,10 @@ public abstract class ExcelExporter<T> {
      * Generates the sheet of the excel with the list of elements
      *
      * @param elements
-     * @param flag
+     * @param flag 0 for LCMS without RT, 1 for LCMS with RT. 2 for Browse
+     * Search
      */
-    public void generateSheetCompound(List elements, int flag) //AQUÍ, CLASE GENÉRICA
-    {
+    public void generateSheetCompound(List elements, int flag) {
         HSSFSheet sheet = book.createSheet();
         rowNumber = 0;
 
@@ -192,27 +196,40 @@ public abstract class ExcelExporter<T> {
         cell.setCellValue(getInitialTitle());
         setRow(sheet.createRow(rowNumber++));
         System.out.println("FLAG: " + flag);
-        generateCompoundHeadLine(flag);
-        //sheet.setColumnWidth(CompoundColumns.NAME.getnColumn(), 50);
-        sheet.autoSizeColumn(CompoundColumns.NAME.getnColumn());
-        //Se insertan los datos
-        Iterator it = elements.iterator();
 
-        while (it.hasNext()) {
-            Object element = it.next();
-            // showProcessCompoundProgress(element);
-            generateCompoundData(element, sheet, flag);
-            //setRow(sheet.createRow(rowNumber++)); // Se deja un espacio entre
-            // cada compuesto empírico
+        if (flag == 2) {
+            //sheet.setColumnWidth(CompoundColumnsBrowseSearch.NAME.getnColumn(), 50);
+            sheet.autoSizeColumn(CompoundColumnsBrowseSearch.NAME.getnColumn());
+            generateCompoundHeadLineBrowse();
+            // Generate excel file for browse search
+            elements.forEach((element) -> {
+                // showProcessCompoundProgress(element);
+                generateCompoundDataBrowse(element, sheet);
+            });
+
+        } else if (flag == 0 || flag == 1) {
+            //sheet.setColumnWidth(CompoundColumns.NAME.getnColumn(), 50);
+            sheet.autoSizeColumn(CompoundColumns.NAME.getnColumn());
+            generateCompoundHeadLineLCMS(flag);
+            elements.forEach((element) -> {
+                // showProcessCompoundProgress(element);
+                generateCompoundDataLCMS(element, sheet, flag);
+            });
         }
 
-        //Se alinea el tamaño de las celdas al tamaño del texto
+        //Align cell size to text size
         for (int j = 0; j < getNumberOfColumns(); j++) {
             sheet.autoSizeColumn((short) j);
         }
     }
 
-    public HSSFWorkbook generateWholeExcelPathway(String fout, List elements) {
+    /**
+     * @deprecated Not used
+     * @param fout
+     * @param elements
+     * @return
+     */
+    public HSSFWorkbook generatesWholeExcelPathway(String fout, List elements) {
         System.out.println("Exporting compounds sorted by pathways into Excel");
 
         HSSFWorkbook workbookPathway;
@@ -246,7 +263,7 @@ public abstract class ExcelExporter<T> {
                 rowCount = rowCount + rowsPathway;
             }
 
-            //Se alinea el tamaño de las celdas al tamaño del texto
+            //Align cell size to text size
             for (int j = 0; j < getNumberOfColumns(); j++) {
                 sheetPathway.autoSizeColumn((short) j);
             }
@@ -269,77 +286,507 @@ public abstract class ExcelExporter<T> {
         return workbookPathway;
     }
 
-    protected abstract void generateCompoundData(Object element, HSSFSheet sheet, int flag);
+    /**
+     * Generate the headline if flag is 0 there is no RT, if flag is 1 there is
+     * RT
+     *
+     * @param flag 0 without RT, 1 with RT
+     */
+    protected void generateCompoundHeadLineLCMS(int flag) {
+        HSSFCell cell = getRow().createCell(CompoundColumns.EXPERIMENTAL_MASS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.EXPERIMENTAL_MASS_HEADER);
+        if (flag == 1) {
+            cell = getRow().createCell(CompoundColumns.RETENTION_TIME.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.RT_HEADER);
+            cell = getRow().createCell(CompoundColumns.CAS.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.CAS_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.COMPOUND_ID.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.COMPOUND_ID_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.INCREMENT_PPM.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.PPM_INCREMENT_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.MOLECULAR_WEIGHT.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.MOL_WEIGHT_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.NAME.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.NAME_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.FORMULA.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.FORMULA_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.ADDUCT.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.ADDUCT_HEADER);
+
+            HSSFHyperlink linkKeggDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.KEGG.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.KEGG_HEADER);
+            linkKeggDB.setAddress(Constantes.WEB_KEGG);
+            cell.setHyperlink(linkKeggDB);
+
+            HSSFHyperlink linkHMDBDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.HMDB.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.HMDB_HEADER);
+            linkHMDBDB.setAddress(Constantes.WEB_HMDB);
+            cell.setHyperlink(linkHMDBDB);
+
+            HSSFHyperlink linkLMDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.LIPIDMAPS.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.LIPIDMAPS_HEADER);
+            linkLMDB.setAddress(Constantes.WEB_LIPID_MAPS);
+            cell.setHyperlink(linkLMDB);
+
+            HSSFHyperlink linkMETLINDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.METLIN.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.METLIN_HEADER);
+            linkMETLINDB.setAddress(Constantes.WEB_METLIN);
+            cell.setHyperlink(linkMETLINDB);
+
+            HSSFHyperlink linkPCDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.PUBCHEM.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.PUBHCEMICAL_HEADER);
+            linkPCDB.setAddress(Constantes.WEB_PUBCHEMICHAL);
+            cell.setHyperlink(linkPCDB);
+
+            cell = getRow().createCell(CompoundColumns.IONIZATION_SCORE.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.IONIZATION_SCORE_HEADER);
+
+            // DELETED TEMPORALY
+            /*
+            cell = getRow().createCell(CompoundColumns.PRECEDENCE_SCORE.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.PRECEDENCE_SCORE_HEADER);
+             */
+            cell = getRow().createCell(CompoundColumns.RETENTION_TIME_SCORE.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.RETENTION_TIME_SCORE_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.ADDUCT_RELATION_SCORE.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.ADDUCT_RELATION_SCORE_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.FINAL_SCORE.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.FINAL_SCORE_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.INCHIKEY.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.INCHIKEY_HEADER);
+            
+            cell = getRow().createCell(CompoundColumns.SMILES.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.SMILES_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.PATHWAYS.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.PATHWAYS_HEADER);
+
+        } else {
+
+            cell = getRow().createCell(CompoundColumns.CAS.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.CAS_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.COMPOUND_ID.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.COMPOUND_ID_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.INCREMENT_PPM.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.PPM_INCREMENT_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.MOLECULAR_WEIGHT.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.MOL_WEIGHT_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.NAME.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.NAME_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.FORMULA.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.FORMULA_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.ADDUCT.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.ADDUCT_HEADER);
+
+            HSSFHyperlink linkKeggDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.KEGG.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.KEGG_HEADER);
+            linkKeggDB.setAddress(Constantes.WEB_KEGG);
+            cell.setHyperlink(linkKeggDB);
+
+            HSSFHyperlink linkHMDBDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.HMDB.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.HMDB_HEADER);
+            linkHMDBDB.setAddress(Constantes.WEB_HMDB);
+            cell.setHyperlink(linkHMDBDB);
+
+            HSSFHyperlink linkLMDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.LIPIDMAPS.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.LIPIDMAPS_HEADER);
+            linkLMDB.setAddress(Constantes.WEB_LIPID_MAPS);
+            cell.setHyperlink(linkLMDB);
+
+            HSSFHyperlink linkMETLINDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.METLIN.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.METLIN_HEADER);
+            linkMETLINDB.setAddress(Constantes.WEB_METLIN);
+            cell.setHyperlink(linkMETLINDB);
+
+            HSSFHyperlink linkPCDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = getRow().createCell(CompoundColumns.PUBCHEM.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(Constantes.PUBHCEMICAL_HEADER);
+            linkPCDB.setAddress(Constantes.WEB_PUBCHEMICHAL);
+            cell.setHyperlink(linkPCDB);
+
+            cell = getRow().createCell(CompoundColumns.IONIZATION_SCORE.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.IONIZATION_SCORE_HEADER);
+
+            // Deleted temporaly
+            /*
+            cell = getRow().createCell(CompoundColumns.PRECEDENCE_SCORE.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.PRECEDENCE_SCORE_HEADER);
+             */
+            cell = getRow().createCell(CompoundColumns.RETENTION_TIME_SCORE.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.RETENTION_TIME_SCORE_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.ADDUCT_RELATION_SCORE.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.ADDUCT_RELATION_SCORE_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.FINAL_SCORE.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.FINAL_SCORE_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.INCHIKEY.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.INCHIKEY_HEADER);
+            
+            cell = getRow().createCell(CompoundColumns.SMILES.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.SMILES_HEADER);
+
+            cell = getRow().createCell(CompoundColumns.PATHWAYS.getnColumn() - 1, CellType.STRING);
+            cell.setCellStyle(getHeadline_style());
+            cell.setCellValue(Constantes.PATHWAYS_HEADER);
+
+        }
+    }
+
+    /**
+     * Generate the headline for browse Searches
+     *
+     */
+    protected void generateCompoundHeadLineBrowse() {
+        HSSFCell cell;
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.CAS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.CAS_HEADER);
+
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.COMPOUND_ID.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.COMPOUND_ID_HEADER);
+
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.MOLECULAR_WEIGHT.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.MOL_WEIGHT_HEADER);
+
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.NAME.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.NAME_HEADER);
+
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.FORMULA.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.FORMULA_HEADER);
+
+        HSSFHyperlink linkKeggDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.KEGG.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.KEGG_HEADER);
+        linkKeggDB.setAddress(Constantes.WEB_KEGG);
+        cell.setHyperlink(linkKeggDB);
+
+        HSSFHyperlink linkHMDBDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.HMDB.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.HMDB_HEADER);
+        linkHMDBDB.setAddress(Constantes.WEB_HMDB);
+        cell.setHyperlink(linkHMDBDB);
+
+        HSSFHyperlink linkLMDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.LIPIDMAPS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.LIPIDMAPS_HEADER);
+        linkLMDB.setAddress(Constantes.WEB_LIPID_MAPS);
+        cell.setHyperlink(linkLMDB);
+
+        HSSFHyperlink linkMETLINDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.METLIN.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.METLIN_HEADER);
+        linkMETLINDB.setAddress(Constantes.WEB_METLIN);
+        cell.setHyperlink(linkMETLINDB);
+
+        HSSFHyperlink linkPCDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.PUBCHEM.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.PUBHCEMICAL_HEADER);
+        linkPCDB.setAddress(Constantes.WEB_PUBCHEMICHAL);
+        cell.setHyperlink(linkPCDB);
+
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.INCHIKEY.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.INCHIKEY_HEADER);
+                
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.SMILES.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.SMILES_HEADER);
+
+        cell = getRow().createCell(CompoundColumnsBrowseSearch.PATHWAYS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.PATHWAYS_HEADER);
+
+    }
+
+    /**
+     * Generate the pathways for exporting after the pathway analysis
+     *
+     * @deprecated
+     * @param element
+     * @param sheet
+     * @param numRow
+     * @return the number of rows generated
+     */
+    public int generatePathwayFileData(Object element, HSSFSheet sheet, int numRow) {
+        int numRows = 0;
+        importers.Pathway pathway = (importers.Pathway) element;
+
+        HSSFRow rowPathway = sheet.createRow(numRow);
+
+        DecimalFormat twoDForm = new DecimalFormat("#.####");
+
+        HSSFHyperlink linkPathway = ch.createHyperlink(HyperlinkType.URL);
+
+        HSSFCell cell = rowPathway.createCell(PathwayColumns.PATHWAYS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(pathway.name);
+        linkPathway.setAddress(pathway.hyperl.getAddress());
+        cell.setHyperlink(linkPathway);
+
+        // Loop for compounds which are present in the pathway
+        for (importers.CompoundForPathway compound : pathway.compounds) {
+            cell = rowPathway.createCell(PathwayColumns.EXPERIMENTAL_MASS.getnColumn(), CellType.NUMERIC);
+
+            cell.setCellValue(Double.valueOf(twoDForm.format(compound.expmass.replace(",", "."))));
+
+            cell = rowPathway.createCell(PathwayColumns.RETENTION_TIME.getnColumn(), CellType.NUMERIC);
+            cell.setCellValue(Double.valueOf(twoDForm.format(compound.retentionTime.replace(",", "."))));
+
+            cell = rowPathway.createCell(PathwayColumns.CAS.getnColumn(), CellType.STRING);
+            cell.setCellValue(compound.casId);
+
+            cell = rowPathway.createCell(PathwayColumns.COMPOUND_ID.getnColumn(), CellType.NUMERIC);
+            cell.setCellValue(compound.compound_id);
+
+            cell = rowPathway.createCell(PathwayColumns.INCREMENT_PPM.getnColumn(), CellType.NUMERIC);
+            cell.setCellValue(compound.ppmError);
+
+            cell = rowPathway.createCell(PathwayColumns.MOLECULAR_WEIGHT.getnColumn(), CellType.NUMERIC);
+            //cell.setCellValue(tc.getMolecularWeight());
+            cell.setCellValue(Double.valueOf(twoDForm.format(compound.molecularWeight.replace(",", "."))));
+
+            cell = rowPathway.createCell(PathwayColumns.NAME.getnColumn(), CellType.STRING);
+            cell.setCellValue(compound.name);
+
+            cell = rowPathway.createCell(PathwayColumns.FORMULA.getnColumn(), CellType.STRING);
+            cell.setCellValue(compound.formula);
+
+            cell = rowPathway.createCell(PathwayColumns.ADDUCT.getnColumn(), CellType.STRING);
+            cell.setCellValue(compound.adduct);
+
+            HSSFHyperlink linkKegg = ch.createHyperlink(HyperlinkType.URL);
+            cell = rowPathway.createCell(PathwayColumns.KEGG.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(compound.keggCompound);
+            String keggWebPage = Constantes.WEB_COMPUESTO_KEGG + compound.keggCompound;
+            linkKegg.setAddress(keggWebPage);
+            cell.setHyperlink(linkKegg);
+
+            HSSFHyperlink linkHMDB = ch.createHyperlink(HyperlinkType.URL);
+            cell = rowPathway.createCell(PathwayColumns.HMDB.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(compound.HMDBCompound);
+            String HMDBWebPage = Constantes.WEB_COMPUESTO_HMDB + compound.HMDBCompound;
+            linkKegg.setAddress(HMDBWebPage);
+            cell.setHyperlink(linkHMDB);
+
+            HSSFHyperlink linkLM = ch.createHyperlink(HyperlinkType.URL);
+            cell = rowPathway.createCell(PathwayColumns.LIPIDMAPS.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(compound.LMCompound);
+            String LMWebPage = Constantes.WEB_COMPUESTO_LM + compound.LMCompound;
+            linkKegg.setAddress(LMWebPage);
+            cell.setHyperlink(linkLM);
+
+            HSSFHyperlink linkMetlin = ch.createHyperlink(HyperlinkType.URL);
+            cell = rowPathway.createCell(PathwayColumns.METLIN.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(compound.metlinCompound);
+            String metlinWebPage = Constantes.WEB_COMPUESTO_METLIN + compound.metlinCompound;
+            linkKegg.setAddress(metlinWebPage);
+            cell.setHyperlink(linkMetlin);
+
+            HSSFHyperlink linkPC = ch.createHyperlink(HyperlinkType.URL);
+            cell = rowPathway.createCell(PathwayColumns.PUBCHEM.getnColumn(), CellType.STRING);
+            cell.setCellStyle(getHlink_style());
+            cell.setCellValue(compound.PCCompound);
+            String PCWebPage = Constantes.WEB_COMPUESTO_PUBCHEMICHAL + compound.PCCompound;
+            linkKegg.setAddress(PCWebPage);
+            cell.setHyperlink(linkPC);
+
+            cell = rowPathway.createCell(PathwayColumns.INCHIKEY.getnColumn(), CellType.STRING);
+            cell.setCellValue(compound.inchikey);
+
+            numRows++;
+
+            rowPathway = sheet.createRow(numRow + numRows);
+        }
+        return numRows;
+    }
+
+    /**
+     * Shows the progress of the pathway exported
+     *
+     * @deprecated
+     * @param element
+     */
+    public void showProcessPathwayProgress(Object element) {
+        importers.Pathway ec = (importers.Pathway) element;
+//        System.out.println("Inserting pathway with name " + ec.name);
+    }
+
+    /**
+     * Generate the header for the pathway analysis being exported
+     *
+     * @deprecated
+     * @param sheetPathway
+     * @param rowNumber
+     */
+    public void generatePathwayFileHeadLine(HSSFSheet sheetPathway, int rowNumber) {
+
+        HSSFRow rowHeaderPathway = sheetPathway.createRow(rowNumber);
+        HSSFCell cell = rowHeaderPathway.createCell(PathwayColumns.PATHWAYS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.PATHWAYS_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.EXPERIMENTAL_MASS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.EXPERIMENTAL_MASS_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.RETENTION_TIME.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.RT_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.CAS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.CAS_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.COMPOUND_ID.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.COMPOUND_ID_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.INCREMENT_PPM.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.PPM_INCREMENT_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.MOLECULAR_WEIGHT.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.MOL_WEIGHT_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.NAME.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.NAME_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.FORMULA.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.FORMULA_HEADER);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.ADDUCT.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.ADDUCT_HEADER);
+
+        HSSFHyperlink linkKeggDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = rowHeaderPathway.createCell(PathwayColumns.KEGG.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.KEGG_HEADER);
+        linkKeggDB.setAddress(Constantes.WEB_KEGG);
+        cell.setHyperlink(linkKeggDB);
+
+        HSSFHyperlink linkHMDBDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = rowHeaderPathway.createCell(PathwayColumns.HMDB.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.HMDB_HEADER);
+        linkHMDBDB.setAddress(Constantes.WEB_HMDB);
+        cell.setHyperlink(linkHMDBDB);
+
+        HSSFHyperlink linkLMDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = rowHeaderPathway.createCell(PathwayColumns.LIPIDMAPS.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.LIPIDMAPS_HEADER);
+        linkLMDB.setAddress(Constantes.WEB_LIPID_MAPS);
+        cell.setHyperlink(linkLMDB);
+
+        HSSFHyperlink linkMETLINDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = rowHeaderPathway.createCell(PathwayColumns.METLIN.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.METLIN_HEADER);
+        linkMETLINDB.setAddress(Constantes.WEB_METLIN);
+        cell.setHyperlink(linkMETLINDB);
+
+        HSSFHyperlink linkPCDB = ch.createHyperlink(HyperlinkType.URL);
+        cell = rowHeaderPathway.createCell(PathwayColumns.PUBCHEM.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHlink_style());
+        cell.setCellValue(Constantes.PUBHCEMICAL_HEADER);
+        linkPCDB.setAddress(Constantes.WEB_PUBCHEMICHAL);
+        cell.setHyperlink(linkPCDB);
+
+        cell = rowHeaderPathway.createCell(PathwayColumns.INCHIKEY.getnColumn(), CellType.STRING);
+        cell.setCellStyle(getHeadline_style());
+        cell.setCellValue(Constantes.INCHIKEY_HEADER);
+    }
+
+    protected abstract void generateCompoundDataLCMS(Object element, HSSFSheet sheet, int flag);
+
+    protected abstract void generateCompoundDataBrowse(Object element, HSSFSheet sheet);
 
     protected abstract void showProcessCompoundProgress(Object element);
 
-    protected abstract void generateCompoundHeadLine(int flag);
-
-    public abstract void generatePathwayFileHeadLine(HSSFSheet sheet, int row);
-
-    public abstract int generatePathwayFileData(Object element, HSSFSheet sheet, int row);
-
-    public abstract void showProcessPathwayProgress(Object element);
-
-    protected void generateRestOfMultipleValues(TheoreticalCompounds tc,
-            HSSFSheet sheet, Iterator kp, int flag) {
-
-        //int cellType = HSSFCell.CELL_TYPE_STRING;
-        if (kp.hasNext()) {
-            int count = 0;
-            //setRow(sheet.createRow(rowNumber++));
-
-            while (kp.hasNext()) {
-                NewPathways p = ((Iterator<NewPathways>) kp).next();
-                insertPathway(p, count, flag);
-                count++;
-            }
-        }
-    }
-
-    /**
-     * Inserts into the cell a link of the kegg compunds
-     *
-     * @param p. The KeggPathway
-     * @param count
-     * @param flag
-     */
-    protected void insertPathway(NewPathways p, int count, int flag) {
-        if (flag == 1) {
-            HSSFCell cell = getRow().createCell(CompoundColumns.PATHWAYS.getnColumn() + count, CellType.STRING);
-            cell.setCellStyle(getHlink_style());
-            cell.setCellValue(p.getPathwayName());
-
-            Hyperlink link = ch.createHyperlink(HyperlinkType.URL);
-            link.setAddress(p.obtainPathwayWebPage());
-            cell.setHyperlink(link);
-        } else {
-            HSSFCell cell = getRow().createCell(CompoundColumns.PATHWAYS.getnColumn() + count - 1, CellType.STRING);
-            cell.setCellStyle(getHlink_style());
-            cell.setCellValue(p.getPathwayName());
-
-            Hyperlink link = ch.createHyperlink(HyperlinkType.URL);
-            link.setAddress(p.obtainPathwayWebPage());
-            cell.setHyperlink(link);
-        }
-    }
-
-    /**
-     * Inserts into the cell a link of the kegg compunds
-     *
-     * @param p. The KeggPathway
-     */
-    /*
-    protected void insertPathway(NewPathways p)
-    {
-        HSSFCell cell = getRow().createCell(CompoundColumns.PATHWAYS.getnColumn());
-        cell.setCellStyle(getHlink_style());
-        cell.setCellValue(p.getPathwayName());
-        HSSFHyperlink link = new HSSFHyperlink(HSSFHyperlink.LINK_URL);
-        link.setAddress(p.obtainCompoundWebPage());
-        cell.setHyperlink(link);
-    }
-     */
     /**
      * @return the initialTitle
      */
@@ -364,7 +811,7 @@ public abstract class ExcelExporter<T> {
     /**
      * @param fileName the fileName to set
      */
-    public void setFileName(String fileName) {
+    public final void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
@@ -591,7 +1038,7 @@ public abstract class ExcelExporter<T> {
     public void setProbable_style(HSSFCellStyle probable_style) {
         this.probable_style = probable_style;
     }
-    
+
     /**
      * @return the probable
      */

@@ -117,7 +117,7 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
      * @return the identifier of the compound
      */
     @Override
-    public Integer getIdentifier() {
+    public Integer getCompoundId() {
         if (this.newCompoundsGen == null) {
             return 0;
         } else {
@@ -292,4 +292,14 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
         }
     }
 
+    @Override
+    public String getSMILES() {
+        if (this.newCompoundsGen == null) {
+            return "";
+        } else if (this.newCompoundsGen.getSmiles() == null) {
+            return "";
+        } else {
+            return this.newCompoundsGen.getSmiles();
+        }
+    }
 }

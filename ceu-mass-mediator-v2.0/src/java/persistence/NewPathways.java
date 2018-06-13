@@ -22,7 +22,7 @@ import static utilities.Constantes.WEB_PATHWAY_KEGG;
    * @version: 3.1, 17/02/2016
    */
 
-@Entity
+@Entity(name = "NewPathways")
 @Table(name = "pathways")
 @XmlRootElement
 @NamedQueries({

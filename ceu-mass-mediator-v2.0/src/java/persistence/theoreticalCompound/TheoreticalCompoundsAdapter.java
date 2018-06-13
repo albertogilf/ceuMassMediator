@@ -1,8 +1,10 @@
 package persistence.theoreticalCompound;
 
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +80,7 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
         this.adductRelationScore = -1F;
         this.retentionTimeScore = -1F;
         this.finalScore = -1F;
-        this.mapRTRules = new HashMap<String, List<Boolean>>();
+        this.mapRTRules = new LinkedHashMap<String, List<Boolean>>();
         this.myKey = em.toString() + "_" + rt.toString();
     }
 
@@ -111,7 +113,7 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
         this.adductRelationScore = -1F;
         this.retentionTimeScore = -1F;
         this.finalScore = -1F;
-        this.mapRTRules = new HashMap<String, List<Boolean>>();
+        this.mapRTRules = new LinkedHashMap<String, List<Boolean>>();
         this.myKey = em.toString() + "_" + rt.toString();
     }
 
@@ -157,8 +159,6 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
         this.ionMode = ionMode;
     }
      */
-    
-
     /**
      * @return the PPM increment
      */
@@ -394,16 +394,18 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
             lnA = 0d;
             wA = 0d;
         } else {
+            // Weight of 1
             lnA = Math.log(this.ionizationScore);
             wA = 1d;
         }
 
         if (Math.abs(this.adductRelationScore + 1F) < 0.001f) {
-            // There is no ionization score
+            // There is no adductRelationScore score
             // Weight is 0
             lnB = 0d;
             wB = 0d;
         } else {
+            // Weight of 2
             lnB = Math.log(this.adductRelationScore);
             wB = 2d;
         }
@@ -457,7 +459,7 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
                     + " num: " + numeratorFinalScore
                     + " den: " + denominatorFinalScore + "  FINAL score: " + this.finalScore);
         }
-        */
+         */
     }
 
     /**
@@ -656,5 +658,10 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
      */
     public void setColorFinalScore(String colorFinalScore) {
         this.colorFinalScore = colorFinalScore;
+    }
+
+    public String roundToFourDecimals(Double doubleToRound) {
+        return String.format("%.4f", doubleToRound).replace(",", ".");
+        // return new DecimalFormat(".#####").format(doubleToRound);
     }
 }

@@ -84,7 +84,7 @@ public class CompoundsGroupByMass extends CompoundsGroupAdapter implements Seria
 
     @Override
     public boolean isThereTheoreticalCompounds() {
-        if (this.getSizeTheoreticalCompoundsGroup() == 1 && this.listCompounds.get(0).getIdentifier() == 0) {
+        if (this.getSizeTheoreticalCompoundsGroup() == 1 && this.listCompounds.get(0).getCompoundId() == 0) {
             return false;
         } else {
             return true;

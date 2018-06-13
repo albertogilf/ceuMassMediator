@@ -1,6 +1,7 @@
 package importers;
 
 import DBManager.DBManager;
+import facades.PathwaysFacade;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -147,8 +148,9 @@ public class PathwayPageConstructor implements Serializable {
                         cellType = cell.getCellType();
                         switch (cellType) {
                             case 0:
-                                if (column == columnsTable.get(PPM_INCREMENT_HEADER)
-                                        || column == columnsTable.get(IDENTIFIER_HEADER)) {
+                                if (column == columnsTable.get(COMPOUND_ID_HEADER)
+                                        || (columnsTable.containsKey(PPM_INCREMENT_HEADER) 
+                                        && column == columnsTable.get(PPM_INCREMENT_HEADER))) {
                                     valueColumn = "" + (int) cell.getNumericCellValue();
                                 } else {
                                     valueColumn = "" + cell.getNumericCellValue();
@@ -250,11 +252,10 @@ public class PathwayPageConstructor implements Serializable {
                 loadPathways();
                 //String dsName = "java:comp/env/jdbc/testConnection";
                 //DBManager dbm = new DBManager(dsName);
-                DBManager dbm = new DBManager();
+                PathwaysFacade pathwaysFacade = new PathwaysFacade();
                 //
-                dbm.connect();
                 //dbm.printPaths(listPathways);
-                List<Pathway> sortedPathways = dbm.orderByMaximum(listPathways);
+                List<Pathway> sortedPathways = pathwaysFacade.orderByMaximum(listPathways);
                 listPathways = sortedPathways;
                 //dbm.printPaths(listPathways);
                 

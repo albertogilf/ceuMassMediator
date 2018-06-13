@@ -13,7 +13,7 @@ public enum CompoundColumns {
 
     EXPERIMENTAL_MASS(0),
     RETENTION_TIME(1),
-    IDENTIFIER(2),
+    COMPOUND_ID(2),
     ADDUCT(3),
     INCREMENT_PPM(4),
     MOLECULAR_WEIGHT(5),
@@ -30,7 +30,8 @@ public enum CompoundColumns {
     METLIN(16),
     PUBCHEM(17),
     INCHIKEY(18),
-    PATHWAYS(19);
+    SMILES(19),
+    PATHWAYS(20);
 
     private int nColumn;
 

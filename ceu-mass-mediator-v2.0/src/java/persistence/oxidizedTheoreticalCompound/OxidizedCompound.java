@@ -6,28 +6,18 @@
 package persistence.oxidizedTheoreticalCompound;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.tree.TreeNode;
-import persistence.NewCompounds;
-import persistence.theoreticalCompound.TheoreticalCompounds;
-import persistence.theoreticalGroup.CompoundsGroupAdapter;
 import persistence.theoreticalGroup.CompoundsGroupByMass;
 import utilities.ConstantesForOxidation;
-import static utilities.ConstantesForOxidation.H_WEIGHT;
-import static utilities.ConstantesForOxidation.PCHEAD_C;
-import static utilities.ConstantesForOxidation.PROTON_WEIGHT;
 import utilities.OxidationLists;
 import utilities.Utilities;
-import static utilities.Utilities.createNameOfPC;
-import static utilities.ConstantesForOxidation.PCHEAD_WEIGHT;
 import static utilities.OxidationLists.LIST_LONG_CHAIN_OXIDATION_TYPES;
 import static utilities.OxidationLists.LIST_SHORT_CHAIN_OXIDATION_TYPES;
 
 /**
- * Interface which defines the groups of theoretical Compounds
+ * Oxidized Compound
  *
  * @author: Alberto Gil de la Fuente. San Pablo-CEU
  * @version: 4.0, 08/09/2016
@@ -135,10 +125,10 @@ public class OxidizedCompound implements OxidizedTheoreticalCompound, Serializab
 
             FAs.add(nonOxidizedFA);
             FAs.add(oxidizedFA);
-            this.name = Utilities.createNameOfPC(FAs);
-            this.formula = Utilities.createFormulaOfPC(FAs);
-            this.theoreticalPIMolecularWeight = Utilities.calculateTheoreticalNeutralMassOfPC(FAs);
-            this.theoreticalPIEM = Utilities.calculateTheoreticalExperimentalMassOfPC(FAs, adductType);
+            this.name = Utilities.createNameOfPCJPA(FAs);
+            this.formula = Utilities.createFormulaOfPCJPA(FAs);
+            this.theoreticalPIMolecularWeight = Utilities.calculateTheoreticalNeutralMassOfPCJPA(FAs);
+            this.theoreticalPIEM = Utilities.calculateTheoreticalExperimentalMassOfPCJPA(FAs, adductType);
             this.ppmIncrement = Utilities.calculatePPMIncrement(this.parentIonEM, this.theoreticalPIEM);
 
             this.numCarbonsInFAs = this.oxidizedFA.getNumCarbons() + this.nonOxidizedFA.getNumCarbons();
@@ -415,9 +405,8 @@ public class OxidizedCompound implements OxidizedTheoreticalCompound, Serializab
         this.nonOxidizedCompoundsGroupByMass = nonOxidizedCompoundsGroupByMass;
     }
     
-    public String roundToFourDecimals(Double doubleToRound)
-    {
-        return String.format("%.4f",doubleToRound);
+    public String roundToFourDecimals(Double doubleToRound) {
+        return String.format("%.4f", doubleToRound).replace(",", ".");
         // return new DecimalFormat(".#####").format(doubleToRound);
     }
 }

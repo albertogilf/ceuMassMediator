@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
    * @version: 3.1, 05/05/2017
    */
 @Entity
-@Table(name = "compounds_gen_identifiers")
+@Table(name = "compound_gen_identifiers")
 @NamedQueries({
     @NamedQuery(name = "NewCompoundsGenIdentifiers.findAll", query = "SELECT ncgi FROM NewCompoundsGenIdentifiers ncgi"),
     @NamedQuery(name = "NewCompoundsGenIdentifiers.findInchiKeyByCompoundIdGen", query = "SELECT ncgi.inchiKey FROM NewCompoundsGenIdentifiers ncgi WHERE ncgi.compoundId = :compoundId"),
@@ -37,6 +37,11 @@ public class NewCompoundsGenIdentifiers implements Serializable {
     @Size(max = 50)
     @Column(name = "inchi_key")
     private String inchiKey;
+    
+    @NotNull
+    @Size(max = 1200)
+    @Column(name = "smiles")
+    private String smiles;
 
     public NewCompoundsGenIdentifiers() {
     }
@@ -56,4 +61,14 @@ public class NewCompoundsGenIdentifiers implements Serializable {
     public void setInchiKey(String inchiKey) {
         this.inchiKey = inchiKey;
     }
+
+    public String getSmiles() {
+        return smiles;
+    }
+
+    public void setSmiles(String smiles) {
+        this.smiles = smiles;
+    }
+    
+    
 }

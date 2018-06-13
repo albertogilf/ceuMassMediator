@@ -231,6 +231,41 @@
                         });
                         return csvFile;
                     }
+                    function detectSeparator(firstLine) {
+                        var firstLine = firstLine.split('\n')[0];
+                        if (firstLine.includes(",")){
+                            return ",";
+                        }
+                        if (firstLine.includes(";")){
+                            return ";";
+                        }
+                        if (firstLine.includes("|")){
+                            return "|";
+                        }
+                        if (firstLine.includes("\t")){
+                            return "\t";
+                        }
+                    }
+                    function guessDelimiters (text, possibleDelimiters) {
+                        return possibleDelimiters.filter(weedOut);
+
+                        function weedOut (delimiter) {
+                            var cache = -1;
+                            return text.split('\n').every(checkLength);
+
+                            function checkLength (line) {
+                                if (!line) {
+                                    return true;
+                                }
+                                // TODO HANDLE QUOTES
+                                var length = line.split(delimiter).length;
+                                if (cache &lt; 0) {
+                                    cache = length;
+                                }
+                                return cache === length &amp;&amp; length &gt; 1;
+                            }
+                        }
+                    }
                     function handleFileSelect(evt) {
                         async:false
                         var files = evt.target.files; // FileList object
@@ -245,8 +280,11 @@
                                 switch (extension) {
                                     case 'txt':
                                     case 'csv':
+                                        // Read first line to see what is the separator
                                         var csvFile = e.target.result;
-                                        var rows = $.csv.toArrays(csvFile);
+                                        var delimiter = detectSeparator(csvFile);
+                                        var options={"separator" : delimiter};
+                                        var rows = $.csv.toArrays(csvFile, options);
                                         break;
                                     case 'xls':
                                     case 'xlsx':

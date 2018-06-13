@@ -5,6 +5,8 @@
  */
 package ruleengine;
 
+import utilities.DataFromInterfacesUtilities;
+
 /**
  * Bean for configuration filter used by ionization rules.
  * 
@@ -12,35 +14,51 @@ package ruleengine;
  */
 public class ConfigFilter {
     
-    private String ionMode;
-    private String modifier;
+    private int ionMode;
+    private int modifier;
     private boolean allCompounds;
 
     /**
      * @return the ionMode
      */
-    public String getIonMode() {
-        return ionMode;
+    public int getIonMode() {
+        return this.ionMode;
     }
 
-    /**
-     * @param ionMode the ionMode to set
+    /** 
+     * @param ionMode the ionMode to set. Neutral, positive or Negative
      */
     public void setIonMode(String ionMode) {
+        int ionizationModeInt = DataFromInterfacesUtilities.ionizationModeToInteger(ionMode);
+        this.ionMode = ionizationModeInt;
+    }
+    
+    /** 
+     * @param ionMode the ionMode to set. 1 positive 0 negative
+     */
+    public void setIonMode(int ionMode) {
         this.ionMode = ionMode;
     }
 
     /**
      * @return the modifier
      */
-    public String getModifier() {
-        return modifier;
+    public int getModifier() {
+        return this.modifier;
     }
 
     /**
      * @param modifier the modifier to set
      */
     public void setModifier(String modifier) {
+        int modifierAsInt = DataFromInterfacesUtilities.modifierToInteger(modifier);
+        this.modifier = modifierAsInt;
+    }
+    
+    /**
+     * @param modifier the modifier to set
+     */
+    public void setModifier(int modifier) {
         this.modifier = modifier;
     }
 

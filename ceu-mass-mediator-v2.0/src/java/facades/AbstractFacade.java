@@ -1,4 +1,4 @@
-package presentation;
+package facades;
 
 import java.io.Serializable;
 import javax.persistence.EntityManager;

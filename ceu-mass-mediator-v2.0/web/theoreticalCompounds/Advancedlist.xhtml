@@ -8,7 +8,7 @@
 
     <ui:composition template="/template_list_compounds.xhtml">
         <ui:define name="head">
-            <title>CEU mass mediator</title>
+            <title>CEU mass mediator. Advanced search</title>
         </ui:define>
         <ui:define name="intro-wrapper">
             <!--
@@ -27,9 +27,12 @@
                         <h:commandButton 
                             class="button"
                             value="Generate Excel" 
-                            action="#{theoreticalCompoundsController.exportToExcel}" 
+                            action="#{theoreticalCompoundsController.exportToExcel(1)}" 
                             rendered="#{theoreticalCompoundsController.isThereTheoreticalCompounds()}">
+                            <ui:remove>
+                                <!-- Property before refactorization -->
                             <f:setPropertyActionListener target="#{theoreticalCompoundsController.flag}" value="1" />
+                            </ui:remove>
                         </h:commandButton>
                         &nbsp;
                         &nbsp;
@@ -67,9 +70,9 @@
                                          The addition of every column is the widh of body -> 1600px
                                     -->
                                     <p:column headerText="Id" 
-                                              sortBy="#{compound.identifier}" 
+                                              sortBy="#{compound.compoundId}" 
                                               style="width:75px">
-                                        <h:outputText value="#{compound.identifier}" />
+                                        <h:outputText value="#{compound.compoundId}" />
                                     </p:column>
                                     <p:column headerText="Name" sortBy="#{compound.name}" style="width:405px">
                                         <h:outputText value="#{compound.name}" />          
@@ -124,7 +127,6 @@
                                             </f:facet>
                                             <h:outputText value="#{compound.precedenceScore>=0 ? compound.precedenceScore : ''}" />
                                         </p:column>    
-                                        <h:outputText value="#{compound.finalScore>=0 ? compound.finalScore : 'N/A'}" />
                                     </ui:remove>
                                     
                                     <p:column 

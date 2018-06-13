@@ -2,6 +2,7 @@ package utilities;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,13 @@ import java.util.Set;
  */
 public class Elements {
 
-    public static final Map<String, Double> MAPELEMENTS = new HashMap<String, Double>();
+    public static final Map<String, Double> MAPELEMENTS = new LinkedHashMap<String, Double>();
     public static final List<Element> LISTELEMENTS = new LinkedList<Element>();
 
     static {
         // TODO UPDATE ELEMENTS MONOISOTOPIC WEIGHTS IN BOTH PROJECTS!!
         MAPELEMENTS.put("H", 1.0078250321d);
+        MAPELEMENTS.put("D", 2.014102d);
         MAPELEMENTS.put("He", 4.0026032542d);
         MAPELEMENTS.put("Li", 7.016004558d);
         MAPELEMENTS.put("Be", 9.012182d);
@@ -149,6 +151,18 @@ public class Elements {
         SETCHNOPS.add("P");
         SETCHNOPS.add("S");
     }
+    public static final Set<String> SETCHNOPSD = new HashSet<String>();
+    static {
+        
+        SETCHNOPSD.add("C");
+        SETCHNOPSD.add("H");
+        SETCHNOPSD.add("N");
+        SETCHNOPSD.add("O");
+        SETCHNOPSD.add("P");
+        SETCHNOPSD.add("S");
+        SETCHNOPSD.add("D");
+    }
+    
     public static final Set<String> SETCHNOPSCL = new HashSet<String>();
     static {
         SETCHNOPSCL.add("C");
@@ -158,6 +172,18 @@ public class Elements {
         SETCHNOPSCL.add("P");
         SETCHNOPSCL.add("S");
         SETCHNOPSCL.add("Cl");
+    }
+    
+    public static final Set<String> SETCHNOPSCLD = new HashSet<String>();
+    static {
+        SETCHNOPSCLD.add("C");
+        SETCHNOPSCLD.add("H");
+        SETCHNOPSCLD.add("N");
+        SETCHNOPSCLD.add("O");
+        SETCHNOPSCLD.add("P");
+        SETCHNOPSCLD.add("S");
+        SETCHNOPSCLD.add("Cl");
+        SETCHNOPSCLD.add("D");
     }
 
 }

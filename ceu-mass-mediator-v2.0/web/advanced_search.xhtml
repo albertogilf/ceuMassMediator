@@ -124,7 +124,12 @@
                                     <f:selectItem itemLabel="CHNOPS" itemValue="CHNOPS" />
                                     <f:selectItem itemLabel="CHNOPS + Cl" itemValue="CHNOPSCL" />
                                 </p:selectOneListbox>
-                                <p:message for="chemicalalphabet" styleClass="errormessage"></p:message>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <p:outputLabel for="@next" value="Deuterium: " />
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <p:selectBooleanCheckbox id="checkboxdeuterium" value="#{theoreticalCompoundsController.includeDeuterium}" />
+                                </div>
                             </p:row>
 
                             <p:row></p:row>

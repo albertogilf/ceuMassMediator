@@ -16,17 +16,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "compounds_gen")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "NewCompoundsGen.findAll", query = "SELECT nc FROM NewCompoundsGen nc"),
-    @NamedQuery(name = "NewCompoundsGen.findByCompoundId", query = "SELECT nc FROM NewCompoundsGen nc WHERE nc.compoundId = :compoundId"),
-    @NamedQuery(name = "NewCompoundsGen.findByMineId", query = "SELECT nc FROM NewCompoundsGen nc WHERE nc.mineId = :mineId"),
-    @NamedQuery(name = "NewCompoundsGen.findByExactMass", query = "SELECT nc FROM NewCompoundsGen nc WHERE nc.mass = :mass"),
+    @NamedQuery(name = "NewCompoundsGen.findAll", query = "SELECT nc FROM NewCompoundsGen nc")
+    ,
+    @NamedQuery(name = "NewCompoundsGen.findByCompoundId", query = "SELECT nc FROM NewCompoundsGen nc WHERE nc.compoundId = :compoundId")
+    ,
+    @NamedQuery(name = "NewCompoundsGen.findByMineId", query = "SELECT nc FROM NewCompoundsGen nc WHERE nc.mineId = :mineId")
+    ,
+    @NamedQuery(name = "NewCompoundsGen.findByExactMass", query = "SELECT nc FROM NewCompoundsGen nc WHERE nc.mass = :mass")
+    ,
     @NamedQuery(name = "NewCompoundsGen.findByFormula", query = "SELECT nc FROM NewCompoundsGen nc WHERE nc.formula = :formula")})
 public class NewCompoundsGen implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
     private NewCompoundsGenIdentifiers ncgIdentifier;
-    
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -46,6 +50,7 @@ public class NewCompoundsGen implements Serializable {
 
     @Column(name = "mass")
     private double mass;
+
     @Size(max = 100)
     @Column(name = "formula")
     private String formula;
@@ -53,6 +58,18 @@ public class NewCompoundsGen implements Serializable {
     @Size(max = 20)
     @Column(name = "formula_type")
     private String formulaType;
+
+    @Column(name = "formula_type_int")
+    private int formulaTypeInt;
+
+    @Column(name = "charge_type")
+    private int chargeType;
+
+    @Column(name = "charge_number")
+    private int chargeNumber;
+
+    @Column(name = "np_likeness")
+    private double npLikeness;
 
     public NewCompoundsGen() {
     }
@@ -109,10 +126,42 @@ public class NewCompoundsGen implements Serializable {
         this.formulaType = formulaType;
     }
 
+    public int getFormulaTypeInt() {
+        return formulaTypeInt;
+    }
+
+    public void setFormulaTypeInt(int formulaTypeInt) {
+        this.formulaTypeInt = formulaTypeInt;
+    }
+
+    public int getChargeType() {
+        return chargeType;
+    }
+
+    public void setChargeType(int chargeType) {
+        this.chargeType = chargeType;
+    }
+
+    public int getChargeNumber() {
+        return chargeNumber;
+    }
+
+    public void setChargeNumber(int chargeNumber) {
+        this.chargeNumber = chargeNumber;
+    }
+
+    public double getNpLikeness() {
+        return npLikeness;
+    }
+
+    public void setNpLikeness(double npLikeness) {
+        this.npLikeness = npLikeness;
+    }
+
     public String obtainMineWebPage() {
         return "http://minedatabase.mcs.anl.gov/#/acompound" + mineId + "/overview";
     }
-    
+
     public NewCompoundsGenIdentifiers getNcgIdentifier() {
         return ncgIdentifier;
     }
@@ -120,7 +169,7 @@ public class NewCompoundsGen implements Serializable {
     public void setNcgIdentifier(NewCompoundsGenIdentifiers ncgIdentifier) {
         this.ncgIdentifier = ncgIdentifier;
     }
-    
+
     public String getInChiKey() {
         if (this.ncgIdentifier == null) {
             return "";
@@ -132,6 +181,19 @@ public class NewCompoundsGen implements Serializable {
 
     public void setInChiKey(String inChiKey) {
         this.ncgIdentifier.setInchiKey(inChiKey);
+    }
+    
+    public String getSmiles() {
+        if (this.ncgIdentifier == null) {
+            return "";
+
+        } else {
+            return this.ncgIdentifier.getSmiles();
+        }
+    }
+
+    public void setSmiles(String smiles) {
+        this.ncgIdentifier.setSmiles(smiles);
     }
 
 }

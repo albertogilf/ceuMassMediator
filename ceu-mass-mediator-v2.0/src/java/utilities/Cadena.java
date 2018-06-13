@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 
 /**
  *
- * @author USUARIO
- * @version: 4.0, 20/07/2016. Modified by Alberto Gil de la Fuente
+ * @author Alberto Gil de la Fuente
+ * @version: 4.0, 20/07/2016.
  */
 public class Cadena {
 
@@ -97,7 +97,7 @@ public class Cadena {
             return new LinkedList<>();
         } else {
             //ArrayList because it is acceded by index
-            List<Double> masses = new ArrayList<Double>();
+            List<Double> masses = new ArrayList<>();
 
             Pattern p = Pattern.compile(patron);
             Matcher m = p.matcher(chain);

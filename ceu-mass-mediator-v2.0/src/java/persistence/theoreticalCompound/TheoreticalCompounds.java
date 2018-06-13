@@ -17,7 +17,7 @@ public interface TheoreticalCompounds {
     //void setAdduct(String adduct);
 
     String getCasId();
-    Integer getIdentifier();
+    Integer getCompoundId();
     String getName();
     String getFormula();
     //String getDatabase();
@@ -51,6 +51,7 @@ public interface TheoreticalCompounds {
     
 // Attributes for InChiKey
     String getInChIKey();
+    String getSMILES();
     
 // Attributes from Lipids Clasification
     

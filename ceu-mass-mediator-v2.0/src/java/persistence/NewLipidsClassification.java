@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * JPA definition for Compounds Lipids Classification
+ * JPA definition for Compounds LM Classification
  *
  * @author alberto Gil de la Fuente. San Pablo-CEU
  * @version: 3.1, 17/02/2016
@@ -35,18 +35,6 @@ public class NewLipidsClassification implements Serializable {
     @Column(name = "compound_id")
     private int compoundId;
 
-    @Size(max = 10)
-    @Column(name = "category")
-    private String category;
-        
-    @Size(max = 10)
-    @Column(name = "main_class")
-    private String mainClass;
-            
-    @Size(max = 10)
-    @Column(name = "sub_class")
-    private String subClass;
-    
     @Size(max = 20)
     @Column(name = "lipid_type")
     private String lipidType;
@@ -76,30 +64,6 @@ public class NewLipidsClassification implements Serializable {
 
     public void setCompoundId(int compoundId) {
         this.compoundId = compoundId;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getMainClass() {
-        return mainClass;
-    }
-
-    public void setMainClass(String mainClass) {
-        this.mainClass = mainClass;
-    }
-
-    public String getSubClass() {
-        return subClass;
-    }
-
-    public void setSubClass(String subClass) {
-        this.subClass = subClass;
     }
 
     public String getLipidType() {

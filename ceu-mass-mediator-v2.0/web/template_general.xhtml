@@ -84,12 +84,8 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="#{view.viewId == '/qa.xhtml'?'current':null}">
-                        <a href="qa.xhtml">BAD SC</a>
-                        <!--<a href="qa.xhtml">Spectral Controller</a>-->
-                    </li>
                     <li class="#{view.viewId == '/qa_inputtexts.xhtml'?'current':null}">
-                        <a href="qa_inputtexts.xhtml">GOOD SC</a>
+                        <a href="qa_inputtexts.xhtml">Spectral Quality Controller</a>
                     </li>
                     <li class="#{view.viewId == '/manuals.xhtml'?'current':null}">
                         <a href="manuals.xhtml" target="_blank">Manual</a>
@@ -112,8 +108,17 @@
 
         <div id="version" class="wrapper style1">
             <div class="container warning">
-
-                <strong>CEU Mass Mediator version 2.0</strong>. If you find 
+                
+                <strong>CEU Mass Mediator version 2.0</strong>.
+                <br/>
+                <strong>Citing CMM: </strong>
+                <a href="https://www.sciencedirect.com/science/article/pii/S0731708517326559" target="_blank">
+                Gil de la Fuente A., Godzien J. et al. 
+                Knowledge-based metabolite annotation tool: CEU Mass Mediator.
+                Journal of Pharmaceutical and Biomedical Analysis. 2018. May 30; 154, 138-149.
+                </a>
+                <br/>
+                If you find 
                 any issue, we would love to hear about it. Please let us know at 
                 <script>getmailaddress('es', 'ceu', 'cembio');</script>
                 <br/>
@@ -131,7 +136,7 @@
                             Universidad CEU-San Pablo.</a></h3>
 
                     <p>
-                        All data has been obtained from: <br />
+                        Data has been obtained from: <br />
                         <a href="http://www.genome.jp/kegg/" target="_blank">KEGG</a>
                         <br/>
                         <a href="https://metlin.scripps.edu/index.php" target="_blank">Metlin</a>

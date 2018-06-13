@@ -29,7 +29,7 @@ public class CompoundForPathway implements Serializable {
     public List<Pathway> pathways;
     public String expmass;
     public String casId;
-    public String identifier;
+    public String compound_id;
     public String formula;
     public String adduct;
     public String molecularWeight;
@@ -61,10 +61,10 @@ public class CompoundForPathway implements Serializable {
             casId = "";
         }
         try {
-            identifier = info.get(TablaColumnas.get(IDENTIFIER_HEADER));
+            compound_id = info.get(TablaColumnas.get(COMPOUND_ID_HEADER));
             // System.out.println("Identifier: " + identifier);
         } catch (Exception e) {
-            identifier = "";
+            compound_id = "";
         }
         try {
             molecularWeight = info.get(TablaColumnas.get(MOL_WEIGHT_HEADER));
@@ -169,11 +169,11 @@ public class CompoundForPathway implements Serializable {
     }
 
     public String getIdentifier() {
-        return identifier;
+        return compound_id;
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        this.compound_id = identifier;
     }
 
     public String getFormula() {
@@ -311,7 +311,7 @@ public class CompoundForPathway implements Serializable {
             doubleLabel = new Label(PathwayColumns.RETENTION_TIME.getnColumn(), row, this.retentionTime);
             sheet.addCell(doubleLabel);
 
-            Label intLabel = new Label(PathwayColumns.IDENTIFIER.getnColumn(), row, this.identifier);
+            Label intLabel = new Label(PathwayColumns.COMPOUND_ID.getnColumn(), row, this.compound_id);
             // System.out.println("Identifier: " + this.identifier + " Content:" + intLabel.getContents());
             sheet.addCell(intLabel);
             
@@ -383,7 +383,7 @@ public class CompoundForPathway implements Serializable {
         } // Default -> Flag = 0
         else {
 
-            Label intLabel = new Label(PathwayColumns.IDENTIFIER.getnColumn() - 1, row, this.identifier);
+            Label intLabel = new Label(PathwayColumns.COMPOUND_ID.getnColumn() - 1, row, this.compound_id);
             // System.out.println("Identifier: " + this.identifier + " Content:" + intLabel.getContents());
             sheet.addCell(intLabel);
             
@@ -465,7 +465,7 @@ public class CompoundForPathway implements Serializable {
         String html = "";
         html = html.concat("<td>" + this.expmass + "</td>");
         html = html.concat("<td>" + this.retentionTime + "</td>");
-        html = html.concat("<td>" + this.identifier + "</td>");
+        html = html.concat("<td>" + this.compound_id + "</td>");
         html = html.concat("<td>" + this.adduct + "</td>");
         html = html.concat("<td>" + this.ppmError + "</td>");
         html = html.concat("<td>" + this.molecularWeight + "</td>");

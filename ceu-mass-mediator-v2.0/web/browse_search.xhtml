@@ -11,14 +11,14 @@
             <title>Browse Search. CEU mass mediator</title>
         </ui:define>
         
-        <ui:param name="onloadbody" value="#{theoreticalCompoundsController.clearForm()}"/>
+        <ui:param name="onloadbody" value="#{browseSearchController.clearForm()}"/>
 
         <ui:define name="intro-wrapper">
 
             <div class="form" >
                 <h:form id="mainsearch" prependId="false">
                     <p:focus for="name"/>
-                    <h:commandButton id="dummy" actionListener="#{theoreticalCompoundsController.submitBrowseSearch()}" 
+                    <h:commandButton id="dummy" actionListener="#{browseSearchController.submitBrowseSearch()}" 
                                      action="/theoreticalCompounds/List" style="display:none;"
                                      />
                     <div id="highlights" class="container whiteborder">
@@ -27,9 +27,11 @@
 
                             <p:row></p:row>
                             <p:row>
-                                <label for="name" style="float: top">Name: </label>
+                                <label for="name" class="tooltip">Name:
+                                    <span class="tooltiptext">regular expressions accepted (see manual)</span>
+                                </label>
                                 <p:inputText id="name" size="2" maxlength="50"  
-                                             value="#{theoreticalCompoundsController.queryName}"
+                                             value="#{browseSearchController.queryName}"
                                              binding="#{name}"
                                              pt:placeholder="enter name"
                                              style="width:100%"
@@ -43,7 +45,7 @@
                             <p:row>
                                 <label for="exactname" style="float: top; display: inline-block;">Exact Name: </label>
                                 <p:selectBooleanCheckbox id="exactname" 
-                                                         value="#{theoreticalCompoundsController.exactName}"
+                                                         value="#{browseSearchController.exactName}"
                                                          style="width:100%"
                                                          />
                             </p:row>
@@ -52,9 +54,11 @@
                             <p:row></p:row>
 
                             <p:row>
-                                <label for="formula" style="float: top">Formula: &nbsp;</label>
+                                <label for="formula" class="tooltip">Formula: 
+                                    <span class="tooltiptext">regular expressions accepted (see manual)</span>
+                                </label>
                                 <p:inputText id="formula" size="2" maxlength="20"  
-                                             value="#{theoreticalCompoundsController.queryFormula}" 
+                                             value="#{browseSearchController.queryFormula}" 
                                              pt:placeholder="enter formula"
                                              style="width:100%"
                                              >
@@ -71,7 +75,7 @@
                             <p:row>
                                 <label for="databasesmenu" style="float: top">Databases: &nbsp;</label>
                                 <p:selectManyMenu id="databasesmenu" 
-                                                  value="#{theoreticalCompoundsController.databases}" 
+                                                  value="#{browseSearchController.databases}" 
                                                   filter="false" 
                                                   filterMatchMode="contains"
                                                   showCheckbox="true"
@@ -79,7 +83,7 @@
                                                   requiredMessage="Choose some database"
                                                   style="width:100%">
                                     <f:ajax execute="databasesmenu" render=" databasesmenu"/>
-                                    <f:selectItems value="#{theoreticalCompoundsController.DBcandidates}" />
+                                    <f:selectItems value="#{browseSearchController.DBcandidates}" />
                                 </p:selectManyMenu>
                                 <p:message for="databasesmenu" styleClass="errormessage"></p:message>
                             </p:row>
@@ -90,14 +94,14 @@
                             <p:row>
                                 <label for="metabolitestypemenu" style="float: top">Metabolites: &nbsp;</label>
                                 <p:selectOneListbox id="metabolitestypemenu" 
-                                                    value="#{theoreticalCompoundsController.metabolitesType}" 
+                                                    value="#{browseSearchController.metabolitesType}" 
                                                     filter="false" 
                                                     filterMatchMode="contains"
                                                     required="true"
                                                     requiredMessage="Choose type of metabolites to search"
                                                     style="width:100%">
                                     <f:ajax execute="metabolitestypemenu" render=" metabolitestypemenu"/>
-                                    <f:selectItems value="#{theoreticalCompoundsController.metabolitesTypecandidates}" />
+                                    <f:selectItems value="#{browseSearchController.metabolitesTypecandidates}" />
                                 </p:selectOneListbox>
                                 <p:message for="metabolitestypemenu" styleClass="errormessage"></p:message>
                             </p:row>
@@ -113,7 +117,7 @@
                                     id="loadDemo" 
                                     type="submit" 
                                     value="Loading of demo data" 
-                                    action="#{theoreticalCompoundsController.setDemoNameFormula()}" 
+                                    action="#{browseSearchController.setDemoNameFormula()}" 
                                     immediate="true"
                                     style="width:100%">
                                     <f:ajax render="@form"/>
@@ -124,8 +128,8 @@
                                 <h:commandButton
                                     id="submit" 
                                     value="submit for compounds" 
-                                    actionListener="#{theoreticalCompoundsController.submitBrowseSearch()}" 
-                                    action="/theoreticalCompounds/List"
+                                    actionListener="#{browseSearchController.submitBrowseSearch()}" 
+                                    action="/theoreticalCompounds/browselist"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>
@@ -134,7 +138,7 @@
                                     id="reset" 
                                     type="submit" 
                                     value="reset" 
-                                    action="#{theoreticalCompoundsController.clearForm()}"
+                                    action="#{browseSearchController.clearForm()}"
                                     immediate="true"
                                     style="width:100%"> 
                                     <f:ajax render="@form"/>

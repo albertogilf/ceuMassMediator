@@ -16,7 +16,7 @@ public enum PathwayColumns {
     PATHWAYS(0),
     EXPERIMENTAL_MASS(1),
     RETENTION_TIME(2),
-    IDENTIFIER(3),
+    COMPOUND_ID(3),
     ADDUCT(4),
     INCREMENT_PPM(5),
     MOLECULAR_WEIGHT(6),

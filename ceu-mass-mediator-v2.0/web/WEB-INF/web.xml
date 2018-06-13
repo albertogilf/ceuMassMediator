@@ -71,11 +71,6 @@
         <ejb-ref-type>Session</ejb-ref-type>
         <ejb-link>#TheoreticalCompoundsFacade</ejb-link>
     </ejb-local-ref>
-    <ejb-local-ref>
-        <ejb-ref-name>theoreticalCompoundsFacade1</ejb-ref-name>
-        <ejb-ref-type>Session</ejb-ref-type>
-        <ejb-link>#TheoreticalCompoundsFacade</ejb-link>
-    </ejb-local-ref>
     <!--<resource-ref>
         <description>Compounds Datasource</description>
         <res-ref-name>jdbc/newDataModel</res-ref-name>

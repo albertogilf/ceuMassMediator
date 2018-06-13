@@ -27,33 +27,9 @@ public class TheoreticalCompoundsComparer implements Comparator<TheoreticalCompo
         final Double massDifferenceForO2 = Math.abs(o2.getMolecularWeight()- o2.getExperimentalMass());
         final Double massDifferenceForO1 = Math.abs(o1.getMolecularWeight()- o1.getExperimentalMass());
         int result = (int)((massDifferenceForO1 - massDifferenceForO2)*10000000);
-        /*
-        System.out.println("\n Compound 1: " + o1.getCasId() + "  Compound 2: " + o2.getCasId());
-        System.out.println("\n DF Compound 1: " + massDifferenceForO1 + " DF Compound 2: " + massDifferenceForO2 + " RETURN: " + (int)((massDifferenceForO1 - massDifferenceForO2)*10000000));
-        if (o1.getCasId() != null && o2.getCasId()!= null && o1.getCasId().equals(o2.getCasId()))
-        {
-            // System.out.println("\n Compound 1: " + o1.getCasId() + "  Compound 2: " + o2.getCasId());
-            return 0;
-        }
-        else
-        {
-        */
-// return dateComparison == 0 ? a.value.compareTo(b.value) : dateComparison; 
-            //return (o1.getCasId() != null && o2.getCasId()!= null && o1.getCasId().equals(o2.getCasId())) == true ? 0 : result +1;
+        
+        // System.out.println("\n Compound 1: " + o1.getMolecularWeight() + "  Compound 2: " + o2.getMolecularWeight());
             return result;
-//        }
-        
-        // return (int)((massDifferenceForO1 - massDifferenceForO2)*10000000);
-        
-/*
-        String casId1 = o1.getCasId();
-        String casId2 = o2.getCasId();
-        
-        if (casId1 == null && casId2 == null) return 0;
-        else if (casId1==null) return 1;
-        else if (casId2==null) return -1;
-        else return (casId1.compareToIgnoreCase(casId2));
-*/
     }
     
 }

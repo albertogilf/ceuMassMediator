@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import persistence.theoreticalCompound.NewCompound;
-import presentation.TheoreticalCompoundsFacade;
+import facades.TheoreticalCompoundsFacade;
 import utilities.Cadena;
 import com.google.gson.Gson;
 import java.util.LinkedList;
@@ -40,7 +40,7 @@ public class CompoundsService {
 
     Gson gson;
     @EJB
-    private presentation.TheoreticalCompoundsFacade ejbFacade;
+    private facades.TheoreticalCompoundsFacade ejbFacade;
 
     public CompoundsService() {
         gson = new Gson();

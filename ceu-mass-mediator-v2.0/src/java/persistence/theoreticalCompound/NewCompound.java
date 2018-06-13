@@ -104,7 +104,7 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
      * @return the identifier of the compound
      */
     @Override
-    public Integer getIdentifier() {
+    public Integer getCompoundId() {
         if (this.newCompounds == null) {
             return 0;
         } else {
@@ -298,6 +298,17 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
             return "";
         } else {
             return this.newCompounds.getInChiKey();
+        }
+    }
+    
+    @Override
+    public String getSMILES() {
+        if (this.newCompounds == null) {
+            return "";
+        } else if (this.newCompounds.getSmiles() == null || this.newCompounds.getSmiles().equals("")) {
+            return "";
+        } else {
+            return this.newCompounds.getSmiles();
         }
     }
 

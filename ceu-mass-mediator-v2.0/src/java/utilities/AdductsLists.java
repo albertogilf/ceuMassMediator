@@ -19,7 +19,7 @@ public class AdductsLists {
     public static final List<SelectItem> LISTNEUTRALMODES;
 
     static {
-        List<SelectItem> listNeutralModesTMP = new LinkedList<SelectItem>();
+        List<SelectItem> listNeutralModesTMP = new LinkedList<>();
         listNeutralModesTMP.add(new SelectItem("neutral", "Neutral"));
         listNeutralModesTMP.add(new SelectItem("positive", "Positive Mode"));
         listNeutralModesTMP.add(new SelectItem("negative", "Negative Mode"));
@@ -29,7 +29,7 @@ public class AdductsLists {
     public static final List<SelectItem> LISTIONIZEDMODES;
 
     static {
-        List<SelectItem> listIonizedModesTMP = new LinkedList<SelectItem>();
+        List<SelectItem> listIonizedModesTMP = new LinkedList<>();
         listIonizedModesTMP.add(new SelectItem("positive", "Positive Mode"));
         listIonizedModesTMP.add(new SelectItem("negative", "Negative Mode"));
         LISTIONIZEDMODES = Collections.unmodifiableList(listIonizedModesTMP);
@@ -69,7 +69,7 @@ public class AdductsLists {
     public static final Map<String, String> MAPMZPOSITIVEADDUCTS;
 
     static {
-        Map<String, String> mapMZPositiveAdductsTMP = new LinkedHashMap<String, String>();
+        Map<String, String> mapMZPositiveAdductsTMP = new LinkedHashMap<>();
         mapMZPositiveAdductsTMP.put("M+H", "-1.007276");
         mapMZPositiveAdductsTMP.put("M+2H", "-1.007276");
         mapMZPositiveAdductsTMP.put("M+Na", "-22.989218");
@@ -110,7 +110,7 @@ public class AdductsLists {
     public static final Map<String, String> MAPMZNEGATIVEADDUCTS;
 
     static {
-        Map<String, String> mapMZNegativeAdductsTMP = new LinkedHashMap<String, String>();
+        Map<String, String> mapMZNegativeAdductsTMP = new LinkedHashMap<>();
         mapMZNegativeAdductsTMP.put("M-H", "1.007276");
         mapMZNegativeAdductsTMP.put("M+Cl", "-34.969402");
         mapMZNegativeAdductsTMP.put("M+FA-H", "-44.998201");
@@ -133,17 +133,40 @@ public class AdductsLists {
     public static final Map<String, String> MAPNEUTRALADDUCTS;
 
     static {
-        Map<String, String> mapNeutralAdductsTMP = new LinkedHashMap<String, String>();
+        Map<String, String> mapNeutralAdductsTMP = new LinkedHashMap<>();
         mapNeutralAdductsTMP.put("M", "0");
         MAPNEUTRALADDUCTS = Collections.unmodifiableMap(mapNeutralAdductsTMP);
     }
     
+    public static final List<String> DEFAULT_ADDUCTS_POSITIVE;
+
+    static {
+        List<String> listDefaultAdductsPositiveTMP = new LinkedList<>();
+        listDefaultAdductsPositiveTMP.add("M+H");
+        listDefaultAdductsPositiveTMP.add("M+2H");
+        listDefaultAdductsPositiveTMP.add("M+Na");
+        listDefaultAdductsPositiveTMP.add("M+K");
+        listDefaultAdductsPositiveTMP.add("M+NH4");
+        listDefaultAdductsPositiveTMP.add("M+H-H2O");
+        DEFAULT_ADDUCTS_POSITIVE = Collections.unmodifiableList(listDefaultAdductsPositiveTMP);
+    }
+    
+    public static final List<String> DEFAULT_ADDUCTS_NEGATIVE;
+
+    static {
+        List<String> listDefaultAdductsNegativeTMP = new LinkedList<>();
+        listDefaultAdductsNegativeTMP.add("M-H");
+        listDefaultAdductsNegativeTMP.add("M+Cl");
+        listDefaultAdductsNegativeTMP.add("M+FA-H");
+        listDefaultAdductsNegativeTMP.add("M-H-H2O");
+        DEFAULT_ADDUCTS_NEGATIVE = Collections.unmodifiableList(listDefaultAdductsNegativeTMP);
+    }
     
     
     public static final List<String> CHARGE_2;
 
     static {
-        List<String> CHARGE_2TMP = new LinkedList<String>();
+        List<String> CHARGE_2TMP = new LinkedList<>();
         CHARGE_2TMP.add("M+2H"); 
         CHARGE_2TMP.add("M+H+NH4"); 
         CHARGE_2TMP.add("M+H+Na"); 
@@ -159,7 +182,7 @@ public class AdductsLists {
     public static final List<String> CHARGE_3;
 
     static {
-        List<String> CHARGE_3TMP = new LinkedList<String>();
+        List<String> CHARGE_3TMP = new LinkedList<>();
         CHARGE_3TMP.add("M+3H"); 
         CHARGE_3TMP.add("M+2H+Na"); 
         CHARGE_3TMP.add("M+H+2K"); 
@@ -172,7 +195,7 @@ public class AdductsLists {
     public static final List<String> DIMER_2;
 
     static {
-        List<String> DIMER_2TMP = new LinkedList<String>();
+        List<String> DIMER_2TMP = new LinkedList<>();
         DIMER_2TMP.add("2M+H"); 
         DIMER_2TMP.add("2M+NH4"); 
         DIMER_2TMP.add("2M+Na"); 
@@ -189,43 +212,26 @@ public class AdductsLists {
     public static final List<String> DIMER_3;
 
     static {
-        List<String> DIMER_3TMP = new LinkedList<String>();
+        List<String> DIMER_3TMP = new LinkedList<>();
         DIMER_3TMP.add("3M-H");
         DIMER_3 = Collections.unmodifiableList(DIMER_3TMP);
     }
 
+    /* NOT USED ANYMORE. NOW WE USE A MAP CALLED 
+    MAPDATABASES in Class DataFromInterfacesUtilities
     public static final List<String> LISTDB;
 
     static {
-        List<String> listDBTMP = new LinkedList<String>();
+        List<String> listDBTMP = new LinkedList<>();
         listDBTMP.add("Kegg");
         listDBTMP.add("HMDB");
         listDBTMP.add("LipidMaps");
         listDBTMP.add("Metlin");
+        listDBTMP.add("in-house");
         // For generated compounds
         listDBTMP.add("MINE (Only In Silico Compounds)");
         LISTDB = Collections.unmodifiableList(listDBTMP);
     }
+*/
 
-    public static final List<String> MODIFIERS;
-
-    static {
-        List<String> modifiersTMP = new LinkedList<String>();
-        modifiersTMP.add("NH3");
-        modifiersTMP.add("HCOO");
-        modifiersTMP.add("CH3COO");
-        modifiersTMP.add("HCOONH3");
-        modifiersTMP.add("CH3COONH3");
-        MODIFIERS = Collections.unmodifiableList(modifiersTMP);
-    }
-
-    public static final List<String> METABOLITESTYPES;
-
-    static {
-        List<String> metabolitesTypesTMP = new LinkedList<String>();
-        metabolitesTypesTMP.add("All except peptides"); //0
-        metabolitesTypesTMP.add("Only lipids"); // 1
-        metabolitesTypesTMP.add("All including peptides"); // 2
-        METABOLITESTYPES = Collections.unmodifiableList(metabolitesTypesTMP);
-    }
 }

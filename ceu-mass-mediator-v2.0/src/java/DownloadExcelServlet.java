@@ -102,7 +102,7 @@ public class DownloadExcelServlet extends HttpServlet implements Constantes {
             Label Column16 = null;
             if (flag == 1) {
                 Column3 = new Label(PathwayColumns.RETENTION_TIME.getnColumn(), row, RT_HEADER, we);
-                Column4 = new Label(PathwayColumns.IDENTIFIER.getnColumn(), row, IDENTIFIER_HEADER, we);
+                Column4 = new Label(PathwayColumns.COMPOUND_ID.getnColumn(), row, COMPOUND_ID_HEADER, we);
                 Column5 = new Label(PathwayColumns.ADDUCT.getnColumn(), row, ADDUCT_HEADER, we);
                 Column6 = new Label(PathwayColumns.INCREMENT_PPM.getnColumn(), row, PPM_INCREMENT_HEADER, we);
                 Column7 = new Label(PathwayColumns.MOLECULAR_WEIGHT.getnColumn(), row, MOL_WEIGHT_HEADER, we);
@@ -116,7 +116,7 @@ public class DownloadExcelServlet extends HttpServlet implements Constantes {
                 Column15 = new Label(PathwayColumns.PUBCHEM.getnColumn(), row, PUBHCEMICAL_HEADER, we);
                 Column16 = new Label(PathwayColumns.INCHIKEY.getnColumn(), row, INCHIKEY_HEADER, we);
             } else {
-                Column3 = new Label(PathwayColumns.IDENTIFIER.getnColumn() - 1, row, IDENTIFIER_HEADER, we);
+                Column3 = new Label(PathwayColumns.COMPOUND_ID.getnColumn() - 1, row, COMPOUND_ID_HEADER, we);
                 Column4 = new Label(PathwayColumns.ADDUCT.getnColumn() - 1, row, ADDUCT_HEADER, we);
                 Column5 = new Label(PathwayColumns.INCREMENT_PPM.getnColumn() - 1, row, PPM_INCREMENT_HEADER, we);
                 Column6 = new Label(PathwayColumns.MOLECULAR_WEIGHT.getnColumn() - 1, row, MOL_WEIGHT_HEADER, we);

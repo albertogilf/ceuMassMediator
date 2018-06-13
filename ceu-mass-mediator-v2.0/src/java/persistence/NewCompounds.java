@@ -19,17 +19,32 @@ import static utilities.Constantes.*;
 @Table(name = "compounds")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "NewCompounds.findAll", query = "SELECT nc FROM NewCompounds nc"),
-    @NamedQuery(name = "NewCompounds.findByCompoundId", query = "SELECT nc FROM NewCompounds nc WHERE nc.compoundId = :compoundId"),
-    @NamedQuery(name = "NewCompounds.findByCasId", query = "SELECT nc FROM NewCompounds nc WHERE nc.casId = :casId"),
-    @NamedQuery(name = "NewCompounds.findByExactMass", query = "SELECT nc FROM NewCompounds nc WHERE nc.mass = :mass"),
+    @NamedQuery(name = "NewCompounds.findAll", query = "SELECT nc FROM NewCompounds nc")
+    ,
+    @NamedQuery(name = "NewCompounds.findByCompoundId", query = "SELECT nc FROM NewCompounds nc WHERE nc.compoundId = :compoundId")
+    ,
+    @NamedQuery(name = "NewCompounds.findByCasId", query = "SELECT nc FROM NewCompounds nc WHERE nc.casId = :casId")
+    ,
+    @NamedQuery(name = "NewCompounds.findByExactMass", query = "SELECT nc FROM NewCompounds nc WHERE nc.mass = :mass")
+    ,
     @NamedQuery(name = "NewCompounds.findByFormula", query = "SELECT nc FROM NewCompounds nc WHERE nc.formula = :formula")})
 public class NewCompounds implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @JoinTable(name = "compounds_pathways", joinColumns = {
-        @JoinColumn(name = "compound_id", referencedColumnName = "compound_id")}, inverseJoinColumns = {
-        @JoinColumn(name = "pathway_id", referencedColumnName = "pathway_id")})
+        @JoinColumn(name = "compound_id", referencedColumnName = "compound_id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "pathway_id", referencedColumnName = "pathway_id")})
     @ManyToMany
     private Collection<NewPathways> newPathwaysCollection;
+
+    @JoinTable(name = "compound_chain", joinColumns = {
+        @JoinColumn(name = "compound_id", referencedColumnName = "compound_id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "chain_id", referencedColumnName = "chain_id")})
+    @ManyToMany
+    private Collection<Chains> chainsCollection;
 
     // Relations to all database compounds
     @OneToOne(cascade = CascadeType.ALL)
@@ -47,7 +62,7 @@ public class NewCompounds implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
     private NewCompoundsHMDB ncHMDB;
-    
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
     private NewCompoundsInHouse ncInHouse;
@@ -62,9 +77,12 @@ public class NewCompounds implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private NewLipidsClassification lipidClass;
+    private NewLMClassification LMclassification;
 
-    private static final long serialVersionUID = 1L;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private NewLipidsClassification lipidClassification;
+
     @Id
     @Basic(optional = false)
     @NotNull
@@ -88,13 +106,26 @@ public class NewCompounds implements Serializable {
     @Column(name = "formula")
     private String formula;
 
+    /*
     @Size(max = 20)
     //@Column(name = "type")
     @Column(name = "formula_type")
     private String formulaType;
+    */
+    @Column(name = "formula_type_int")
+    private int formulaTypeInt;
 
     @Column(name = "compound_type")
     private int compoundType;
+
+    @Column(name = "charge_type")
+    private int chargeType;
+
+    @Column(name = "charge_number")
+    private int chargeNumber;
+
+    @Column(name = "compound_status")
+    private int compoundStatus;
 
     public NewCompounds() {
     }
@@ -118,7 +149,7 @@ public class NewCompounds implements Serializable {
     public void setCasId(String casId) {
         this.casId = casId;
     }
-
+/*
     public String getFormulaType() {
         return formulaType;
     }
@@ -126,6 +157,16 @@ public class NewCompounds implements Serializable {
     public void setFormulaType(String formulaType) {
         this.formulaType = formulaType;
     }
+*/
+    public int getFormulaTypeInt() {
+        return formulaTypeInt;
+    }
+
+    public void setFormulaTypeInt(int formulaTypeInt) {
+        this.formulaTypeInt = formulaTypeInt;
+    }
+    
+    
 
     public int getCompoundType() {
         return compoundType;
@@ -159,6 +200,30 @@ public class NewCompounds implements Serializable {
         this.formula = formula;
     }
 
+    public int getChargeType() {
+        return chargeType;
+    }
+
+    public void setChargeType(int chargeType) {
+        this.chargeType = chargeType;
+    }
+
+    public int getChargeNumber() {
+        return chargeNumber;
+    }
+
+    public void setChargeNumber(int chargeNumber) {
+        this.chargeNumber = chargeNumber;
+    }
+
+    public int getCompoundStatus() {
+        return compoundStatus;
+    }
+
+    public void setCompoundStatus(int compoundStatus) {
+        this.compoundStatus = compoundStatus;
+    }
+
     @XmlTransient
     public Collection<NewPathways> getNewPathwaysCollection() {
         return this.newPathwaysCollection;
@@ -166,6 +231,15 @@ public class NewCompounds implements Serializable {
 
     public void setNewPathwaysCollection(Collection<NewPathways> newPathwaysCollection) {
         this.newPathwaysCollection = newPathwaysCollection;
+    }
+
+    @XmlTransient
+    public Collection<Chains> getChainsCollection() {
+        return this.chainsCollection;
+    }
+
+    public void setChainsCollection(Collection<Chains> chainsCollection) {
+        this.chainsCollection = chainsCollection;
     }
 
     public NewCompoundsKegg getNcKegg() {
@@ -245,7 +319,7 @@ public class NewCompounds implements Serializable {
         return WEB_COMPUESTO_LM + getLmId();
         //return "";
     }
-    
+
     public NewCompoundsInHouse getNcInHouse() {
         return ncInHouse;
     }
@@ -318,6 +392,11 @@ public class NewCompounds implements Serializable {
         this.ncPC.setPcId(Integer.parseInt(pcId));
     }
 
+    public String obtainPCWebPage() {
+        return WEB_COMPUESTO_PUBCHEMICHAL + getPcId();
+        //return "";
+    }
+
     public NewCompoundsIdentifiers getNcIdentifier() {
         return ncIdentifier;
     }
@@ -341,78 +420,129 @@ public class NewCompounds implements Serializable {
         //this.ncIdentifier.setInchiKey(inChiKey);
     }
 
-    public String obtainPCWebPage() {
-        return WEB_COMPUESTO_PUBCHEMICHAL + getPcId();
-        //return "";
+    public String getSmiles() {
+        if (this.ncIdentifier == null) {
+            return "";
+        } else {
+            return this.ncIdentifier.getSmiles();
+        }
+    }
+
+    public void setSmiles(String inChiKey) {
+        //this.ncIdentifier.setSmiles(inChiKey);
     }
 
 // Attributes from Lipids Clasification
-    public NewLipidsClassification getLipidClass() {
-        return lipidClass;
+    public NewLMClassification getLMclassification() {
+        return LMclassification;
     }
 
-    public void setLipidClass(NewLipidsClassification lipidClass) {
-        this.lipidClass = lipidClass;
+    public void setLMclassification(NewLMClassification LMclassification) {
+        this.LMclassification = LMclassification;
     }
 
     public String getCategory() {
-        if (this.lipidClass == null) {
+        if (this.LMclassification == null) {
             return "";
         } else {
-            return lipidClass.getCategory();
+            return LMclassification.getCategory();
         }
     }
 
     public void setCategory(String category) {
-        lipidClass.setCategory(category);
+        LMclassification.setCategory(category);
     }
 
     public String getMainClass() {
-        if (this.lipidClass == null) {
+        if (this.LMclassification == null) {
             return "";
         } else {
-            return lipidClass.getMainClass();
+            return LMclassification.getMainClass();
         }
     }
 
     public void setMainClass(String mainClass) {
-        this.lipidClass.setMainClass(mainClass);
+        this.LMclassification.setMainClass(mainClass);
     }
 
     public String getSubClass() {
-        if (this.lipidClass == null) {
+        if (this.LMclassification == null) {
             return "";
         } else {
-            return lipidClass.getSubClass();
+            return LMclassification.getSubClass();
         }
     }
 
     public void setSubClass(String subClass) {
-        this.lipidClass.setSubClass(subClass);
+        this.LMclassification.setSubClass(subClass);
     }
 
+    public String getClassLevel4() {
+        if (this.LMclassification == null) {
+            return "";
+        } else {
+            return LMclassification.getClassLevel4();
+        }
+    }
+
+    public void setClassLevel4(String classLevel4) {
+        this.LMclassification.setClassLevel4(classLevel4);
+    }
+
+    public NewLipidsClassification getLipidClassification() {
+        return lipidClassification;
+    }
+
+    public void setLipidClassification(NewLipidsClassification lipidClassification) {
+        this.lipidClassification = lipidClassification;
+    }
+    
     public int getCarbons() {
-        if (this.lipidClass == null) {
+        if (this.lipidClassification == null) {
             return -1;
         } else {
-            return lipidClass.getCarbons();
+            return lipidClassification.getCarbons();
         }
     }
 
     public void setCarbons(int carbons) {
-        this.lipidClass.setCarbons(carbons);
+        this.lipidClassification.setCarbons(carbons);
     }
 
     public int getDoubleBonds() {
-        if (this.lipidClass == null) {
+        if (this.lipidClassification == null) {
             return -1;
         } else {
-            return lipidClass.getDoubleBonds();
+            return lipidClassification.getDoubleBonds();
         }
     }
 
     public void setDoubleBonds(int doubleBonds) {
-        this.lipidClass.setDoubleBonds(doubleBonds);
+        this.lipidClassification.setDoubleBonds(doubleBonds);
+    }
+
+    public int getNumChains() {
+        if (this.lipidClassification == null) {
+            return -1;
+        } else {
+            return lipidClassification.getNumChains();
+        }
+    }
+
+    public void setNumChains(int numChains) {
+        this.lipidClassification.setNumChains(numChains);
+    }
+
+    public String getLipidType() {
+        if (this.lipidClassification == null) {
+            return "";
+        } else {
+            return lipidClassification.getLipidType();
+        }
+    }
+
+    public void setLipidType(String lipidType) {
+        this.lipidClassification.setLipidType(lipidType);
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
-import presentation.TheoreticalCompoundsFacade;
+import facades.TheoreticalCompoundsFacade;
 import utilities.Constantes;
 import persistence.oxidizedTheoreticalCompound.OxidizedTheoreticalCompound;
 
