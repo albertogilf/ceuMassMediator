@@ -1,6 +1,5 @@
 package utilities;
 
-// import java.util.HashMap;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -14,15 +13,14 @@ import javax.faces.model.SelectItem;
  * @version: 4.0, 20/07/2016
  */
 public class AdductsLists {
-    
 
     public static final List<SelectItem> LISTNEUTRALMODES;
 
     static {
         List<SelectItem> listNeutralModesTMP = new LinkedList<>();
-        listNeutralModesTMP.add(new SelectItem("neutral", "Neutral"));
-        listNeutralModesTMP.add(new SelectItem("positive", "Positive Mode"));
-        listNeutralModesTMP.add(new SelectItem("negative", "Negative Mode"));
+        listNeutralModesTMP.add(new SelectItem(0, "Neutral"));
+        listNeutralModesTMP.add(new SelectItem(1, "Positive Mode"));
+        listNeutralModesTMP.add(new SelectItem(2, "Negative Mode"));
         LISTNEUTRALMODES = Collections.unmodifiableList(listNeutralModesTMP);
     }
 
@@ -30,8 +28,8 @@ public class AdductsLists {
 
     static {
         List<SelectItem> listIonizedModesTMP = new LinkedList<>();
-        listIonizedModesTMP.add(new SelectItem("positive", "Positive Mode"));
-        listIonizedModesTMP.add(new SelectItem("negative", "Negative Mode"));
+        listIonizedModesTMP.add(new SelectItem(1, "Positive Mode"));
+        listIonizedModesTMP.add(new SelectItem(2, "Negative Mode"));
         LISTIONIZEDMODES = Collections.unmodifiableList(listIonizedModesTMP);
     }
 
@@ -65,7 +63,7 @@ public class AdductsLists {
         mapRecalculatedNegativeAdductsTMP.put("2M-H", "0");
         MAPRECALCULATEDNEGATIVEADDUCTS = Collections.unmodifiableMap(mapRecalculatedNegativeAdductsTMP);
     }
-*/
+     */
     public static final Map<String, String> MAPMZPOSITIVEADDUCTS;
 
     static {
@@ -105,6 +103,11 @@ public class AdductsLists {
         mapMZPositiveAdductsTMP.put("2M+K", "-38.963158");
         mapMZPositiveAdductsTMP.put("2M+ACN+H", "-42.033823");
         mapMZPositiveAdductsTMP.put("2M+ACN+Na", "-64.015765");
+        mapMZPositiveAdductsTMP.put("M+H-2H2O", "35.0127");
+        mapMZPositiveAdductsTMP.put("M+NH4-H2O", "-0.0227");
+        mapMZPositiveAdductsTMP.put("M+Li", "-7.0160");
+        mapMZPositiveAdductsTMP.put("2M+2H+3H2O", "-28.02312");
+
         MAPMZPOSITIVEADDUCTS = Collections.unmodifiableMap(mapMZPositiveAdductsTMP);
     }
     public static final Map<String, String> MAPMZNEGATIVEADDUCTS;
@@ -127,6 +130,7 @@ public class AdductsLists {
         mapMZNegativeAdductsTMP.put("2M+FA-H", "-44.998201");
         mapMZNegativeAdductsTMP.put("2M+Hac-H", "-59.013851");
         mapMZNegativeAdductsTMP.put("3M-H", "1.007276");
+        mapMZNegativeAdductsTMP.put("M+F", "-18.9984");
         MAPMZNEGATIVEADDUCTS = Collections.unmodifiableMap(mapMZNegativeAdductsTMP);
     }
 
@@ -137,7 +141,7 @@ public class AdductsLists {
         mapNeutralAdductsTMP.put("M", "0");
         MAPNEUTRALADDUCTS = Collections.unmodifiableMap(mapNeutralAdductsTMP);
     }
-    
+
     public static final List<String> DEFAULT_ADDUCTS_POSITIVE;
 
     static {
@@ -150,7 +154,7 @@ public class AdductsLists {
         listDefaultAdductsPositiveTMP.add("M+H-H2O");
         DEFAULT_ADDUCTS_POSITIVE = Collections.unmodifiableList(listDefaultAdductsPositiveTMP);
     }
-    
+
     public static final List<String> DEFAULT_ADDUCTS_NEGATIVE;
 
     static {
@@ -161,54 +165,54 @@ public class AdductsLists {
         listDefaultAdductsNegativeTMP.add("M-H-H2O");
         DEFAULT_ADDUCTS_NEGATIVE = Collections.unmodifiableList(listDefaultAdductsNegativeTMP);
     }
-    
-    
+
     public static final List<String> CHARGE_2;
 
     static {
         List<String> CHARGE_2TMP = new LinkedList<>();
-        CHARGE_2TMP.add("M+2H"); 
-        CHARGE_2TMP.add("M+H+NH4"); 
-        CHARGE_2TMP.add("M+H+Na"); 
-        CHARGE_2TMP.add("M+H+K"); 
-        CHARGE_2TMP.add("M+ACN+2H"); 
-        CHARGE_2TMP.add("M+2Na"); 
-        CHARGE_2TMP.add("M+2ACN+2H"); 
-        CHARGE_2TMP.add("M+3ACN+2H"); 
-        CHARGE_2TMP.add("M-2H"); 
+        CHARGE_2TMP.add("M+2H");
+        CHARGE_2TMP.add("M+H+NH4");
+        CHARGE_2TMP.add("M+H+Na");
+        CHARGE_2TMP.add("M+H+K");
+        CHARGE_2TMP.add("M+ACN+2H");
+        CHARGE_2TMP.add("M+2Na");
+        CHARGE_2TMP.add("M+2ACN+2H");
+        CHARGE_2TMP.add("M+3ACN+2H");
+        CHARGE_2TMP.add("M-2H");
         CHARGE_2 = Collections.unmodifiableList(CHARGE_2TMP);
     }
-    
+
     public static final List<String> CHARGE_3;
 
     static {
         List<String> CHARGE_3TMP = new LinkedList<>();
-        CHARGE_3TMP.add("M+3H"); 
-        CHARGE_3TMP.add("M+2H+Na"); 
-        CHARGE_3TMP.add("M+H+2K"); 
-        CHARGE_3TMP.add("M+H+2Na"); 
-        CHARGE_3TMP.add("M+3Na"); 
-        CHARGE_3TMP.add("M-3H"); 
+        CHARGE_3TMP.add("M+3H");
+        CHARGE_3TMP.add("M+2H+Na");
+        CHARGE_3TMP.add("M+H+2K");
+        CHARGE_3TMP.add("M+H+2Na");
+        CHARGE_3TMP.add("M+3Na");
+        CHARGE_3TMP.add("M-3H");
         CHARGE_3 = Collections.unmodifiableList(CHARGE_3TMP);
     }
-    
+
     public static final List<String> DIMER_2;
 
     static {
         List<String> DIMER_2TMP = new LinkedList<>();
-        DIMER_2TMP.add("2M+H"); 
-        DIMER_2TMP.add("2M+NH4"); 
-        DIMER_2TMP.add("2M+Na"); 
-        DIMER_2TMP.add("2M+K"); 
-        DIMER_2TMP.add("2M+ACN+H"); 
-        DIMER_2TMP.add("2M+ACN+Na"); 
-        DIMER_2TMP.add("2M+H-H2O"); 
-        DIMER_2TMP.add("2M-H"); 
-        DIMER_2TMP.add("2M+FA-H"); 
-        DIMER_2TMP.add("2M+Hac-H"); 
+        DIMER_2TMP.add("2M+H");
+        DIMER_2TMP.add("2M+NH4");
+        DIMER_2TMP.add("2M+Na");
+        DIMER_2TMP.add("2M+K");
+        DIMER_2TMP.add("2M+ACN+H");
+        DIMER_2TMP.add("2M+ACN+Na");
+        DIMER_2TMP.add("2M+H-H2O");
+        DIMER_2TMP.add("2M-H");
+        DIMER_2TMP.add("2M+FA-H");
+        DIMER_2TMP.add("2M+Hac-H");
+        DIMER_2TMP.add("2M+2H+3H2O");
         DIMER_2 = Collections.unmodifiableList(DIMER_2TMP);
     }
-    
+
     public static final List<String> DIMER_3;
 
     static {
@@ -231,7 +235,281 @@ public class AdductsLists {
         // For generated compounds
         listDBTMP.add("MINE (Only In Silico Compounds)");
         LISTDB = Collections.unmodifiableList(listDBTMP);
+    }*/
+    public static final Map<String, List<String>> MAPPOSITIVEADDUCTFRAGMENT;
+
+    static {
+        Map<String, List<String>> mapMZPositiveAdductsTMP = new LinkedHashMap<>();
+
+        List<String> possibleParents = new LinkedList<>();
+        possibleParents.add("M+H");
+        possibleParents.add("M+2H");
+        possibleParents.add("M+3H");
+        possibleParents.add("M+H-H2O");
+        possibleParents.add("M+H+NH4");
+        possibleParents.add("M+H+HCOONa");
+        possibleParents.add("M+2H+Na");
+        possibleParents.add("M+H+2K");
+        possibleParents.add("M+H+2Na");
+        possibleParents.add("M+H+Na");
+        possibleParents.add("M+H+K");
+        possibleParents.add("2M+H");
+        possibleParents.add("2M+H-H2O");
+        possibleParents.add("M+ACN+2H");
+        possibleParents.add("M+2ACN+2H");
+        possibleParents.add("M+3ACN+2H");
+        possibleParents.add("M+CH3OH+H");
+        possibleParents.add("M+ACN+H");
+        possibleParents.add("M+IsoProp+H");
+        possibleParents.add("M+DMSO+H");
+        possibleParents.add("M+2ACN+H");
+        possibleParents.add("M+IsoProp+Na+H");
+        possibleParents.add("2M+ACN+H");
+        possibleParents.add("M+H-2H2O");
+        possibleParents.add("2M+2H+3H2O");
+        mapMZPositiveAdductsTMP.put("M+H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+2H");
+        possibleParents.add("M+2H+Na");
+        possibleParents.add("M+ACN+2H");
+        possibleParents.add("M+2ACN+2H");
+        possibleParents.add("M+3ACN+2H");
+        mapMZPositiveAdductsTMP.put("M+2H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+Na");
+        possibleParents.add("2M+Na");
+        possibleParents.add("M+2H+Na");
+        possibleParents.add("M+H+2Na");
+        possibleParents.add("M+3Na");
+        possibleParents.add("M+H+Na");
+        possibleParents.add("M+2Na");
+        possibleParents.add("M+2Na-H");
+        possibleParents.add("M+ACN+Na");
+        possibleParents.add("M+IsoProp+Na+H");
+        possibleParents.add("2M+ACN+Na");
+        mapMZPositiveAdductsTMP.put("M+Na", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+K");
+        possibleParents.add("M+H+2K");
+        possibleParents.add("M+H+K");
+        possibleParents.add("M+2K-H");
+        possibleParents.add("2M+K");
+        mapMZPositiveAdductsTMP.put("M+K", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+NH4");
+        possibleParents.add("M+H+NH4");
+        possibleParents.add("2M+NH4");
+        mapMZPositiveAdductsTMP.put("M+NH4", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("2M+H-H2O");
+        possibleParents.add("M+H-H2O");
+        mapMZPositiveAdductsTMP.put("M+H-H2O", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+H+NH4");
+        mapMZPositiveAdductsTMP.put("M+H+NH4", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+H+HCOONa");
+        mapMZPositiveAdductsTMP.put("M+H+HCOONa", possibleParents);
+
+        //mapMZPositiveAdductsTMP.put("2M+H-H2O", "17.0032");
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+3H");
+        mapMZPositiveAdductsTMP.put("M+3H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+2H+Na");
+        mapMZPositiveAdductsTMP.put("M+2H+Na", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+H+2K");
+        mapMZPositiveAdductsTMP.put("M+H+2K", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+H+2Na");
+        mapMZPositiveAdductsTMP.put("M+H+2Na", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+3Na");
+        mapMZPositiveAdductsTMP.put("M+3Na", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+2H+Na");
+        possibleParents.add("M+H+2Na");
+        possibleParents.add("M+H+Na");
+        mapMZPositiveAdductsTMP.put("M+H+Na", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+H+2K");
+        possibleParents.add("M+H+K");
+        mapMZPositiveAdductsTMP.put("M+H+K", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+3ACN+2H");
+        possibleParents.add("M+2ACN+2H");
+        possibleParents.add("M+ACN+2H");
+        mapMZPositiveAdductsTMP.put("M+ACN+2H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+3Na");
+        possibleParents.add("M+2Na");
+        possibleParents.add("M+H+2Na");
+        possibleParents.add("M+2Na-H");
+        mapMZPositiveAdductsTMP.put("M+2Na", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+3ACN+2H");
+        possibleParents.add("M+2ACN+2H");
+        mapMZPositiveAdductsTMP.put("M+2ACN+2H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+3ACN+2H");
+        mapMZPositiveAdductsTMP.put("M+3ACN+2H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+CH3OH+H");
+        mapMZPositiveAdductsTMP.put("M+CH3OH+H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+ACN+2H");
+        possibleParents.add("M+ACN+H");
+        possibleParents.add("M+2ACN+2H");
+        possibleParents.add("M+3ACN+2H");
+        possibleParents.add("M+2ACN+H");
+        possibleParents.add("2M+ACN+H");
+        mapMZPositiveAdductsTMP.put("M+ACN+H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+2Na-H");
+        mapMZPositiveAdductsTMP.put("M+2Na-H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+IsoProp+Na+H");
+        possibleParents.add("M+IsoProp+H");
+        mapMZPositiveAdductsTMP.put("M+IsoProp+H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("2M+ACN+Na");
+        possibleParents.add("M+ACN+Na");
+        mapMZPositiveAdductsTMP.put("M+ACN+Na", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+2K-H");
+        mapMZPositiveAdductsTMP.put("M+2K-H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+DMSO+H");
+        mapMZPositiveAdductsTMP.put("M+DMSO+H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+3ACN+2H");
+        possibleParents.add("M+2ACN+2H");
+        possibleParents.add("M+2ACN+H");
+        mapMZPositiveAdductsTMP.put("M+2ACN+H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+IsoProp+Na+H");
+        mapMZPositiveAdductsTMP.put("M+IsoProp+Na+H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+H-2H2O");
+        mapMZPositiveAdductsTMP.put("M+H-2H2O", possibleParents);
+        
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+NH4-H2O");
+        mapMZPositiveAdductsTMP.put("M+NH4-H2O", possibleParents);
+        
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+Li");
+        mapMZPositiveAdductsTMP.put("M+Li", possibleParents);
+        
+        possibleParents = new LinkedList<>();
+        possibleParents.add("2M+2H+3H2O");
+        mapMZPositiveAdductsTMP.put("2M+2H+3H2O", possibleParents);
+
+        MAPPOSITIVEADDUCTFRAGMENT = Collections.unmodifiableMap(mapMZPositiveAdductsTMP);
     }
-*/
+
+    public static final Map<String, List<String>> MAPNEGATIVEADDUCTFRAGMENT;
+
+    static {
+        Map<String, List<String>> mapMZNegativeAdductsTMP = new LinkedHashMap<>();
+
+        List<String> possibleParents = new LinkedList<>();
+        possibleParents.add("M-H");
+        possibleParents.add("M+FA-H");
+        possibleParents.add("M-H-H2O");
+        possibleParents.add("M-H+HCOONa");
+        possibleParents.add("2M-H");
+        possibleParents.add("M+Hac-H");
+        possibleParents.add("M+TFA-H");
+        possibleParents.add("2M+FA-H");
+        possibleParents.add("2M+Hac-H");
+        possibleParents.add("3M-H");
+        possibleParents.add("M-2H");
+        possibleParents.add("M+Na-2H");
+        possibleParents.add("M+K-2H");
+        possibleParents.add("M-3H");
+        mapMZNegativeAdductsTMP.put("M-H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+Cl");
+        mapMZNegativeAdductsTMP.put("M+Cl", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("2M+FA-H");
+        possibleParents.add("M+FA-H");
+        mapMZNegativeAdductsTMP.put("M+FA-H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M-H-H2O");
+        mapMZNegativeAdductsTMP.put("M-H-H2O", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M-H+HCOONa");
+        mapMZNegativeAdductsTMP.put("M-H+HCOONa", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M-3H");
+        mapMZNegativeAdductsTMP.put("M-3H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+Na-2H");
+        possibleParents.add("M-2H");
+        possibleParents.add("M+K-2H");
+        mapMZNegativeAdductsTMP.put("M-2H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+Na-2H");
+        mapMZNegativeAdductsTMP.put("M+Na-2H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+K-2H");
+        mapMZNegativeAdductsTMP.put("M+K-2H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+Hac-H");
+        mapMZNegativeAdductsTMP.put("M+Hac-H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+Br");
+        mapMZNegativeAdductsTMP.put("M+Br", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+TFA-H");
+        mapMZNegativeAdductsTMP.put("M+TFA-H", possibleParents);
+
+        possibleParents = new LinkedList<>();
+        possibleParents.add("M+F");
+        mapMZNegativeAdductsTMP.put("M+F", possibleParents);
+        
+        MAPNEGATIVEADDUCTFRAGMENT = Collections.unmodifiableMap(mapMZNegativeAdductsTMP);
+    }
 
 }

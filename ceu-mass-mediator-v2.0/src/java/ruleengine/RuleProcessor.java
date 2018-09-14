@@ -8,8 +8,6 @@ package ruleengine;
 import LCMS.CompoundLCMS;
 import LCMS.CompoundsLCMSGroupByAdduct;
 import LCMS.Feature;
-import compound.LM_Classification;
-import compound.Lipids_Classification;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,28 +29,42 @@ public class RuleProcessor {
     private static final boolean ACTIVE = true;
 
     /**
+     * Method for creating a container for drools. There are different
+     * containers for each module (web and REST)
+     *
+     * @param containerId
+     * @return a KieContainer
+     */
+    public static KieContainer getContainer(String containerId) {
+        if (ACTIVE) {
+            try {
+
+                KieContainer kContainer = KieServices.Factory.get().newKieClasspathContainer();
+
+                return kContainer;
+            } catch (RuntimeException e) {
+                System.out.println("EXCEPTION: " + e.toString());
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.getContainer");
+            } catch (Exception e) {
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.getContainer");
+            }
+        }
+        return null;
+    }
+
+    /**
      * Method for rules execution over a theoretical compound list.
      *
      * @param compounds
      * @param configFilter
      */
-    public static void processRulesTC(List<TheoreticalCompounds> compounds, ConfigFilter configFilter) {
+    public static void processRulesTC(List<TheoreticalCompounds> compounds,
+            ConfigFilter configFilter) {
         if (ACTIVE) {
             try {
 
-                // TEST.
-                //compounds = getPrecedenceRulesTest();
-                //compounds = getRetentionTimeRulesTest();
-                // ----------------------------------------------------
-                System.out.println("######### Processing advanced search #########");
-                System.out.println("#########--> Num. Compounds: " + compounds.size());
-                System.out.println("#########--> Ionization: " + configFilter.getIonMode());
-                System.out.println("#########--> Modifier: " + configFilter.getModifier());
-                System.out.println("#########--> All Compounds: " + configFilter.getAllCompounds());
-
                 long time = System.currentTimeMillis();
-
-                KieContainer kContainer = KieServices.Factory.get().getKieClasspathContainer();
+                KieContainer kContainer = KieServices.Factory.get().newKieClasspathContainer();
                 KieSession kSession = null;
 
                 // -------------------------------------
@@ -86,12 +98,13 @@ public class RuleProcessor {
                 // -------------------------------------
                 // Deleted temporaly
                 /*
-                System.out.println("#########--> Precedence rules. START.");
-                
-                compounds = processPrecedenceRules(compounds, configFilter, kContainer);             
-                
-                System.out.println("#########--> Precedence rules. END. Time: " + (System.currentTimeMillis() - time));
-                time = System.currentTimeMillis(); 
+                 * System.out.println("#########--> Precedence rules. START.");
+                 *
+                 * compounds = processPrecedenceRules(compounds, configFilter,
+                 * kContainer); *
+                 * System.out.println("#########--> Precedence rules. END. Time:
+                 * " + (System.currentTimeMillis() - time));
+                 * time = System.currentTimeMillis();
                  */
                 // -------------------------------------
                 // RETENTION TIME RULES
@@ -102,12 +115,29 @@ public class RuleProcessor {
 
                 System.out.println("#########--> Retention Time. END. Time: " + (System.currentTimeMillis() - time));
 
+                // Release the kie container 
+                kContainer.dispose();
                 // -------------------------------------
                 // TRACE
                 // -------------------------------------
                 for (TheoreticalCompounds compo : compounds) {
                     if (compo.getCategory() != null && !"".equals(compo.getCategory().trim())) {
                         /*
+                         * System.out.println(" --> ["
+                         * + compo.getCompoundId() + "]["
+                         * + compo.getCategory() + "]["
+                         * + compo.getMainClass() + "]["
+                         * + compo.getSubClass() + "]["
+                         * + compo.getCarbons() + "]["
+                         * + compo.getDoubleBonds() + "]["
+                         * + compo.getRetentionTime() + "]["
+                         * + compo.isSignificativeCompound() + "] -> ["
+                         * + compo.getAdduct() + "] :::> ION_SCORE: "
+                         * + compo.getIonizationScore() + " | AR_SCORE: "
+                         * + compo.getAdductRelationScore() + " | RT_SCORE: "
+                         * // Deleted temporaly
+                         * //+ compo.getPrecedenceScore() + " | PRE_SCORE: "
+                         * + compo.getRetentionTimeScore());
                         System.out.println(" --> ["
                                 + compo.getCompoundId() + "]["
                                 + compo.getCategory() + "]["
@@ -123,26 +153,26 @@ public class RuleProcessor {
                                 // Deleted temporaly
                                 //+ compo.getPrecedenceScore() + " | PRE_SCORE: " 
                                 + compo.getRetentionTimeScore());
-                        */
+                         */
                     }
                 }
-
             } catch (RuntimeException e) {
                 System.out.println("EXCEPTION: " + e.toString());
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processRulesTC");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processRulesTC");
             }
         }
     }
 
     /**
-     * Process the ionization rules for a simple search. It contains Features
+     * Process the rules for compoundLCMS. It contains Features
      *
      * @param features
      * @param configFilter
      */
-    public static void processRulesFeatures(List<Feature> features, ConfigFilter configFilter) {
+    public static void processRulesFeatures(List<Feature> features,
+            ConfigFilter configFilter) {
         List<CompoundLCMS> compoundsLCMS = new LinkedList();
         features.forEach((feature) -> {
             for (CompoundsLCMSGroupByAdduct compoundsLCMSGroupByAdduct : feature.getAnnotationsGroupedByAdduct()) {
@@ -153,14 +183,15 @@ public class RuleProcessor {
         });
         processRulesCompoundsLCMS(compoundsLCMS, configFilter);
     }
-    
+
     /**
-     * Method for rules execution over a theoretical compound list.
+     * Method for rules execution over a list of CompoundsLCMS
      *
      * @param compoundsLCMS
      * @param configFilter
      */
-    public static void processRulesCompoundsLCMS(List<CompoundLCMS> compoundsLCMS, ConfigFilter configFilter) {
+    public static void processRulesCompoundsLCMS(
+            List<CompoundLCMS> compoundsLCMS, ConfigFilter configFilter) {
         if (ACTIVE) {
             try {
 
@@ -175,8 +206,7 @@ public class RuleProcessor {
                 System.out.println("#########--> All Compounds: " + configFilter.getAllCompounds());
 
                 long time = System.currentTimeMillis();
-
-                KieContainer kContainer = KieServices.Factory.get().getKieClasspathContainer();
+                KieContainer kContainer = KieServices.Factory.get().newKieClasspathContainer();
                 KieSession kSession = null;
 
                 // -------------------------------------
@@ -209,12 +239,13 @@ public class RuleProcessor {
                 // -------------------------------------
                 // Deleted temporaly
                 /*
-                System.out.println("#########--> Precedence rules. START.");
-                
-                processPrecedenceRulesCompoundsLCMS(compoundsLCMS, configFilter, kContainer);             
-                
-                System.out.println("#########--> Precedence rules. END. Time: " + (System.currentTimeMillis() - time));
-                time = System.currentTimeMillis(); 
+                 * System.out.println("#########--> Precedence rules. START.");
+                 *
+                 * processPrecedenceRulesCompoundsLCMS(compoundsLCMS,
+                 * configFilter, kContainer); *
+                 * System.out.println("#########--> Precedence rules. END. Time:
+                 * " + (System.currentTimeMillis() - time));
+                 * time = System.currentTimeMillis();
                  */
                 // -------------------------------------
                 // RETENTION TIME RULES
@@ -228,10 +259,13 @@ public class RuleProcessor {
                 // -------------------------------------
                 // TRACE
                 // -------------------------------------
+                /*
                 for (CompoundLCMS compo : compoundsLCMS) {
                     if (compo.getCategory() != null && !"".equals(compo.getCategory().trim())) {
+
                         System.out.println(" --> ["
                                 + compo.getCompound_id() + "]["
+                                + compo.getEM() + "]["
                                 + compo.getCategory() + "]["
                                 + compo.getMainClass() + "]["
                                 + compo.getSubClass() + "]["
@@ -241,18 +275,21 @@ public class RuleProcessor {
                                 + compo.isIsSignificative() + "] -> ["
                                 + compo.getAdduct() + "] :::> ION_SCORE: "
                                 + compo.getIonizationScore() + " | AR_SCORE: "
-                                + compo.getAdductRelationScore() + " | RT_SCORE:  "
+                                + compo.getAdductRelationScore() + " | RT_SCORE: "
                                 // Deleted temporaly
-                                //+ compo.getPrecedenceScore() + " | PRE_SCORE: " 
-                                + compo.getRTscore());
+                                //+ compo.getPrecedenceScore() + " | PRE_SCORE: "
+                                + compo.getRTscore()
+                                + compo.getFinalScore());
                     }
                 }
-
+*/
+                // Release the kie container 
+                kContainer.dispose();
             } catch (RuntimeException e) {
                 System.out.println("EXCEPTION: " + e.toString());
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processRulesCompoundsLCMS");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processRulesCompoundsLCMS");
             }
         }
     }
@@ -264,7 +301,8 @@ public class RuleProcessor {
      * @param compounds
      * @param configFilter
      */
-    public static void processSimpleSearchTC(List<TheoreticalCompounds> compounds, ConfigFilter configFilter) {
+    public static void processSimpleSearchTC(
+            List<TheoreticalCompounds> compounds, ConfigFilter configFilter) {
         if (ACTIVE) {
             try {
 
@@ -279,31 +317,33 @@ public class RuleProcessor {
                 System.out.println("#########--> All Compounds: " + configFilter.getAllCompounds());
 
                 long time = System.currentTimeMillis();
-                KieContainer kContainer = KieServices.Factory.get().getKieClasspathContainer();
-
+                KieContainer kContainer = KieServices.Factory.get().newKieClasspathContainer();
                 // -------------------------------------
                 // IONIZATION RULES
                 // -------------------------------------
                 System.out.println("#########--> Ionization rules. START.");
                 processIonizationRulesTC(compounds, configFilter, kContainer);
 
+                // Release the kie container 
+                kContainer.dispose();
                 System.out.println("#########--> Ionization rules. END. Time: " + (System.currentTimeMillis() - time));
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processSimpleSearchTC");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processSimpleSearchTC");
             }
         }
     }
-    
+
     /**
      * Process the ionization rules for a simple search. It contains Features
      *
      * @param features
      * @param configFilter
      */
-    public static void processSimpleSearchFeatures(List<Feature> features, ConfigFilter configFilter) {
+    public static void processSimpleSearchFeatures(List<Feature> features,
+            ConfigFilter configFilter) {
         List<CompoundLCMS> compoundsLCMS = new LinkedList();
         features.forEach((feature) -> {
             for (CompoundsLCMSGroupByAdduct compoundsLCMSGroupByAdduct : feature.getAnnotationsGroupedByAdduct()) {
@@ -316,13 +356,14 @@ public class RuleProcessor {
     }
 
     /**
-     * Process the ionization rules for a simple search. It contains compounds
-     * with only EM and adducts from an experiment with a modifier.
+     * Process the ionization rules for a simple search. It contains a list of
+     * compoundLCMS
      *
      * @param compoundsLCMS
      * @param configFilter
      */
-    public static void processSimpleSearchCompoundsLCMS(List<CompoundLCMS> compoundsLCMS, ConfigFilter configFilter) {
+    public static void processSimpleSearchCompoundsLCMS(
+            List<CompoundLCMS> compoundsLCMS, ConfigFilter configFilter) {
         if (ACTIVE) {
             try {
 
@@ -337,20 +378,20 @@ public class RuleProcessor {
                 System.out.println("#########--> All Compounds: " + configFilter.getAllCompounds());
 
                 long time = System.currentTimeMillis();
-                KieContainer kContainer = KieServices.Factory.get().getKieClasspathContainer();
-
+                KieContainer kContainer = KieServices.Factory.get().newKieClasspathContainer();
                 // -------------------------------------
                 // IONIZATION RULES
                 // -------------------------------------
                 System.out.println("#########--> Ionization rules. START.");
                 processIonizationRulesCompoundsLCMS(compoundsLCMS, configFilter, kContainer);
 
+                kContainer.dispose();
                 System.out.println("#########--> Ionization rules. END. Time: " + (System.currentTimeMillis() - time));
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processSimpleSearchCompoundsLCMS");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processSimpleSearchCompoundsLCMS");
             }
         }
     }
@@ -376,13 +417,13 @@ public class RuleProcessor {
                 kSession.dispose();
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationRulesTC");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationRulesTC");
             }
         }
     }
-    
+
     private static void processIonizationRulesCompoundsLCMS(
             List<CompoundLCMS> compounds,
             ConfigFilter configFilter,
@@ -397,20 +438,17 @@ public class RuleProcessor {
                 // -------------------------------------
                 kSession = kContainer.newKieSession("LipidsTypeIonRulesCompoundsKSession");
                 kSession.insert(configFilter);
-                //System.out.println("config: " + configFilter.getModifier() + configFilter.getIonMode());
                 for (CompoundLCMS compo : compounds) {
-                    //System.out.println("CLASS: " + compo.getCategory() + compo.getMainClass() + compo.getSubClass());
-                    //System.out.println("ADDUCT: " + compo.getAdduct()+ compo.isIsSignificative());
-                    
+
                     kSession.insert(compo);
                 }
                 kSession.fireAllRules();
                 kSession.dispose();
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationRulesCompoundsLCMS");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationRulesCompoundsLCMS");
             }
         }
     }
@@ -435,13 +473,13 @@ public class RuleProcessor {
                 kSession.dispose();
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processAdductRelationRulesTC");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processAdductRelationRulesTC");
             }
         }
     }
-    
+
     private static void processAdductRelationRulesCompoundsLCMS(
             List<CompoundLCMS> compounds,
             ConfigFilter configFilter,
@@ -462,13 +500,13 @@ public class RuleProcessor {
                 kSession.dispose();
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processAdductRelationRulesCompoundsLCMS");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processAdductRelationRulesCompoundsLCMS");
             }
         }
     }
-    
+
     private static void processLackAdductRelationRulesCompoundsLCMS(
             List<CompoundLCMS> compounds,
             ConfigFilter configFilter,
@@ -490,10 +528,11 @@ public class RuleProcessor {
                     kSession.fireAllRules();
                     kSession.dispose();
                 }
+
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processLackAdductRelationRulesCompoundsLCMS");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processLackAdductRelationRulesCompoundsLCMS");
             }
         }
     }
@@ -519,14 +558,15 @@ public class RuleProcessor {
                     kSession.fireAllRules();
                     kSession.dispose();
                 }
+
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processLackAdductRelationRulesTC");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processLackAdductRelationRulesTC");
             }
         }
     }
-    
+
     private static void processPrecedenceRulesCompoundsLCMS(
             List<CompoundLCMS> compounds,
             ConfigFilter configFilter,
@@ -545,10 +585,11 @@ public class RuleProcessor {
                 }
                 kSession.fireAllRules();
                 kSession.dispose();
+
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processPrecedenceRulesCompoundsLCMS");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processPrecedenceRulesCompoundsLCMS");
             }
         }
     }
@@ -571,14 +612,15 @@ public class RuleProcessor {
                 }
                 kSession.fireAllRules();
                 kSession.dispose();
+
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processPrecedenceRulesTC");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processPrecedenceRulesTC");
             }
         }
     }
-    
+
     private static void processRTRulesCompoundsLCMS(
             List<CompoundLCMS> compounds,
             ConfigFilter configFilter,
@@ -599,9 +641,9 @@ public class RuleProcessor {
                 kSession.dispose();
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processRTRulesCompoundsLCMS");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processRTRulesCompoundsLCMS");
             }
         }
     }
@@ -626,9 +668,9 @@ public class RuleProcessor {
                 kSession.dispose();
 
             } catch (RuntimeException e) {
-                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processRTRulesTC");
             } catch (Exception e) {
-                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processIonizationCompounds");
+                System.out.println("NON RUNTIME EXCEPTION. FAILED APPLYING RULES IN RuleProcessor.processRTRulesTC");
             }
         }
     }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import javax.faces.model.SelectItem;
 import facades.MSFacade;
-import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -52,8 +52,8 @@ public abstract class LCMSControllerAdapter implements Serializable {
     private String metabolitesType;
     private final List<SelectItem> metabolitesTypecandidates;
 
-    private String massesMode;
-    private String ionMode;
+    private int massesMode;
+    private int ionMode;
     private List<SelectItem> ionizationModeCandidates;
     private List<String> adducts;
     private List<SelectItem> adductsCandidates;
@@ -69,7 +69,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
     private List<Map<Double, Integer>> queryCompositeSpectrum;
     private List<Boolean> isSignificativeCompound;
 
-    private boolean allFeatures;
+    private boolean isAllFeatures;
 
     // Declared as a variable because JSF needs that even Framework marks as not used.
     private int numAdducts;
@@ -105,28 +105,28 @@ public abstract class LCMSControllerAdapter implements Serializable {
         this.metabolitesType = "All except peptides";
 
         this.positiveCandidates = new LinkedList<>();
-        this.positiveCandidates.add(new SelectItem("allPositives", "All"));
+        this.positiveCandidates.add(new SelectItem(DataFromInterfacesUtilities.ALLADDUCTS_POSITIVE, "All"));
         (AdductsLists.MAPMZPOSITIVEADDUCTS).entrySet().forEach((e) -> {
             this.positiveCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
         });
 
         this.negativeCandidates = new LinkedList<>();
-        this.negativeCandidates.add(new SelectItem("allNegatives", "All"));
+        this.negativeCandidates.add(new SelectItem(DataFromInterfacesUtilities.ALLADDUCTS_NEGATIVE, "All"));
         (AdductsLists.MAPMZNEGATIVEADDUCTS).entrySet().forEach((e) -> {
             this.negativeCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
         });
 
         this.neutralCandidates = new LinkedList<>();
-        this.neutralCandidates.add(new SelectItem("allNeutral", "All"));
+        this.neutralCandidates.add(new SelectItem(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL, "All"));
         (AdductsLists.MAPNEUTRALADDUCTS).entrySet().forEach((e) -> {
             this.neutralCandidates.add(new SelectItem((String) e.getKey(), (String) e.getKey()));
         });
-        this.massesMode = "neutral";
+        this.massesMode = 0;
         this.ionizationModeCandidates = AdductsLists.LISTNEUTRALMODES;
-        this.ionMode = "neutral";
+        this.ionMode = 0;
         this.adductsCandidates = neutralCandidates;
         this.adducts = new LinkedList<>();
-        this.adducts.add("allNeutral");
+        this.adducts.add(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL);
         this.queryInputMasses = "";
         this.queryInputRetentionTimes = "";
         this.queryInputCompositeSpectra = "";
@@ -143,7 +143,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
      */
     public void setDemoMass() {
         this.setQueryInputMasses(ONEDEMOMASS);
-        this.ionMode = "positive";
+        this.ionMode = 1;
         this.adductsCandidates = positiveCandidates;
         this.adducts.clear();
         this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
@@ -159,7 +159,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
         this.setQueryInputCompositeSpectra(ONECOMPOSITESPECTRUM);
         this.chemAlphabet = "CHNOPS";
         this.includeDeuterium = false;
-        this.ionMode = "positive";
+        this.ionMode = 1;
         this.adductsCandidates = positiveCandidates;
         this.adducts.clear();
         this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
@@ -183,13 +183,13 @@ public abstract class LCMSControllerAdapter implements Serializable {
         this.setQueryInputCompositeSpectra(NEWDEMOSPECTRUM);
         this.chemAlphabet = "CHNOPS";
         this.includeDeuterium = false;
-        this.ionMode = "positive";
+        this.ionMode = 1;
+        this.massesMode = 0;
         this.adductsCandidates = positiveCandidates;
         this.adducts.clear();
         this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
         //System.out.println(demoMasses);
         // TODO Set All Masses, RTs and Composites
-
     }
 
     /**
@@ -212,7 +212,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
         this.ionMode = "neutral";
         this.adductsCandidates = neutralCandidates;
         this.adducts.clear();
-        this.adducts.add("allNeutral");
+        this.adducts.add(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL);
          */
         resetItems();
     }
@@ -398,24 +398,26 @@ public abstract class LCMSControllerAdapter implements Serializable {
         this.includeDeuterium = includeDeuterium;
     }
 
-    public String getMassesMode() {
+    public int getMassesMode() {
         return this.massesMode;
     }
 
-    public void setMassesMode(String massesMode) {
+    public void setMassesMode(int massesMode) {
         switch (massesMode) {
-            case "neutral":
+            // Neutral
+            case 0:
                 this.ionizationModeCandidates = AdductsLists.LISTNEUTRALMODES;
-                this.ionMode = "neutral";
+                this.ionMode = 0;
                 this.adductsCandidates = neutralCandidates;
                 this.adducts.clear();
-                this.adducts.add("allNeutral");
+                this.adducts.add(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL);
                 break;
             // If there is not any of these 3 (It should not occur) The assigned mode is neutral
-            case "mz":
+            // Case mz
+            case 1:
                 // By default, positive
                 this.ionizationModeCandidates = AdductsLists.LISTIONIZEDMODES;
-                this.ionMode = "positive";
+                this.ionMode = 1;
                 this.adductsCandidates = positiveCandidates;
                 this.adducts.clear();
                 this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
@@ -433,7 +435,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
     /**
      * @return The ionization mode
      */
-    public String getIonMode() {
+    public int getIonMode() {
         // System.out.println("ION MODE RETURNED: " + ionMode);
         return ionMode;
     }
@@ -443,32 +445,32 @@ public abstract class LCMSControllerAdapter implements Serializable {
      *
      * @param ionMode
      */
-    public void setIonMode(String ionMode) {
+    public void setIonMode(int ionMode) {
         switch (ionMode) {
-            case "positive":
+            case 1:
                 this.ionMode = ionMode;
                 this.adductsCandidates = positiveCandidates;
                 this.adducts.clear();
                 this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
                 break;
-            case "negative":
+            case 2:
                 this.ionMode = ionMode;
                 this.adductsCandidates = negativeCandidates;
                 this.adducts.clear();
                 this.adducts.addAll(AdductsLists.DEFAULT_ADDUCTS_NEGATIVE);
                 break;
             // If there is not any of these 3 (It should not occur) The assigned mode is neutral
-            case "neutral":
+            case 0:
                 this.ionMode = ionMode;
                 this.adductsCandidates = neutralCandidates;
                 this.adducts.clear();
-                this.adducts.add("allNeutral");
+                this.adducts.add(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL);
                 break;
             default:
-                this.ionMode = ionMode;
+                this.ionMode = 0;
                 this.adductsCandidates = neutralCandidates;
                 this.adducts.clear();
-                this.adducts.add("allNeutral");
+                this.adducts.add(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL);
                 break;
         }
     }
@@ -569,16 +571,16 @@ public abstract class LCMSControllerAdapter implements Serializable {
     /**
      * @return if user introduced significant and non-significant compounds
      */
-    public boolean isAllFeatures() {
-        return allFeatures;
+    public boolean isIsAllFeatures() {
+        return isAllFeatures;
     }
 
     /**
-     * @param allFeatures user introduced significant and non significant
+     * @param isAllFeatures user introduced significant and non significant
      * compounds
      */
-    public void setAllFeatures(boolean allFeatures) {
-        this.allFeatures = allFeatures;
+    public void setIsAllFeatures(boolean isAllFeatures) {
+        this.isAllFeatures = isAllFeatures;
     }
 
     /**
@@ -586,20 +588,20 @@ public abstract class LCMSControllerAdapter implements Serializable {
      * @return the number of adducts
      */
     public int getNumAdducts() {
-        if (adducts.contains("allPositives")) {
+        if (adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_POSITIVE)) {
             // Double check
-            if (!ionMode.equals("positive")) {
+            if (this.ionMode != 1) {
                 System.out.println("\nSomething is wrong in the search form "
                         + "Adducts contains positive and ion mode is: " + ionMode);
             }
             return AdductsLists.MAPMZPOSITIVEADDUCTS.size();
-        } else if (adducts.contains("allNegatives")) {
-            if (!ionMode.equals("negative")) {
+        } else if (adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_NEGATIVE)) {
+            if (this.ionMode != 2) {
                 System.out.println("\nSomething is wrong in the search form "
                         + "Adducts contains negative and ion mode is: " + ionMode);
             }
             return AdductsLists.MAPMZPOSITIVEADDUCTS.size();
-        } else if (ionMode.equals("neutral")) {
+        } else if (this.ionMode == 0) {
             return 1;
         }
 
@@ -668,13 +670,13 @@ public abstract class LCMSControllerAdapter implements Serializable {
             spectrumAux = Cadena.extractDataSpectrum(input);
             // If there is no time for all queryMasses, fill with 0
             for (int i = spectrumAux.size(); i < numInputMasses; i++) {
-                spectrumAux.add(new LinkedHashMap<Double, Integer>());
+                spectrumAux.add(new TreeMap<Double, Integer>());
             }
         } else {
             spectrumAux = new ArrayList<Map<Double, Integer>>();
             // If there is no time for all queryMasses, fill with 0
             for (int i = 0; i < numInputMasses; i++) {
-                spectrumAux.add(new LinkedHashMap<Double, Integer>());
+                spectrumAux.add(new TreeMap<Double, Integer>());
             }
 
         }
@@ -686,7 +688,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
     }
 
     public String showMessageForNeutralMasses() {
-        if (this.massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && (this.ionMode.equals("positive") || this.ionMode.equals("negative"))) {
+        if (this.massesMode == 0 && (this.ionMode == 1 || this.ionMode == 2)) {
             return "calculation of new m/z from neutral mass based on selected adducts";
         } else {
             return "";
@@ -712,7 +714,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
         System.out.println("masses size " + experimentalMasses.size());
         System.out.println("rt size " + retentionTimes.size());
         System.out.println("cs size " + compositeSpectra.size());
-        */
+         */
 
         Double tolerance;
         List<String> adductsFiltered;
@@ -720,14 +722,16 @@ public abstract class LCMSControllerAdapter implements Serializable {
         Integer toleranceMode;
         List<Integer> databasesInt;
         Integer metabolitesTypeInt;
+        
         tolerance = Double.parseDouble(this.inputTolerance);
         toleranceMode = DataFromInterfacesUtilities.toleranceTypeToInteger(this.inputModeTolerance);
         databasesInt = DataFromInterfacesUtilities.getDatabasesAsInt(this.databases);
         metabolitesTypeInt = DataFromInterfacesUtilities.metabolitesTypeToInteger(this.metabolitesType);
         int chemAlphabet = DataFromInterfacesUtilities.getChemAlphabetAsInt(this.chemAlphabet);
+        
 
         featuresFromInputData = FeaturesRTProcessing.loadFeatures(experimentalMasses, retentionTimes,
-                compositeSpectra, searchAnnotationsInDatabase, this.ionMode, adductsFiltered,
+                compositeSpectra, searchAnnotationsInDatabase, this.massesMode, this.ionMode, adductsFiltered,
                 tolerance, toleranceMode, databasesInt, metabolitesTypeInt, chemAlphabet, this.msFacade);
 
         return featuresFromInputData;
@@ -768,6 +772,18 @@ public abstract class LCMSControllerAdapter implements Serializable {
 
     public String getMINEWebPage() {
         return Constantes.WEB_MINE;
+    }
+
+    public List<SelectItem> getPositiveCandidates() {
+        return positiveCandidates;
+    }
+
+    public List<SelectItem> getNegativeCandidates() {
+        return negativeCandidates;
+    }
+
+    public List<SelectItem> getNeutralCandidates() {
+        return neutralCandidates;
     }
 
     /**

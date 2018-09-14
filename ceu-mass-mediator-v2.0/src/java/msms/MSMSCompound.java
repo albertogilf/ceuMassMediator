@@ -5,9 +5,7 @@
  */
 package msms;
 
-
 import java.util.List;
-
 
 /**
  * MSMS Compounds from the standards, mainly from databases.
@@ -44,11 +42,11 @@ public class MSMSCompound extends Msms {
      * @param compound_formula
      * @param compound_mass
      * @param score
-
+     *
      */
-    public MSMSCompound(
-            int ionizationMode, int voltage, String voltageLevel, List<Peak> peaks, int spectraType,
-            int msms_id, int compound_id, String hmdb_id, String compound_name, String compound_formula, double compound_mass, double score) {
+    public MSMSCompound(int ionizationMode, int voltage, String voltageLevel, List<Peak> peaks, int spectraType,
+            int msms_id, int compound_id, String hmdb_id, String compound_name, String compound_formula,
+            double compound_mass, double score) {
         super(ionizationMode, voltage, voltageLevel, peaks, spectraType);
         this.compound_id = compound_id;
         this.msms_id = msms_id;
@@ -57,9 +55,9 @@ public class MSMSCompound extends Msms {
         this.compound_formula = compound_formula;
         this.compound_mass = compound_mass;
         this.parentIonNeutralMass = this.compound_mass;
-        this.parentIonMZ = utilities.AdductProcessing.calculateMZ(ionizationMode, this.parentIonMZ);
+        this.parentIonMZ = utilities.AdductProcessing.calculateMZFromHAdduct(ionizationMode, this.parentIonMZ);
         this.score = score;
-       
+
     }
 
     /**
@@ -89,20 +87,18 @@ public class MSMSCompound extends Msms {
         this.compound_formula = compound_formula;
         this.compound_mass = compound_mass;
         this.parentIonNeutralMass = this.compound_mass;
-        this.parentIonMZ = utilities.AdductProcessing.calculateMZ(ionizationMode, this.parentIonMZ);
+        this.parentIonMZ = utilities.AdductProcessing.calculateMZFromHAdduct(ionizationMode, this.parentIonMZ);
     }
 
-    public MSMSCompound(int msms_id, int compound_id, String hmdb_id,int ionizationMode, int voltage, String voltageLevel, List<Peak> peaks, int spectraType) {
+    public MSMSCompound(int msms_id, int compound_id, String hmdb_id, int ionizationMode, int voltage, String voltageLevel, List<Peak> peaks, int spectraType) {
         super(ionizationMode, voltage, voltageLevel, peaks, spectraType);
         this.msms_id = msms_id;
         this.compound_id = compound_id;
         this.hmdb_id = hmdb_id;
-        this.compound_name="";
-        this.compound_formula="";
-        this.compound_mass=0;
+        this.compound_name = "";
+        this.compound_formula = "";
+        this.compound_mass = 0;
     }
-    
-    
 
     public String getHMDB_ID() {
         return this.hmdb_id;

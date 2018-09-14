@@ -1,7 +1,6 @@
 package controllers;
 
 import LCMS.CompoundLCMS;
-import LCMS.CompoundsLCMSGroupByAdduct;
 import LCMS.Experiment;
 import LCMS.Feature;
 import List.NoDuplicatesList;
@@ -60,55 +59,32 @@ public class LCMSController extends LCMSControllerAdapter {
         this.allFeatures.clear();
         List<Double> massesAux; // auxiliar List for input Masses
         int numInputMasses;
+        massesAux = Cadena.extractDoubles(getQueryInputMasses());
+        List<Double> massesMZFromNeutral = new LinkedList<>();
+
+        for (double mass : massesAux) {
+            mass = utilities.Utilities.calculateMZFromNeutralMass(mass, getMassesMode(), getIonMode());
+            massesMZFromNeutral.add(mass);
+        }
+
+        this.setQueryMasses(massesMZFromNeutral);
+        numInputMasses = massesMZFromNeutral.size();
+        List<Double> retentionTimes = Cadena.getListOfDoubles(getQueryInputRetentionTimes(), numInputMasses);
+        this.setQueryRetentionTimes(retentionTimes);
+        List<Map<Double, Integer>> compositeSpectra = getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
+        this.setQueryCompositeSpectrum(compositeSpectra);
+
+        List<Feature> significantFeatures;
+        significantFeatures = loadFeaturesFromExperiment(massesMZFromNeutral,
+                retentionTimes, compositeSpectra, true);
+
         if (getAllInputMasses().equals("")) {
-            setAllFeatures(false);
-            //Method returns an ArrayList because it is acceded by index
-            massesAux = Cadena.extractDoubles(getQueryInputMasses());
-            List<Double> massesMZFromNeutral = new LinkedList<>();
-
-            for (double mass : massesAux) {
-                mass = utilities.Utilities.calculateMZFromNeutralMass(mass, getMassesMode(), getIonMode());
-                massesMZFromNeutral.add(mass);
-            }
-
-            this.setQueryMasses(massesMZFromNeutral);
-            numInputMasses = massesAux.size();
-            List<Double> retentionTimes = Cadena.getListOfDoubles(getQueryInputRetentionTimes(), numInputMasses);
-            this.setQueryRetentionTimes(retentionTimes);
-            List<Map<Double, Integer>> compositeSpectra = getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
-            this.setQueryCompositeSpectrum(compositeSpectra);
-
-            List <Feature> significantFeatures;
-            significantFeatures = loadFeaturesFromExperiment(massesMZFromNeutral,
-                    retentionTimes, compositeSpectra, true);
+            setIsAllFeatures(false);
             processCompoundsAdvanced(significantFeatures, significantFeatures);
-
-            // TODO MARIA REMOVE AFTER TESTING
-            printResults(this.allFeatures);
             this.significativeFeatures = this.allFeatures;
+
         } else {
-
-            setAllFeatures(true);
-            // significant features
-            massesAux = Cadena.extractDoubles(getQueryInputMasses());
-            List<Double> massesMZFromNeutral = new LinkedList<>();
-
-            for (double mass : massesAux) {
-                mass = utilities.Utilities.calculateMZFromNeutralMass(mass, getMassesMode(), getIonMode());
-                massesMZFromNeutral.add(mass);
-            }
-
-            this.setQueryMasses(massesMZFromNeutral);
-            numInputMasses = massesAux.size();
-            List<Double> retentionTimes = Cadena.getListOfDoubles(getQueryInputRetentionTimes(), numInputMasses);
-            this.setQueryRetentionTimes(retentionTimes);
-            List<Map<Double, Integer>> compositeSpectra = getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
-            this.setQueryCompositeSpectrum(compositeSpectra);
-
-            List <Feature> significantFeatures;
-            significantFeatures = loadFeaturesFromExperiment(massesMZFromNeutral,
-                    retentionTimes, compositeSpectra, true);
-
+            setIsAllFeatures(true);
             //all features
             List<Double> allMassesAux = Cadena.extractDoubles(this.getAllInputMasses());
             List<Double> allMassesMZFromNeutral = new LinkedList<>();
@@ -117,27 +93,21 @@ public class LCMSController extends LCMSControllerAdapter {
                 allMassesMZFromNeutral.add(mass);
             }
             this.setQueryMasses(allMassesMZFromNeutral);
-            numInputMasses = allMassesMZFromNeutral.size();
-            List<Double> allretentionTimes = Cadena.getListOfDoubles(getAllInputRetentionTimes(), numInputMasses);
+            int numAllInputMasses = allMassesMZFromNeutral.size();
+            List<Double> allretentionTimes = Cadena.getListOfDoubles(getAllInputRetentionTimes(), numAllInputMasses);
             this.setQueryRetentionTimes(allretentionTimes);
             List<Map<Double, Integer>> allcompositeSpectra;
-            allcompositeSpectra = getListOfCompositeSpectra(getAllInputCompositeSpectra(), numInputMasses);
+            allcompositeSpectra = getListOfCompositeSpectra(getAllInputCompositeSpectra(), numAllInputMasses);
             this.setQueryCompositeSpectrum(allcompositeSpectra);
 
-            List <Feature> allTheFeatures;
-            allTheFeatures = loadFeaturesFromExperiment(allMassesMZFromNeutral,
+            List<Feature> allFeatures;
+            allFeatures = loadFeaturesFromExperiment(allMassesMZFromNeutral,
                     allretentionTimes,
                     allcompositeSpectra, true);
 
-            FeaturesRTProcessing.setSignificantFeatures(significantFeatures, allTheFeatures);
-
-            processCompoundsAdvanced(significantFeatures, allTheFeatures);
-            
-            
-            //TODO MARIA REMOVE AFTER TESTING
-            printResults(this.allFeatures);
+            FeaturesRTProcessing.setSignificantFeatures(significantFeatures, allFeatures);
+            processCompoundsAdvanced(significantFeatures, allFeatures);
         }
-
     }
 
     /**
@@ -145,11 +115,11 @@ public class LCMSController extends LCMSControllerAdapter {
      */
     @Override
     public void submitLCMSSimpleSearch() {
-        System.out.println("Entering submit");
+        //System.out.println("Entering submit");
         this.allFeatures.clear();
         List<Double> massesAux; // auxiliar List for input Masses
         int numInputMasses;
-        setAllFeatures(false);
+        setIsAllFeatures(false);
         //Method returns an ArrayList because it is acceded by index
         massesAux = Cadena.extractDoubles(getQueryInputMasses());
         List<Double> massesMZFromNeutral = new LinkedList<>();
@@ -166,14 +136,11 @@ public class LCMSController extends LCMSControllerAdapter {
         List<Map<Double, Integer>> compositeSpectra = getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
         this.setQueryCompositeSpectrum(compositeSpectra);
 
-        List <Feature> features;
+        List<Feature> features;
         features = loadFeaturesFromExperiment(massesMZFromNeutral,
                 retentionTimes, compositeSpectra, true);
-        
-        processCompoundsSimple(features);
 
-        // TODO MARIA REMOVE AFTER TESTING
-        printResults(this.allFeatures);
+        processCompoundsSimple(features);
 
         this.significativeFeatures = this.allFeatures;
     }
@@ -216,16 +183,16 @@ public class LCMSController extends LCMSControllerAdapter {
      * needed Creates the experiment object with the given data (which implies
      * grouping the features by retention time)
      */
-    private void processCompoundsAdvanced(List <Feature> significantFeatures, List <Feature> allFeatures) {
-        System.out.println("Entering process advanced NO GROUPED");
+    private void processCompoundsAdvanced(List<Feature> significantFeatures, List<Feature> allFeatures) {
+        //System.out.println("Entering process advanced NO GROUPED");
 
         int tolerance = Integer.parseInt(getInputTolerance());
-        boolean isAllFeatures = isAllFeatures();
+        boolean isAllFeatures = isIsAllFeatures();
 
         List<Integer> databasesAsInt = DataFromInterfacesUtilities.getDatabasesAsInt(getDatabases());
         int metabolitesTypeInt = DataFromInterfacesUtilities.metabolitesTypeToInteger(getMetabolitesType());
-        int inputMassModeAsInt = DataFromInterfacesUtilities.inputMassModeToInteger(getMassesMode());
-        int ionizationModeAsInt = DataFromInterfacesUtilities.ionizationModeToInteger(getIonMode());
+        int inputMassModeAsInt = getMassesMode();
+        int ionMode = getIonMode();
         int chemAlphabetInt = DataFromInterfacesUtilities.getChemAlphabetAsInt(getChemAlphabet());
         int toleranceTypeAsInt = DataFromInterfacesUtilities.toleranceTypeToInteger(getInputModeTolerance());
         int modifierInt = DataFromInterfacesUtilities.modifierToInteger(getModifier());
@@ -236,12 +203,10 @@ public class LCMSController extends LCMSControllerAdapter {
         this.experiment = new Experiment(significantFeatures, allFeatures, isAllFeatures,
                 tolerance, toleranceTypeAsInt,
                 chemAlphabetInt, modifierInt, metabolitesTypeInt,
-                databasesAsInt, inputMassModeAsInt, ionizationModeAsInt, adducts);
+                databasesAsInt, inputMassModeAsInt, ionMode, adducts);
 
         this.experiment.processCompoundsAdvanced();
         this.allFeatures = this.experiment.getAllFeatures();
-
-        // TODO PROCESS RULES FROM DROOLS
     }
 
     /**
@@ -251,16 +216,16 @@ public class LCMSController extends LCMSControllerAdapter {
      * the features by retention time)
      *
      */
-    private void processCompoundsSimple(List <Feature> allFeatures) {
+    private void processCompoundsSimple(List<Feature> allFeatures) {
 
-        System.out.println("Entering process process simple search");
+        //System.out.println("Entering process process simple search");
         int tolerance = Integer.parseInt(getInputTolerance());
-        boolean isAllFeatures = isAllFeatures();
+        boolean isAllFeatures = isIsAllFeatures();
 
         List<Integer> databasesAsInt = DataFromInterfacesUtilities.getDatabasesAsInt(getDatabases());
         int metabolitesTypeInt = DataFromInterfacesUtilities.metabolitesTypeToInteger(getMetabolitesType());
-        int inputMassModeAsInt = DataFromInterfacesUtilities.inputMassModeToInteger(getMassesMode());
-        int ionizationModeAsInt = DataFromInterfacesUtilities.ionizationModeToInteger(getIonMode());
+        int inputMassModeAsInt = getMassesMode();
+        int ionMode = getIonMode();
         int chemAlphabetInt = DataFromInterfacesUtilities.getChemAlphabetAsInt(getChemAlphabet());
         int toleranceTypeAsInt = DataFromInterfacesUtilities.toleranceTypeToInteger(getInputModeTolerance());
         int modifierInt = DataFromInterfacesUtilities.modifierToInteger(getModifier());
@@ -271,10 +236,10 @@ public class LCMSController extends LCMSControllerAdapter {
         this.experiment = new Experiment(allFeatures, allFeatures, isAllFeatures,
                 tolerance, toleranceTypeAsInt,
                 chemAlphabetInt, modifierInt, metabolitesTypeInt,
-                databasesAsInt, inputMassModeAsInt, ionizationModeAsInt, adducts);
+                databasesAsInt, inputMassModeAsInt, ionMode, adducts);
 
         this.experiment.processCompoundsSimple();
-        
+
         this.allFeatures = this.experiment.getAllFeatures();
     }
 
@@ -296,6 +261,7 @@ public class LCMSController extends LCMSControllerAdapter {
     }
 
     //TODO: remove after testing
+    /*
     public static void printResults(List<Feature> features) {
         System.out.println("****FINAL OUTPUT FOR NON GROUPED SEARCH*****");
         for (Feature f : features) {
@@ -311,5 +277,5 @@ public class LCMSController extends LCMSControllerAdapter {
             }
         }
     }
-
+     */
 }

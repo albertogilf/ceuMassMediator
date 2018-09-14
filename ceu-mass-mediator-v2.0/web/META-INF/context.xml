@@ -21,7 +21,7 @@
     -->
     <!-- It is not used because there are defined connection pools in the server.xml of the server ($CATALINA_HOME)
     -->
-    <!--<Resource name="jdbc/testConnection" 
+    <!--<Resource name="jdbc/testConnection"
               auth="Container"
               type="javax.sql.DataSource"
               driverClassName="com.mysql.jdbc.Driver"
@@ -40,7 +40,7 @@
     <!--global="jdbc/newDataModel" compounds-->
     <!--global="jdbc/test" compounds_new -->
     <ResourceLink 
-                  global="jdbc/test"
+                  global="jdbc/newDataModel"
                   name="jdbc/linkToNewDataModel" 
                   type="javax.sql.DataSource" 
     />

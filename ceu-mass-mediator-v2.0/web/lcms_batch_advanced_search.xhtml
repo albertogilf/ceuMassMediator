@@ -63,7 +63,7 @@
                                 <span class="tooltiptext">
                                     RT for statistically significant masses.
                                     <br/>
-                                    Any unit accepted (see manual)
+                                    Any unit accepted (see manual).
                                 </span>
                                 </label>
                                 <p:inputTextarea id="rtimes"
@@ -242,7 +242,10 @@
                             <p:row></p:row>
 
                             <p:row>
-                                <label for="metabolitestypemenu" style="float: top">Metabolites (*): &nbsp;</label>
+                                <label for="metabolitestypemenu" style="float: top">Metabolites (*): &nbsp;
+                                    <span class="tooltiptext">Restrict search to the specific compounds type<br/>
+                                    </span>
+                                </label>
                                 <p:selectOneListbox id="metabolitestypemenu" 
                                                     value="#{LCMSController.metabolitesType}" 
                                                     filter="false" 
@@ -268,8 +271,8 @@
                                 <p:selectOneListbox id="massesmodemenu" 
                                                     value="#{LCMSController.massesMode}"
                                                     style="width:100%">
-                                    <f:selectItem itemValue="neutral" itemLabel="Neutral Masses"/>
-                                    <f:selectItem itemValue="mz" itemLabel="m/z Masses"/>
+                                    <f:selectItem itemValue="0" itemLabel="Neutral Masses"/>
+                                    <f:selectItem itemValue="1" itemLabel="m/z Masses"/>
                                     <!--<f:selectItem itemValue="recalculated" itemLabel="Recalculated m/z Masses"/>-->
                                     <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu 
                                             adductsmenu messageionmode"/>

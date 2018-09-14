@@ -40,15 +40,15 @@
                          
                             <p:row>
                                 <div class="form-group">
-                                    <label style="float: top">Parent Ion Mass (m/z): </label>
-                                    <p:inputText id="parentionmass"
+                                    <label style="float: top">Precursor Ion Mass (m/z): </label>
+                                    <p:inputText id="precursorionmass"
                                                  required="true"
-                                                 value="#{MSMSController.parentIonMass}"
-                                                 validator="#{MSMSController.validateParentIonMass}"
-                                                 pt:placeholder="enter parent ion mass"
+                                                 value="#{MSMSController.precursorIonMass}"
+                                                 validator="#{MSMSController.validatePrecursorIonMass}"
+                                                 pt:placeholder="enter precursor ion mass"
                                                  style="width:100%;height: 300%"
                                                  />
-                                    <p:message for="parentionmass" styleClass="errormessage"></p:message>
+                                    <p:message for="precursorionmass" styleClass="errormessage"></p:message>
                                 </div>
                             </p:row>
 
@@ -64,6 +64,7 @@
                                 
                                 <p:inputTextarea id="inputpeaks"
                                                  value="#{MSMSController.queryPeaks}"
+                                                 validator="#{MSMSController.validatePeaks}"
                                                  required="true"
                                                  pt:placeholder="enter one peak per line"
                                                  autoResize="false" 
@@ -76,9 +77,9 @@
 
                             <p:row>
                                 <div class="col-sm-9">
-                                    <label style="float: top">Parent Ion Tolerance: </label>
+                                    <label style="float: top">Precursor Ion Tolerance: </label>
                                     <p:inputText id="inputpitolerance" size="2" maxlength="4"  
-                                                 value="#{MSMSController.parentIonTolerance}" 
+                                                 value="#{MSMSController.precursorIonTolerance}" 
                                                  validator="#{MSMSController.validateTolerance}"
                                                  required="true"
                                                  pt:placeholder="enter tolerance"
@@ -91,7 +92,7 @@
                                     <p:selectOneRadio id="inputmodetolerancepi" 
                                                       required="true"
                                                       requiredMessage="Choose tolerance mode"
-                                                      value="#{MSMSController.parentIonToleranceMode}" >
+                                                      value="#{MSMSController.precursorIonToleranceMode}" >
                                         <f:selectItem itemValue="Da" itemLabel="Da"/>
                                         <f:selectItem itemValue="ppm" itemLabel="ppm"/>  
                                     </p:selectOneRadio>
@@ -145,8 +146,8 @@
                                 <p:selectOneListbox id="ionizationmodemenu" 
                                                     value="#{MSMSController.ionizationMode}"
                                                     style="width:100%">
-                                    <f:selectItem itemValue="positive" itemLabel="Positive"/>
-                                    <f:selectItem itemValue="negative" itemLabel="Negative"/>
+                                    <f:selectItem itemValue="1" itemLabel="Positive"/>
+                                    <f:selectItem itemValue="2" itemLabel="Negative"/>
                                     <!--<f:selectItem itemValue="recalculated" itemLabel="Recalculated m/z Masses"/>-->
                                     <f:ajax execute="ionizationmodemenu" />
                                 </p:selectOneListbox>

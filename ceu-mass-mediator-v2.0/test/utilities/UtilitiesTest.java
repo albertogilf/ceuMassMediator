@@ -262,8 +262,7 @@ public class UtilitiesTest {
         Double expResult = null;
         Double result = Utilities.calculateFAEMFromPIandOtherFAEM(ParentIonNeutralMass, FAEM1);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
 
     /**

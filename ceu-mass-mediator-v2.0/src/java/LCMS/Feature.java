@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import utilities.AdductProcessing;
 import static utilities.AdductsLists.MAPMZNEGATIVEADDUCTS;
 import static utilities.AdductsLists.MAPMZPOSITIVEADDUCTS;
@@ -27,35 +28,30 @@ public class Feature {
     private final List<CompoundsLCMSGroupByAdduct> annotationsGroupedByAdduct;
 
     private final double EM;
+    private final double massIntroduced;
     private final double RT;
     private final Map<Double, Integer> CS;
     private boolean isSignificativeFeature;
     private boolean isAdductAutoDetected;
     private String adductAutoDetected;
+    private final int EMMode; // 0 neutral (protonated or deprotonated), 1 m/z
     private final int ionization_mode; // 0 neutral, 1 positive, 2 negative
 
     private boolean possibleFragment;
-    private List<CompoundLCMS> possibleParentCompounds = new LinkedList<>();
 
-    /*
-    Commented. We do not want to create any feature if it is not explicited 
-    indicated if it is significant or not.
-    /*
-    public Feature(double EM,  int ionizationMode) {
-        this(EM, 0d, new LinkedHashMap<Double,Double>(), false, "",
-                true, new LinkedList<CompoundsLCMSGroupByAdduct>(), ionizationMode);
-    }
-     */
+    private Map<String, List<CompoundLCMS>> possibleParentCompounds;
+    // private List<CompoundLCMS> possibleParentCompounds = new LinkedList<>();
+
     /**
      *
      * @param EM
      * @param isSignificativeFeature
-     * @param ionizationMode
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      */
-    public Feature(double EM, boolean isSignificativeFeature, int ionizationMode) {
-        this(EM, 0d, new LinkedHashMap<Double, Integer>(), false, "",
-                isSignificativeFeature, new LinkedList<CompoundsLCMSGroupByAdduct>(), ionizationMode);
-
+    public Feature(double EM, boolean isSignificativeFeature, int EMMode, int ionizationMode) {
+        this(EM, 0d, new TreeMap<Double, Integer>(), false, "",
+                isSignificativeFeature, new LinkedList<CompoundsLCMSGroupByAdduct>(), EMMode, ionizationMode);
     }
 
     /**
@@ -63,11 +59,12 @@ public class Feature {
      * @param EM
      * @param RT
      * @param isSignificativeFeature
-     * @param ionizationMode
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      */
-    public Feature(double EM, double RT, boolean isSignificativeFeature, int ionizationMode) {
-        this(EM, RT, new LinkedHashMap<Double, Integer>(), false, "", isSignificativeFeature,
-                new LinkedList<CompoundsLCMSGroupByAdduct>(), ionizationMode);
+    public Feature(double EM, double RT, boolean isSignificativeFeature, int EMMode, int ionizationMode) {
+        this(EM, RT, new TreeMap<Double, Integer>(), false, "", isSignificativeFeature,
+                new LinkedList<CompoundsLCMSGroupByAdduct>(), EMMode, ionizationMode);
     }
 
     /**
@@ -77,12 +74,13 @@ public class Feature {
      * @param isAdductAutoDetected
      * @param adductAutoDetected
      * @param isSignificativeFeature
-     * @param ionizationMode
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      */
     public Feature(double EM, Map<Double, Integer> CS, boolean isAdductAutoDetected,
-            String adductAutoDetected, boolean isSignificativeFeature, int ionizationMode) {
+            String adductAutoDetected, boolean isSignificativeFeature, int EMMode, int ionizationMode) {
         this(EM, 0d, CS, isAdductAutoDetected, adductAutoDetected,
-                isSignificativeFeature, new LinkedList<CompoundsLCMSGroupByAdduct>(), ionizationMode);
+                isSignificativeFeature, new LinkedList<CompoundsLCMSGroupByAdduct>(), EMMode, ionizationMode);
     }
 
     /**
@@ -93,12 +91,13 @@ public class Feature {
      * @param isAdductAutoDetected
      * @param adductAutoDetected
      * @param isSignificativeFeature
-     * @param ionizationMode
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      */
     public Feature(double EM, double RT, Map<Double, Integer> CS, boolean isAdductAutoDetected,
-            String adductAutoDetected, boolean isSignificativeFeature, int ionizationMode) {
+            String adductAutoDetected, boolean isSignificativeFeature, int EMMode, int ionizationMode) {
         this(EM, RT, CS, isAdductAutoDetected, adductAutoDetected,
-                isSignificativeFeature, new LinkedList<CompoundsLCMSGroupByAdduct>(), ionizationMode);
+                isSignificativeFeature, new LinkedList<CompoundsLCMSGroupByAdduct>(), EMMode, ionizationMode);
     }
 
     /**
@@ -110,16 +109,18 @@ public class Feature {
      * @param adductAutoDetected
      * @param isSignificativeFeature
      * @param annotations
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
      * @param ionizationMode 0 neutral, 1 positive, 2 negative
      */
     public Feature(double EM, double RT, Map<Double, Integer> CS, boolean isAdductAutoDetected,
             String adductAutoDetected, boolean isSignificativeFeature,
-            List<CompoundsLCMSGroupByAdduct> annotations, int ionizationMode) {
+            List<CompoundsLCMSGroupByAdduct> annotations, int EMMode, int ionizationMode) {
+        this.possibleParentCompounds = new LinkedHashMap<>();
         this.EM = EM;
         this.RT = RT;
         this.CS = CS;
         this.ionization_mode = ionizationMode;
-
+        this.EMMode = EMMode;
         // USE THE FUNCTION IN EXPERIMENT TO TRY TO DETECT THE ADDUCT
         // Check adduct 
         if (checkAdductAutoDetected(isAdductAutoDetected, adductAutoDetected, ionizationMode)) {
@@ -131,6 +132,21 @@ public class Feature {
         }
         this.isSignificativeFeature = isSignificativeFeature;
         this.annotationsGroupedByAdduct = annotations;
+        if (this.EMMode == 0) {
+            switch (this.ionization_mode) {
+                case 1:
+                    this.massIntroduced = this.EM - utilities.Constantes.PROTON_WEIGHT;
+                    break;
+                case 2:
+                    this.massIntroduced = this.EM + utilities.Constantes.PROTON_WEIGHT;
+                    break;
+                default:
+                    this.massIntroduced = this.EM;
+                    break;
+            }
+        } else {
+            this.massIntroduced = this.EM;
+        }
     }
 
     @Override
@@ -142,7 +158,8 @@ public class Feature {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj
+    ) {
         if (this == obj) {
             return true;
         }
@@ -214,12 +231,21 @@ public class Feature {
         this.possibleFragment = possibleFragment;
     }
 
-    public List<CompoundLCMS> getPossibleParentCompounds() {
+    public Map<String, List<CompoundLCMS>> getPossibleParentCompounds() {
         return possibleParentCompounds;
     }
 
-    public void setPossibleParentCompounds(List<CompoundLCMS> possibleParentCompounds) {
+    public void setPossibleParentCompounds(Map<String, List<CompoundLCMS>> possibleParentCompounds) {
         this.possibleParentCompounds = possibleParentCompounds;
+    }
+
+    public void addPossibleParentCompounds(String adduct, CompoundLCMS possibleParentCompounds) {
+        List<CompoundLCMS> listCompoundParent = this.possibleParentCompounds.get(adduct);
+        if (listCompoundParent == null) {
+            listCompoundParent = new LinkedList();
+            this.possibleParentCompounds.put(adduct, listCompoundParent);
+        }
+        listCompoundParent.add(possibleParentCompounds);
     }
 
     public int getNumberPossibleParentCompounds() {
@@ -344,7 +370,7 @@ public class Feature {
             List<CompoundLCMS> annotationsForAdduct = new LinkedList<>();
             annotationsForAdduct.add(annotation);
             CompoundsLCMSGroupByAdduct newGroupCompoundsLCMS = new CompoundsLCMSGroupByAdduct(
-                    EM, RT, CS, adduct, annotationsForAdduct);
+                    EM, RT, CS, adduct, this.EMMode, this.ionization_mode, annotationsForAdduct);
             this.annotationsGroupedByAdduct.add(newGroupCompoundsLCMS);
         }
     }
@@ -365,7 +391,7 @@ public class Feature {
      */
     public String getTitleMessage() {
         String titleMessage;
-        titleMessage = "Metabolites found for mass: " + this.EM + "";
+        titleMessage = "Metabolites found for m/z: " + this.massIntroduced + "";
         if (this.RT > 0d) {
             titleMessage = titleMessage + " and retention time: " + this.RT;
         }
@@ -399,7 +425,7 @@ public class Feature {
      */
     public String getTitleMessageForParents() {
         String titleMessageForParents;
-        titleMessageForParents = "Possible parent ions found for mass: " + this.EM + "";
+        titleMessageForParents = "Possible precursor ions found for mass: " + this.massIntroduced + "";
         if (this.RT > 0d) {
             titleMessageForParents = titleMessageForParents + " and retention time: " + this.RT;
         }
@@ -407,7 +433,13 @@ public class Feature {
         if (!possibleFragment) {
             titleMessageForParents = "No " + titleMessageForParents;
         } else {
-            titleMessageForParents = titleMessageForParents + " -> " + this.possibleParentCompounds.size();
+            int numPossibleParentCompounds = 0;
+            for (Map.Entry<String, List<CompoundLCMS>> entry : this.possibleParentCompounds.entrySet()) {
+                numPossibleParentCompounds += entry.getValue().size();
+            }
+
+            titleMessageForParents = titleMessageForParents + " -> " + numPossibleParentCompounds;
+
         }
         return titleMessageForParents;
     }
@@ -428,6 +460,21 @@ public class Feature {
         return titleMessage;
     }
 
+    /**
+     * Get title for the presentation
+     *
+     * @return
+     */
+    public List<String> getAdductsPossibleFragment() {
+        List<String> adductsPossibleFragment = new LinkedList(this.possibleParentCompounds.keySet());
+        return adductsPossibleFragment;
+    }
+
+    public Integer getNumAdductsPossibleFragment() {
+        List<String> adductsPossibleFragment = new LinkedList(this.possibleParentCompounds.keySet());
+        return adductsPossibleFragment.size();
+    }
+
     @Override
     public String toString() {
         Iterator it = this.annotationsGroupedByAdduct.iterator();
@@ -441,7 +488,19 @@ public class Feature {
                 toreturn += "";
             }
         }
-        return "    FEATURE WITH EM: " + this.EM + " RT: " + this.RT + "\n" + toreturn;
+
+        if (isPossibleFragment()) {
+            for (Map.Entry<String, List<CompoundLCMS>> entry : this.possibleParentCompounds.entrySet()) {
+                String adduct = entry.getKey();
+                toreturn += "possible fragments of adduct: " + adduct;
+                toreturn += "\n";
+                List<CompoundLCMS> possibleParents = entry.getValue();
+                for (CompoundLCMS possibleParent : possibleParents) {
+                    toreturn += possibleParent.toString() + "\n";
+                }
+            }
+        }
+        return "    FEATURE WITH EM: " + this.massIntroduced + " RT: " + this.RT + "\n" + toreturn;
     }
 
     public boolean isThereTheoreticalCompounds() {
@@ -454,14 +513,21 @@ public class Feature {
      * @return
      */
     public double getHypotheticalNeutralMass() {
-        String ionMode = AdductProcessing.getStringIonizationModeFromInt(this.ionization_mode);
         if (this.isAdductAutoDetected) {
-
-            double hypoteticalNeutralMass = AdductProcessing.getMassToSearch(this.EM, this.adductAutoDetected, ionMode);
+            double hypoteticalNeutralMass;
+            hypoteticalNeutralMass = AdductProcessing.getMassToSearch(
+                    this.EM, this.adductAutoDetected, this.ionization_mode);
             return hypoteticalNeutralMass;
         } else {
             return 0d;
         }
     }
 
+    public double getMassIntroduced() {
+        return this.massIntroduced;
+    }
+
+    public int getEMMode() {
+        return this.EMMode;
+    }
 }

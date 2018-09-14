@@ -18,54 +18,116 @@
             <div class="title">Introduction</div>
             -->
             <div class="container whiteborder">
-                <p><strong>CEU Mass Mediator</strong> is a tool for searching metabolites 
-                    in different databases (Kegg, HMDB, LipidMaps, Metlin and an in-house library).  This is specially 
-                    designed for searches through experimental mass obtained from mass spectrometry techniques.</p>
+                <ui:remove>
+                    <center>
+                        <p>We are performing a survey for helping the researchers with the metabolomics annotation and 
+                            identification! Please, help us and fill it 
+                            <br/>
+                            <strong>
+                                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdIQ5MVpA4gNi7lE3vrr0KKnkSJUXC7bF0NpaQ8wBjfzdtyRw/viewform?c=0&amp;w=1"
+                                   target="_blank">
+                                    HERE
+                                </a>
+                            </strong>
+                        </p>
+                    </center>
+                </ui:remove>
+                <p class="style2"><strong>CEU Mass Mediator</strong> is a tool for searching metabolites 
+                    in different databases (Kegg, HMDB, LipidMaps, Metlin, MINE and an in-house library). This is specially 
+                    designed for searches through experimental masses obtained from mass spectrometry techniques.</p>
 
-                <p class="style2"><strong>CEU Mass Mediator</strong> includes an advanced search which could be used to identify adducts
-                    from different ionization modes using the CompositeSpectrum from Agilent Software. It unifies compounds from different sources. It will save time
-                    to researches which have to find the compounds in the databases one by one and unifying them manually.
-                    It avoids the risk of unify different compounds by human errors.</p>
+                <p class="style2"><strong>CEU Mass Mediator</strong> unifies compounds from different sources 
+                    based on the InChI Key. 
+                    It will save time to researchers which have to find the compounds in the databases one by one 
+                    and unifying them manually as well as it reduces the risk of a wrong manual unification.
+                </p>
+
+                <p class="style2">It calculates a scoring for the annotations based on three aspects: 
+
+                    <br/><strong>1. </strong>Probability of the compound to form a specific adduct.
+                    <br/><strong>2. </strong>Presence of other adducts coming from the same signal
+                    in the same RT window.
+                    <br/><strong>3. </strong>RT of the lipids with the same head depending on the number of 
+                    carbons and double bonds (and, consequently, the hydrophobicity of them).
+                    <br/>A final score is calculated based on these three aspects 
+                    (see <a href="manuals.xhtml" target="_blank">manual</a> for more information).
+                </p>
+
+                <p class="style2">
+                    Furthermore, it offers the next services: 
+                    <br/><strong>1. </strong>
+                    A pathway displayer for sorting the most relevant pathways in a previous search from CMM. 
+                    <br/><strong>2. </strong>
+                    Identification of oxidized glycerophosphocholines (oxPCs) based on the MS/MS spectrum of them. 
+                    <br/><strong>3. </strong>
+                    A spectral quality controller to measure the reliability of a spectrum for identification purposes.
+                </p>
 
                 <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+                    <ui:remove>
+                        <p:row>
+                            <a href="lcms_simple_search.xhtml" class="button style3 small" style="width:100%">Simple Search</a>
+                        </p:row>
 
+                        <p:row>
+                            <a href="lcms_advanced_search.xhtml" class="button style3 small" style="width:100%">Advanced Search</a>
+                        </p:row>
+
+                        <p:row>
+                            <a href="lcms_batch_search.xhtml" class="button style3 small" style="width:100%">Batch Search</a>
+                        </p:row>
+
+                        <p:row>
+                            <a href="lcms_batch_advanced_search.xhtml" class="button style3 small" style="width:100%">Batch Advanced Search</a>
+                        </p:row>
+                    </ui:remove>
+                    
                     <p:row>
-                        <a href="simple_search.xhtml" class="button style3 small" style="width:100%">Simple Search</a>
+                            <a href="simple_search.xhtml" class="button style3 small" style="width:100%">Simple Search</a>
+                        </p:row>
+
+                        <p:row>
+                            <a href="advanced_search.xhtml" class="button style3 small" style="width:100%">Advanced Search</a>
+                        </p:row>
+
+                        <p:row>
+                            <a href="batch_search.xhtml" class="button style3 small" style="width:100%">Batch Search</a>
+                        </p:row>
+
+                        <p:row>
+                            <a href="batch_advanced_search.xhtml" class="button style3 small" style="width:100%">Batch Advanced Search</a>
+                        </p:row>
+                    
+                    <p:row>
+                        <a href="browse_search_1.xhtml" class="button style3 small" style="width:100%">Browse Search</a>
                     </p:row>
 
-                    <p:row>
-                        <a href="advanced_search.xhtml" class="button style3 small" style="width:100%">Advanced Search</a>
-                    </p:row>
+                    <ui:remove>
+                        <p:row>
+                            <a href="lcms_grouped_rt_search.xhtml" class="button style3 small" style="width:100%">Advanced Search grouped by RT</a>
+                        </p:row>
 
-                    <p:row>
-                        <a href="batch_search.xhtml" class="button style3 small" style="width:100%">Batch Search</a>
-                    </p:row>
-
-                    <p:row>
-                        <a href="batch_advanced_search.xhtml" class="button style3 small" style="width:100%">Batch Advanced Search</a>
-                    </p:row>
-
-                    <p:row>
-                        <a href="browse_search.xhtml" class="button style3 small" style="width:100%">Browse Search</a>
-                    </p:row>
+                        <p:row>
+                            <a href="msms_search.xhtml" class="button style3 small" style="width:100%">MS/MS search</a>
+                        </p:row>
+                    </ui:remove>
 
                     <p:row>
                         <a href="pathway_displayer.xhtml" class="button style3 small" style="width:100%">Pathway Displayer</a>
                     </p:row>
 
                     <p:row>
-                        <a href="oxidation_lc.xhtml" class="button style3 small" style="width:100%">Long Chain Oxidation</a>
+                        <a href="oxidation_lc_1.xhtml" class="button style3 small" style="width:100%">Long Chain Oxidation</a>
                     </p:row>
-                    
+
                     <p:row>
-                        <a href="oxidation_sc.xhtml" class="button style3 small" style="width:100%">Short Chain Oxidation</a>
+                        <a href="oxidation_sc_1.xhtml" class="button style3 small" style="width:100%">Short Chain Oxidation</a>
                     </p:row>
-                    
+
                     <p:row>
                         <a href="qa_inputtexts.xhtml" class="button style3 small" style="width:100%">Spectral Quality Controller</a>
                     </p:row>
-                    
-                    
+
                     <p:row>
                         <a href="manuals.xhtml" class="button style3 small" style="width:100%">Manual</a>
                     </p:row>

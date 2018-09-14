@@ -8,9 +8,11 @@ package utilities;
 public interface Constantes {
 
     public static final double PROTON_WEIGHT = 1.0073d;
+    public static final double BIGGEST_ISOTOPE = 2.01; // Chlorine is the biggest gap for an isotope detected
     public static double RT_WINDOW = 0.05D;
+    public static double TOLERANCE_FOR_MSMS_PEAKS_POSSIBLE_FRAGMENTS = 0.1d;
     public static double ADDUCT_AUTOMATIC_DETECTION_WINDOW = 0.05D;
-    public static double TOLERANCE_SAME_MASS_WITHIN_FEATUREGROUPEDBYRT = 0.00001; 
+    public static double TOLERANCE_SAME_MASS_WITHIN_FEATUREGROUPEDBYRT = 0.00001d;
     public static final String TOLERANCE_INICITAL_VALUE = "10";
     public static final String TOLERANCE_MODE_INICITAL_VALUE = "ppm";
     public static final String WEB_COMPUESTO_KEGG = "http://www.genome.jp/dbget-bin/www_bget?cpd:";
@@ -24,14 +26,13 @@ public interface Constantes {
     public static final String WEB_LIPID_MAPS = "http://www.lipidmaps.org";
     public static final String WEB_HMDB = "http://www.hmdb.ca";
     public static final String WEB_PUBCHEMICHAL = "https://pubchem.ncbi.nlm.nih.gov";
-    public static final String WEB_COMPOUND_MINE_START = "http://minedatabase.mcs.anl.gov/#/acompound";
+    public static final String WEB_COMPOUND_MINE_START = "http://minedatabase.mcs.anl.gov/#/acompound-";
     public static final String WEB_COMPOUND_MINE_SUFFIX = "/overview";
     public static final String WEB_MINE = "http://minedatabase.mcs.anl.gov";
     public static final int ITEMS_PER_PAGE = 6500;
     public static final int ITEMS_PER_PAGE_IN_EXCEL = 6500;
     public static final float MIN_RETENTION_TIME_SCORE = 0.05F;
     public static final float MIN_SCORE_FOR_EUCLIDEAN_DISTANCE = 0.000001F;
-    
 
     public static final String FILE_FOR_ANALYTICS_PATH = "/home/alberto/PHD/statistics_mediator/";
 
@@ -236,6 +237,22 @@ public interface Constantes {
             + "\n1.0322223"
             + "\n30.569942";
 
+    /*
+    FOR TFG Maria 
+     */
+    public static final String EXAMPLEDEMOMASSES
+            = "192.0743"
+            + "\n301.1798"
+            + "\n146.4819"
+            + "\n90.0219"
+            + "\n187";
+    public static final String EXAMPLEDEMORTS
+            = "18.842525"
+            + "\n8.425"
+            + "\n18.842525"
+            + "\n18.842525"
+            + "\n8.425";
+
     /**
      * DEMO NAME
      */
@@ -260,13 +277,13 @@ public interface Constantes {
     /**
      * DEMO PARENT ION MASS FOR THE MSMS SEARCH
      */
-    public static final String DEMOPARENTIONMASS="147.0";
+    public static final String DEMOPRECUSRORIONMASS = "147.0";
     /**
      * DEMO PARENT ION MASS TOLERANCE FOR THE MSMS SEARCH
      */
-    public static final String DEMOPARENTIONMASSTOLERANCE="0.1";
+    public static final String DEMOPRECURSORIONMASSTOLERANCE = "0.1";
     /**
      * DEMO MZ TOLERANCE FOR THE MSMS SEARCH
      */
-    public static final String DEMOMZTOLERANCE="0.5";
+    public static final String DEMOMZTOLERANCE = "0.5";
 }

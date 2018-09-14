@@ -1,0 +1,3 @@
+# file for robots 
+User-agent: *
+Crawl-delay: 5

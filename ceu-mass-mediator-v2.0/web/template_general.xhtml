@@ -32,6 +32,8 @@
             ga('send', 'pageview');
 
         </script>
+        <link rel="shortcut icon"
+              href="http://ceumass.eps.uspceu.es/favicon.ico" />
         <ui:insert name="head">CEU mass mediator default HEADER</ui:insert>
     </h:head>
     <ui:insert>
@@ -53,21 +55,46 @@
                     <li class="#{view.viewId.contains('search.xhtml') ?'current':null}">
                         <a href="">Search</a>
                         <ul>
-                            <li class="#{view.viewId == '/simple_search.xhtml'?'current':null}">
+                            <ui:remove>
+                                <li class="#{view.viewId == '/lcms_simple_search.xhtml'?'current':null}">
+                                    <a href="lcms_simple_search.xhtml">Simple Search</a> 
+                                </li>
+                                <li class="#{view.viewId == '/lcms_advanced_search.xhtml'?'current':null}">
+                                    <a href="lcms_advanced_search.xhtml">Advanced Search</a>
+                                </li>
+                                <li class="#{view.viewId == '/lcms_batch_search.xhtml'?'current':null}">
+                                    <a href="lcms_batch_search.xhtml">Batch Search</a>
+                                </li>
+                                <li class="#{view.viewId == '/lcms_batch_advanced_search.xhtml'?'current':null}">
+                                    <a href="lcms_batch_advanced_search.xhtml">Batch Advanced Search</a>
+                                </li>
+                            </ui:remove>
+
+                            <li class="#{view.viewId == '/lcms_simple_search.xhtml'?'current':null}">
                                 <a href="simple_search.xhtml">Simple Search</a> 
                             </li>
-                            <li class="#{view.viewId == '/advanced_search.xhtml'?'current':null}">
+                            <li class="#{view.viewId == '/lcms_advanced_search.xhtml'?'current':null}">
                                 <a href="advanced_search.xhtml">Advanced Search</a>
                             </li>
-                            <li class="#{view.viewId == '/batch_search.xhtml'?'current':null}">
+                            <li class="#{view.viewId == '/lcms_batch_search.xhtml'?'current':null}">
                                 <a href="batch_search.xhtml">Batch Search</a>
                             </li>
-                            <li class="#{view.viewId == '/batch_advanced_search.xhtml'?'current':null}">
+                            <li class="#{view.viewId == '/lcms_batch_advanced_search.xhtml'?'current':null}">
                                 <a href="batch_advanced_search.xhtml">Batch Advanced Search</a>
                             </li>
-                            <li class="#{view.viewId == '/browse_search.xhtml'?'current':null}">
-                                <a href="browse_search.xhtml">Browse Search</a>
+                            <li class="#{view.viewId == '/browse_search_1.xhtml'?'current':null}">
+                                <a href="browse_search_1.xhtml">Browse Search</a>
                             </li>
+                            <ui:remove>
+                                <li class="#{view.viewId == '/msms_search.xhtml'?'current':null}">
+                                    <a href="msms_search.xhtml">MS/MS Search</a>
+                                </li>
+                                <!--</ui:remove>-->
+                                <!--<ui:remove>-->
+                                <li class="#{view.viewId == '/lcms_grouped_rt_search.xhtml'?'current':null}">
+                                    <a href="lcms_grouped_rt_search.xhtml">Advanced Search grouped by RT</a>
+                                </li>
+                            </ui:remove>
                         </ul>
                     </li>
                     <li class="#{view.viewId == '/pathway_displayer.xhtml'?'current':null}">
@@ -76,11 +103,11 @@
                     <li class="#{view.viewId.contains('oxidation') ? 'current':null}">
                         <a href="">Oxidation</a>
                         <ul>
-                            <li class="#{view.viewId == '/oxidation_lc.xhtml'?'current':null}">
-                                <a href="oxidation_lc.xhtml">Oxidation in long FA chain</a>
+                            <li class="#{view.viewId == '/oxidation_lc_1.xhtml'?'current':null}">
+                                <a href="oxidation_lc_1.xhtml">Oxidation in long FA chain</a>
                             </li>
-                            <li class="#{view.viewId == '/oxidation_sc.xhtml'?'current':null}">
-                                <a href="oxidation_sc.xhtml">Oxidation in short FA chain</a>
+                            <li class="#{view.viewId == '/oxidation_sc_1.xhtml'?'current':null}">
+                                <a href="oxidation_sc_1.xhtml">Oxidation in short FA chain</a>
                             </li>
                         </ul>
                     </li>
@@ -108,14 +135,14 @@
 
         <div id="version" class="wrapper style1">
             <div class="container warning">
-                
+
                 <strong>CEU Mass Mediator version 2.0</strong>.
                 <br/>
                 <strong>Citing CMM: </strong>
                 <a href="https://www.sciencedirect.com/science/article/pii/S0731708517326559" target="_blank">
-                Gil de la Fuente A., Godzien J. et al. 
-                Knowledge-based metabolite annotation tool: CEU Mass Mediator.
-                Journal of Pharmaceutical and Biomedical Analysis. 2018. May 30; 154, 138-149.
+                    Gil de la Fuente A., Godzien J. et al. 
+                    Knowledge-based metabolite annotation tool: CEU Mass Mediator.
+                    Journal of Pharmaceutical and Biomedical Analysis. 2018. May 30; 154, 138-149.
                 </a>
                 <br/>
                 If you find 
@@ -204,7 +231,7 @@
             </div>
         </div>
 
-        
+
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/js/jquery-ui.min.js"></script>
         <script src="assets/js/jquery.dropotron.min.js"></script>

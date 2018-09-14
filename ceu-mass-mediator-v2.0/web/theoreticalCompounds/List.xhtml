@@ -85,14 +85,14 @@
                                     </p:column>
 
                                     <p:column 
-                                        sortBy="#{compound.ionizationScore}" style="width:75px"
+                                        sortBy="#{compound.ionizationScore}" style="width:95px"
                                         styleClass="#{compound.colorIonizationScore}"
                                         >
                                         <f:facet name="header">
-                                            <h:outputText value="Score1" title="Score based on adduct formation rules"/>
+                                            <h:outputText value="Ionization score " title="Score based on adduct formation rules (see manual for more information)"/>
+                                            <p:graphicImage alt="" title="Score based on adduct formation rules (see manual for more information)" value="/images/help_icon.png" width="15px"/>
                                         </f:facet>
-                                        <h:outputText value="#{compound.ionizationScore>=0 ? compound.ionizationScore : 'N/A'}" 
-                                                      />
+                                        <h:outputText value="#{compound.ionizationScore>=0 ? compound.ionizationScore : 'N/A'}" />
                                     </p:column>
 
                                     <p:column headerText="Cas" sortBy="#{compound.casId}" style="width:120px">

@@ -5,26 +5,19 @@
  */
 package timeTest;
 
-import LCMS.Experiment;
 import LCMS.ExperimentGroupByRT;
 import LCMS.Feature;
 import LCMS.FeaturesGroupByRT;
 import List.NoDuplicatesList;
 import controllers.LCMSController;
-import controllers.LCMSControllerAdapter;
 import facades.MSFacade;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.DoubleStream;
-import javax.faces.model.SelectItem;
 import org.junit.Test;
-import utilities.AdductsLists;
 import utilities.Cadena;
 import utilities.Constantes;
 import utilities.DataFromInterfacesUtilities;
@@ -35,18 +28,20 @@ import utilities.FeaturesRTProcessing;
  * @author María 606888798
  */
 public class timeTest {
-    /*
+    
+  /*
+    @Test    
     public void generateRandomMasses()
     {
         
         
         
-        int limit= 15000;
+        int limit= 1000;
        
         double maxMass=700;
         List <Double> masses= new LinkedList<>();
         
-        for (int i= 0; i<=limit; i++)
+        for (int i= 0; i<limit; i++)
         {
             double mass= Math.random()*maxMass;
             //double rt=Math.random()*maxRT;
@@ -55,13 +50,14 @@ public class timeTest {
             masses.add(mass);
             System.out.println(mass);
             //retentionTimes.add(rt);
-            //Map <Double, Integer> CS= new LinkedHashMap<>();
+            //Map <Double, Integer> CS= new TreeMap<>();
             //CS.put(csDouble, csInt);
             //compositeSpectra.add(CS);
         }
     }
-
    
+
+
 @Test
     public void createFeaturesListAndExperiment () {
         long start = System.currentTimeMillis(); 
@@ -74,7 +70,7 @@ public class timeTest {
         int numInputMasses = masses.size();
         List <Double> massesMZFromNeutral= new LinkedList<>();
         for (double mass : masses) {
-                mass = utilities.Utilities.calculateMZFromNeutralMass(mass, "m/z", "positive");
+                mass = utilities.Utilities.calculateMZFromNeutralMass(mass, "m/z", 1);
                 massesMZFromNeutral.add(mass);
             }
         List<Double> retentionTimes = Cadena.getListOfDoubles(queryRetentionTimes, numInputMasses);
@@ -105,163 +101,207 @@ public class timeTest {
         
                 
         ExperimentGroupByRT experiment= new ExperimentGroupByRT(significantFeatures, significantFeatures, false,
-                10, 0, 0, 0, 0, databases, 0, 1, adducts);
+                10, 0, 0, 0, 0, databases, 0, 1, adducts, Constantes.RT_WINDOW );
         
         List <FeaturesGroupByRT> allFeaturesGroupByRT= experiment.getAllFeaturesGroupByRT();
         end= System.currentTimeMillis(); 
         System.out.println("Time create Experiment with FeatureGroupBYRT List: "+(end-start)+" miliseconds");
-        System.out.println("Time with jdbc: "+MSFacade.JDBCcounter);
-        System.out.println("Time creating objects: "+MSFacade.objectLCMSCompoundCounter);
+        //System.out.println("Time with jdbc: "+MSFacade.JDBCcounter);
+        //System.out.println("Time creating objects: "+MSFacade.objectLCMSCompoundCounter);
     }
-     
- 
-    @Test 
-    public void maxCapacity()
-    {
-        long start = System.currentTimeMillis(); 
-        
-        int limit= 150000;
-        MSFacade msfacade = new MSFacade();
-        List<Double> totalMasses = new LinkedList<>();
-        List<String> adducts = new LinkedList<>();
-        adducts.add("M+H");
-        adducts.add("M+2H");
-        adducts.add("M+Na");
-        adducts.add("M+K");
-        adducts.add("M+NH4");
-        adducts.add("M+H-H2O");
-        List <String> databases= new LinkedList<>();
-        databases.add("AllWM");
-        List <Integer> databasesInt= DataFromInterfacesUtilities.getDatabasesAsInt(databases);
-        int metabolitesType=0;
-        double maxMass=700;
-        double maxRT=30;
-        double maxCS=700;
-        int maxCSInt=1000;
-        int tolerance= 10;
-        List <Double> masses= new LinkedList<>();
-        List <Double> retentionTimes= new LinkedList<>();
-        List <Map <Double, Integer>> compositeSpectra=new LinkedList<>();
-        
-        msfacade.JDBCcounter=0;
-        msfacade.queryCreation=0;
-        msfacade.objectLCMSCompoundCounter=0;
-        msfacade.structureCounter=0;
-        msfacade.pathwayCounter=0;
-        msfacade.LMClassificationCounter=0;
-        msfacade.lipidsClassificationCounter=0;
-        
-        for (int i= 0; i<=limit; i++)
-        {
-            double mass= Math.random()*maxMass;
-            //double rt=Math.random()*maxRT;
-            //double csDouble=Math.random()*maxCS;
-            //int csInt= (int) Math.random()*maxCSInt;
-            masses.add(mass);
-            //retentionTimes.add(rt);
-            //Map <Double, Integer> CS= new LinkedHashMap<>();
-            //CS.put(csDouble, csInt);
-            //compositeSpectra.add(CS);
-        }
-        
-        long end = System.currentTimeMillis(); 
-        System.out.println("Time creating lists: "+(end-start));
-        start= end;
-        List <Double> massesMZFromNeutral= new LinkedList();
-        LCMSController controller= new LCMSController();
-        for (double mass : masses) {
-                mass = utilities.Utilities.calculateMZFromNeutralMass(mass, "m/z", "positive");
-                massesMZFromNeutral.add(mass);
-            }
-        end= System.currentTimeMillis();
-        System.out.println("Time to neutral: "+(end-start));
-        start=end;
-         FeaturesRTProcessing.loadFeatures(massesMZFromNeutral, new LinkedList(),
-                new LinkedList(), true, "positive", adducts,
-                10d, 0, databasesInt, metabolitesType, msfacade);
-        end = System.currentTimeMillis(); 
-        
-        //Advanced:      
-        // ---> Create experiment
-        //---> Experiment.processcompoundsAdvanced
-        System.out.println("Time creating features: "+(end-start)+" miliseconds");
-        System.out.println("Time with jdbc: " + msfacade.JDBCcounter);
-        System.out.println("Time creating queries: " + msfacade.queryCreation);
-        System.out.println("Time creating objects: " + msfacade.objectLCMSCompoundCounter);
-        System.out.println("Time creating structures: " + msfacade.structureCounter);
-        System.out.println("Time creating pathways: " + msfacade.pathwayCounter);
-        System.out.println("Time creating LMClassification: " + msfacade.LMClassificationCounter);
-        System.out.println("Time creating lipids_classification: " + msfacade.lipidsClassificationCounter);
+    */
 
+    /**
+     * Performs an advanced search jdbc over a number of random masses (limit)
+     */
+  
+//        @Test 
+//       public void maxCapacity()
+//       {
+//           long start = System.currentTimeMillis(); 
+//
+//           int limit= 10000;
+//           MSFacade msfacade = new MSFacade();
+//           List<Double> totalMasses = new LinkedList<>();
+//           List<String> adducts = new LinkedList<>();
+//           adducts.add("M+H");
+//           adducts.add("M+2H");
+//           adducts.add("M+Na");
+//           adducts.add("M+K");
+//           adducts.add("M+NH4");
+//           adducts.add("M+H-H2O");
+//           List <String> databases= new LinkedList<>();
+//           databases.add("AllWM");
+//           List <Integer> databasesInt= DataFromInterfacesUtilities.getDatabasesAsInt(databases);
+//           int metabolitesType=0;
+//           double maxMass=700;
+//           double maxRT=30;
+//           double maxCS=700;
+//           int maxCSInt=1000;
+//           int tolerance= 10;
+//           List <Double> masses= new LinkedList<>();
+//           List <Double> retentionTimes= new LinkedList<>();
+//           List <Map <Double, Integer>> compositeSpectra=new LinkedList<>();
+//
+//           /*
+//           msfacade.JDBCcounter=0;
+//           msfacade.queryCreation=0;
+//           msfacade.objectLCMSCompoundCounter=0;
+//           msfacade.structureCounter=0;
+//           msfacade.pathwayCounter=0;
+//           msfacade.LMClassificationCounter=0;
+//           msfacade.lipidsClassificationCounter=0;
+//           */
+//
+//           for (int i= 0; i<=limit; i++)
+//           {
+//               double mass= Math.random()*maxMass;
+//               //double rt=Math.random()*maxRT;
+//               //double csDouble=Math.random()*maxCS;
+//               //int csInt= (int) Math.random()*maxCSInt;
+//               masses.add(mass);
+//               //retentionTimes.add(rt);
+//               //Map <Double, Integer> CS= new TreeMap<>();
+//               //CS.put(csDouble, csInt);
+//               //compositeSpectra.add(CS);
+//           }
+//
+//           long end = System.currentTimeMillis(); 
+//           System.out.println("Time creating lists: "+(end-start));
+//           start= end;
+//           List <Double> massesMZFromNeutral= new LinkedList();
+//           LCMSController controller= new LCMSController();
+//           for (double mass : masses) {
+//                   mass = utilities.Utilities.calculateMZFromNeutralMass(mass, "m/z", 1);
+//                   massesMZFromNeutral.add(mass);
+//               }
+//           end= System.currentTimeMillis();
+//           System.out.println("Time to neutral: "+(end-start));
+//           start=end;
+//
+//           List <Feature> features= FeaturesRTProcessing.loadFeatures(massesMZFromNeutral, new LinkedList(),
+//                   new LinkedList(), true, 1, adducts,
+//                   10d, 0, databasesInt, metabolitesType,1, msfacade);
+//           end = System.currentTimeMillis(); 
+//           System.out.println("Time creating features: "+(end-start)+" miliseconds");
+//
+//           //Advanced:      
+//           // ---> Create experiment
+//           //---> Experiment.processcompoundsAdvanced
+//           start=end;
+//           ExperimentGroupByRT experiment= new ExperimentGroupByRT(features, features, false,
+//                   10, 0, 0, 0, 0, databasesInt, 0, 1, adducts, Constantes.RT_WINDOW );
+//           end=System.currentTimeMillis();
+//           System.out.println("Time creating experiment: "+(end-start));
+//
+//           start=end;
+//           experiment.processCompoundsAdvanced();
+//           end=System.currentTimeMillis();
+//           System.out.println("Time jdbc advanced: "+(end-start));
+//
+//           /*
+//           System.out.println("Time with jdbc: " + msfacade.JDBCcounter);
+//           System.out.println("Time creating queries: " + msfacade.queryCreation);
+//           System.out.println("Time creating objects: " + msfacade.objectLCMSCompoundCounter);
+//           System.out.println("Time creating structures: " + msfacade.structureCounter);
+//           System.out.println("Time creating pathways: " + msfacade.pathwayCounter);
+//           System.out.println("Time creating LMClassification: " + msfacade.LMClassificationCounter);
+//           System.out.println("Time creating lipids_classification: " + msfacade.lipidsClassificationCounter);
+//           */
+//
+//
+//   }
+     
+    /**
+     * Measures the time in jdbc to perform and advanced search. Yo are reading an excel file and the limit is the number of masses read.
+     */
     
-}*/
-     
-    @Test
-    public void maxCapacityFromExcel() {
-
-        int limit = 10;
-        MSFacade msfacade = new MSFacade();
-        List<Double> totalMasses = new LinkedList<>();
-        List<String> adducts = new LinkedList<>();
-        adducts.add("M+H");
-        adducts.add("M+2H");
-        adducts.add("M+Na");
-        adducts.add("M+K");
-        adducts.add("M+NH4");
-        adducts.add("M+H-H2O");
-        List <String> databases= new LinkedList<>();
-        databases.add("AllWM");
-        List <Integer> databasesInt= DataFromInterfacesUtilities.getDatabasesAsInt(databases);
-        int metabolitesType=0;
-        int chemAlphabet=4;
-
-        msfacade.JDBCcounter=0;
-        msfacade.queryCreation=0;
-        msfacade.objectLCMSCompoundCounter=0;
-        msfacade.structureCounter=0;
-        msfacade.pathwayCounter=0;
-        msfacade.LMClassificationCounter=0;
-        msfacade.lipidsClassificationCounter=0;
-        //msfacade.classifierClassificationCounter=0;
-        
-        
-        try {
-            totalMasses = ExcelReader.getMassesFromCSV();
-        } catch (IOException ex) {
-            Logger.getLogger(timeTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        List<Double> masses = new LinkedList<>();
-        for (int i = 0; i < limit; i++) {
-            masses.add(totalMasses.get(i));
-        }
-        
-        long start = System.currentTimeMillis();
-        List<Double> massesMZFromNeutral = new LinkedList();
-        for (double mass : masses) {
-            mass = utilities.Utilities.calculateMZFromNeutralMass(mass, "m/z", "positive");
-            massesMZFromNeutral.add(mass);
-        }
-        long end = System.currentTimeMillis();
-        System.out.println("Time getting neutral masses: " + (end - start));
-
-        start = end;
-        
-        FeaturesRTProcessing.loadFeatures(massesMZFromNeutral, new LinkedList(),
-                new LinkedList(), true, "positive", adducts,
-                10d, 0, databasesInt, metabolitesType, chemAlphabet, msfacade);
-
-        end = System.currentTimeMillis();
-        System.out.println("Time creating features: " + (end - start) + " miliseconds");
-        System.out.println("Time with jdbc: " + msfacade.JDBCcounter);
-        System.out.println("Time creating queries: " + msfacade.queryCreation);
-        System.out.println("Time creating objects: " + msfacade.objectLCMSCompoundCounter);
-        System.out.println("Time creating structures: " + msfacade.structureCounter);
-        System.out.println("Time creating pathways: " + msfacade.pathwayCounter);
-        System.out.println("Time creating LMClassification: " + msfacade.LMClassificationCounter);
-        System.out.println("Time creating lipids_classification: " + msfacade.lipidsClassificationCounter);
-        //System.out.println("Time cerating classyfier_classifications: " + msfacade.classifierClassificationCounter);
-
-    }
+//    @Test
+//    public void maxCapacityFromExcel() {
+//
+//        int limit = 1400;
+//        MSFacade msfacade = new MSFacade();
+//        List<Double> totalMasses = new LinkedList<>();
+//        List<String> adducts = new LinkedList<>();
+//        adducts.add("M+H");
+//        adducts.add("M+2H");
+//        adducts.add("M+Na");
+//        adducts.add("M+K");
+//        adducts.add("M+NH4");
+//        adducts.add("M+H-H2O");
+//        List <String> databases= new LinkedList<>();
+//        databases.add("AllWM");
+//        List <Integer> databasesInt= DataFromInterfacesUtilities.getDatabasesAsInt(databases);
+//        int metabolitesType=0;
+//        int chemAlphabet=4;
+//
+//        
+//        //msfacade.JDBCcounter=0;
+//        //msfacade.queryCreation=0;
+//        //msfacade.objectLCMSCompoundCounter=0;
+//        //msfacade.structureCounter=0;
+//        //msfacade.pathwayCounter=0;
+//        //msfacade.LMClassificationCounter=0;
+//        //msfacade.lipidsClassificationCounter=0;
+//        
+//        //msfacade.classifierClassificationCounter=0;
+//        
+//        
+//        try {
+//            totalMasses = ExcelReader.getMassesFromCSV();
+//        } catch (IOException ex) {
+//            Logger.getLogger(timeTest.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        List<Double> masses = new LinkedList<>();
+//        for (int i = 0; i < limit; i++) {
+//            masses.add(totalMasses.get(i));
+//        }
+//        
+//        long start = System.currentTimeMillis();
+//        List<Double> massesMZFromNeutral = new LinkedList();
+//        for (double mass : masses) {
+//            mass = utilities.Utilities.calculateMZFromNeutralMass(mass, "m/z", 1);
+//            massesMZFromNeutral.add(mass);
+//        }
+//        long end = System.currentTimeMillis();
+//        System.out.println("Time getting neutral masses: " + (end - start));
+//
+//        start = end;
+//        
+//        List <Feature> features= FeaturesRTProcessing.loadFeatures(massesMZFromNeutral, new LinkedList(),
+//                new LinkedList(), true, 1, adducts,
+//                10d, 0, databasesInt, metabolitesType, chemAlphabet, msfacade);
+//
+//        end = System.currentTimeMillis();
+//        
+//        System.out.println("Time loading features: "+(end-start));
+//        
+//        start=end;
+//        ExperimentGroupByRT experiment= new ExperimentGroupByRT(features, features, false,
+//                10, 0, 0, 0, 0, databasesInt, 0, 1, adducts, Constantes.RT_WINDOW );
+//        end=System.currentTimeMillis();
+//        System.out.println("Time creating experiment: "+(end-start));
+//        
+//        start=end;
+//        experiment.processCompoundsAdvanced();
+//        end=System.currentTimeMillis();
+//        System.out.println("Time jdbc advanced: "+(end-start));
+//        
+//        
+//        /*
+//        System.out.println("Time creating features: " + (end - start) + " miliseconds");
+//        System.out.println("Time with jdbc: " + msfacade.JDBCcounter);
+//        System.out.println("Time creating queries: " + msfacade.queryCreation);
+//        System.out.println("Time creating objects: " + msfacade.objectLCMSCompoundCounter);
+//        System.out.println("Time creating structures: " + msfacade.structureCounter);
+//        System.out.println("Time creating pathways: " + msfacade.pathwayCounter);
+//        System.out.println("Time creating LMClassification: " + msfacade.LMClassificationCounter);
+//        System.out.println("Time creating lipids_classification: " + msfacade.lipidsClassificationCounter);
+//        */
+//        //System.out.println("Time cerating classyfier_classifications: " + msfacade.classifierClassificationCounter);
+//
+//   }
+    
     /*
     @Test
     public void measureJDBCTime ()
@@ -276,7 +316,7 @@ public class timeTest {
         int numInputMasses = masses.size();
         List <Double> massesMZFromNeutral= new LinkedList<>();
         for (double mass : masses) {
-                mass = utilities.Utilities.calculateMZFromNeutralMass(mass, "m/z", "positive");
+                mass = utilities.Utilities.calculateMZFromNeutralMass(mass, "m/z", 1);
                 massesMZFromNeutral.add(mass);
             }
         List<Double> retentionTimes = Cadena.getListOfDoubles(queryRetentionTimes, numInputMasses);
@@ -305,7 +345,7 @@ public class timeTest {
         adducts.add("2M+Na");
         
          ExperimentGroupByRT experiment= new ExperimentGroupByRT(significantFeatures, significantFeatures, false,
-                10, 0, 0, 0, 0, databases, 0, 1, adducts);
+                10, 0, 0, 0, 0, databases, 0, 1, adducts, Constantes.RT_WINDOW );
         
         List <FeaturesGroupByRT> allFeaturesGroupByRT= experiment.getAllFeaturesGroupByRT();
         end= System.currentTimeMillis(); 
@@ -314,9 +354,19 @@ public class timeTest {
         
         MSFacade msfacade= new MSFacade();
         List <Feature> features= new NoDuplicatesList();
-        FeaturesRTProcessing.setAnnotationsGroupByAdduct(allFeaturesGroupByRT,0.1d, 0, adducts, "positive",databases, 0,msfacade);
+        for (FeaturesGroupByRT fgbrt: allFeaturesGroupByRT)
+        {
+            features= fgbrt.getFeatures();
+            for (Feature f: features)
+            {
+                FeaturesRTProcessing.setAnnotationsGroupByAdduct(f,0.1d, 0, adducts, 1,databases, 0,4, msfacade);
+            }
+        }
+        
 
     }
-     */
+*/
+   
+     
 
 }

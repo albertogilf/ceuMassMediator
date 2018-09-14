@@ -9,7 +9,7 @@ import java.util.Comparator;
 
 /**
  *
- * @author María 606888798
+ * @author María Postigo. San Pablo CEU
  */
 public class EMComparator implements Comparator <Feature>{
      @Override

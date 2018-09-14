@@ -9,7 +9,8 @@ import java.util.Comparator;
 
 /**
  *
- * @author María 606888798
+ * @author María Postigo. San Pablo-CEU
+ * @version: 4.0, 24/04/2018
  */
 public class RTComparator implements Comparator <Feature>{
 

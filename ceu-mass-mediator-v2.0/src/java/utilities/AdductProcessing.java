@@ -12,11 +12,11 @@ package utilities;
 import LCMS.EMComparator;
 import LCMS.Feature;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import static utilities.Constantes.ADDUCT_AUTOMATIC_DETECTION_WINDOW;
 
 /**
@@ -25,7 +25,7 @@ import static utilities.Constantes.ADDUCT_AUTOMATIC_DETECTION_WINDOW;
  * @version $Revision: 1.1.1.1 $
  * @since Build 4.1 10-may-2018
  *
- * @author Alberto Gil de la Fuente
+ * @author Alberto Gil de la Fuente. María Postigo. San Pablo-CEU
  */
 public class AdductProcessing {
 
@@ -33,7 +33,6 @@ public class AdductProcessing {
 
     }
 
-    //if the ionization is positive subtacts an H, if negative it adds it
     /**
      * Calculate the neutral mass adding or subtracting the weight of a proton
      * depending on the ionization mode.
@@ -42,34 +41,40 @@ public class AdductProcessing {
      * @param mzMass
      * @return
      */
-    public static double calculateNeutralMass(int ionizationMode, double mzMass) {
-        if (ionizationMode == 0) //means negative ionization
-        {
-            return mzMass + Constantes.PROTON_WEIGHT;
+    public static double calculateNeutralMassFromHAdduct(int ionizationMode, double mzMass) {
+        switch (ionizationMode) {
+            // positive ionization
+            case 1:
+                return getMassToSearch(mzMass, "M+H", ionizationMode);
+            // negative ionization
+            case 2:
+                return getMassToSearch(mzMass, "M-H", ionizationMode);
+            
+            default:
+                return mzMass;
         }
-        if (ionizationMode == 1) {
-            return mzMass - Constantes.PROTON_WEIGHT;
-        }
-        return 0d;
     }
 
     /**
-     * Calculate the neutral mass adding or subtracting the weight of a proton
+     * Calculate the m/z mass adding or subtracting the weight of a proton
      * depending on the ionization mode.
      *
      * @param ionizationMode 0 is negative. 1 is positive
      * @param neutralMass
      * @return
      */
-    public static double calculateMZ(int ionizationMode, double neutralMass) {
-        if (ionizationMode == 0) //means negative ionization
-        {
-            return neutralMass - Constantes.PROTON_WEIGHT;
+    //TODO IMPORTANT
+    public static double calculateMZFromHAdduct(int ionizationMode, double neutralMass) {
+        switch (ionizationMode) {
+            // positive ionization
+            case 1:
+                return getMassOfAdductFromMonoWeight(neutralMass, "M+H", ionizationMode);
+            // negative ionization
+            case 2:
+                return getMassOfAdductFromMonoWeight(neutralMass, "M-H", ionizationMode);
+            default:
+                return neutralMass;
         }
-        if (ionizationMode == 1) {
-            return neutralMass + Constantes.PROTON_WEIGHT;
-        }
-        return 0d;
     }
 
     /**
@@ -108,7 +113,7 @@ public class AdductProcessing {
      * @param ionizationMode
      * @return
      */
-    public static Double getMassToSearch(Double experimentalMass, String adduct, String ionizationMode) {
+    public static Double getMassToSearch(Double experimentalMass, String adduct, int ionizationMode) {
         Double adductValue = getAdductValue(adduct, ionizationMode);
         Double massToSearch;
 
@@ -172,7 +177,7 @@ public class AdductProcessing {
      * @return the mass difference within the tolerance respecting to the
      * massToSearch
      */
-    public static Double getMassOfAdductFromMonoWeight(Double monoisotopic_weight, String adduct, String ionizationMode) {
+    public static Double getMassOfAdductFromMonoWeight(Double monoisotopic_weight, String adduct, int ionizationMode) {
         Double adductValue = getAdductValue(adduct, ionizationMode);
         Double massToSearch;
 
@@ -268,16 +273,13 @@ public class AdductProcessing {
      * @return
      */
     public static Map<Double, Integer> getMonoPeaksFromCS(Map<Double, Integer> compositeSpectrum) {
-        Map<Double, Integer> filteredCS = new LinkedHashMap();
+        Map<Double, Integer> filteredCS = new TreeMap();
         Double previousPeak = 0d;
-        // System.out.println("CS:" + compositeSpectrum);
         for (Map.Entry<Double, Integer> entry : compositeSpectrum.entrySet()) {
             Double mz = entry.getKey();
             Integer intensity = entry.getValue();
-            //System.out.println("PREVIOUS: " + previousPeak + " NEW: " + mz );
-            if (previousPeak == 0d || Math.abs(mz - previousPeak) > 2 * Constantes.PROTON_WEIGHT) {
+            if (previousPeak == 0d || Math.abs(mz - previousPeak) > Constantes.BIGGEST_ISOTOPE * Constantes.PROTON_WEIGHT) {
                 filteredCS.put(mz, intensity);
-                //System.out.println("INSERTING: " + mz );
             }
             previousPeak = mz;
         }
@@ -285,41 +287,20 @@ public class AdductProcessing {
     }
 
     /**
-     * * Detect the ionization adduct based on the relationships in the
-     * Composite Spectrum. The inputMass is handled as m/z
-     *
-     * @param ionMode 0 negative, 1 positive.
-     * @param inputMass m/z
-     * @param adducts possible adducts to be formed
-     * @param compositeSpectrum Signals of CS
-     * @return
-     */
-    public static String detectAdductBasedOnCompositeSpectrum(
-            Integer ionMode,
-            Double inputMass,
-            List<String> adducts,
-            Map<Double, Integer> compositeSpectrum) {
-        String ionizationMode = getStringIonizationModeFromInt(ionMode);
-        return AdductProcessing.detectAdductBasedOnCompositeSpectrum(ionizationMode, inputMass, adducts, compositeSpectrum);
-    }
-
-    /**
      * Detect the ionization adduct based on the relationships in the Composite
      * Spectrum. The inputMass is handled as m/z
      *
-     * @param ionMode positive or negative
+     * @param ionMode 0 neutral, 1 positive 2 negative
      * @param inputMass m/z
      * @param adducts possible adducts to be formed
      * @param compositeSpectrum Signals of CS
      * @return
      */
     public static String detectAdductBasedOnCompositeSpectrum(
-            String ionMode,
+            int ionMode,
             Double inputMass,
             List<String> adducts,
             Map<Double, Integer> compositeSpectrum) {
-//        System.out.println("DETECTING ADDUCT BASED ON COMPOSITE SPECTRUM. Masses Mode: " + massesMode + " ionMode: " + ionMode);
-//        System.out.println("FOR INPUT MASS: " + inputMass);
         if (compositeSpectrum.isEmpty()) {
             return "";
         }
@@ -334,11 +315,11 @@ public class AdductProcessing {
         List<String> allAdductsForCheckRelation;
         boolean search = false;
         switch (ionMode) {
-            case "positive": {
+            case 1: {
                 mapAdducts = AdductsLists.MAPMZPOSITIVEADDUCTS;
                 allAdductsForCheckRelation = new LinkedList<>();
                 allAdductsForCheckRelation.addAll(AdductsLists.MAPMZPOSITIVEADDUCTS.keySet());
-                if (ionMode.equals("positive")) {
+                if (ionMode == 1) {
                     search = true;
                 } else {
                     System.out.println("ION MODE BAD SPECIFIED DETECTING AUTOMATIC ADDUCT BASED ON "
@@ -347,11 +328,11 @@ public class AdductProcessing {
                 }
                 break;
             }
-            case "negative": {
+            case 2: {
                 mapAdducts = AdductsLists.MAPMZNEGATIVEADDUCTS;
                 allAdductsForCheckRelation = new LinkedList<>();
                 allAdductsForCheckRelation.addAll(AdductsLists.MAPMZNEGATIVEADDUCTS.keySet());
-                if (ionMode.equals("negative")) {
+                if (ionMode == 2) {
                     search = true;
                 } else {
                     System.out.println("ION MODE BAD SPECIFIED DETECTING AUTOMATIC ADDUCT BASED ON "
@@ -424,37 +405,35 @@ public class AdductProcessing {
      * @param ionMode Ionization mode (positive, negative or neutral)
      * @return provisionalMap Map to get the value of adducts
      */
-    public static Map<String, String> chooseprovisionalMapAdducts(String massesMode, String ionMode) {
+    public static Map<String, String> chooseprovisionalMapAdducts(String massesMode, int ionMode) {
         Map<String, String> provisionalMap;
         switch (massesMode) {
             case "mz":
                 switch (ionMode) {
-                    case "positive":
+                    case 1:
                         provisionalMap = AdductsLists.MAPMZPOSITIVEADDUCTS;
                         break;
-                    case "negative":
+                    case 2:
                         provisionalMap = AdductsLists.MAPMZNEGATIVEADDUCTS;
                         break;
                     default:
                         provisionalMap = AdductsLists.MAPNEUTRALADDUCTS;
                         break;
                 }
-                //System.out.println("MZ -> PROVISIONALMAP: " + provisionalMap);
                 return provisionalMap;
 
             default:
                 switch (ionMode) {
-                    case "positive":
+                    case 1:
                         provisionalMap = AdductsLists.MAPMZPOSITIVEADDUCTS;
                         break;
-                    case "negative":
+                    case 2:
                         provisionalMap = AdductsLists.MAPMZNEGATIVEADDUCTS;
                         break;
                     default:
                         provisionalMap = AdductsLists.MAPNEUTRALADDUCTS;
                         break;
                 }
-                //System.out.println("DEFAULT -> PROVISIONALMAP: " + provisionalMap);
                 return provisionalMap;
         }
     }
@@ -469,18 +448,18 @@ public class AdductProcessing {
      * @param adducts Possible adducts occurred during the experiment
      * @return the list of adducts to search
      */
-    public static List<String> chooseAdducts(String ionMode,
+    public static List<String> chooseAdducts(int ionMode,
             Map<String, String> provisionalMap,
             List<String> adducts) {
         switch (ionMode) {
-            case "positive":
-                if (adducts.isEmpty() || adducts.get(0).equals("allPositives")) {
+            case 1:
+                if (adducts.isEmpty() || adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_POSITIVE)) {
                     Set set = provisionalMap.keySet();
                     return new LinkedList<>(set);
                 }
                 break;
-            case "negative":
-                if (adducts.isEmpty() || adducts.get(0).equals("allNegatives")) {
+            case 2:
+                if (adducts.isEmpty() || adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_NEGATIVE)) {
                     Set set = provisionalMap.keySet();
                     return new LinkedList<>(set);
                 }
@@ -489,7 +468,6 @@ public class AdductProcessing {
                 Set set = provisionalMap.keySet();
                 return new LinkedList<>(set);
         }
-        //System.out.println(" NEUTRAL -> ADDUCTS: " + adducts);
         return adducts;
 
     }
@@ -503,8 +481,11 @@ public class AdductProcessing {
      * @param ionMode Ionization mode
      * @return
      */
-    public static List<String> FilterAdductsFromInterface(List<String> adducts, String ionMode) {
-        if (adducts.contains("allPositives") || adducts.contains("allNegatives") || adducts.contains("allNeutral")) {
+    public static List<String> FilterAdductsFromInterface(List<String> adducts, int ionMode) {
+        if (adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_POSITIVE) || 
+                adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_NEGATIVE) || 
+                adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL)
+                || adducts.contains("all")) {
             adducts = AdductProcessing.getAllAdducts(ionMode);
         }
         return adducts;
@@ -529,7 +510,29 @@ public class AdductProcessing {
                 adducts = new LinkedList<>(AdductsLists.MAPNEUTRALADDUCTS.keySet());
                 break;
         }
-        //System.out.println(" NEUTRAL -> ADDUCTS: " + adducts);
+        return adducts;
+    }
+
+    /**
+     * Get all the adducts from the ionization mode
+     *
+     * @param ionMode Ionization mode (1 positive, 2 negative, 0 neutral.
+     * Default neutral)
+     * @return the list of adducts to search
+     */
+    public static List<String> getAllAdducts(int ionMode) {
+        List<String> adducts;
+        switch (ionMode) {
+            case 1:
+                adducts = new LinkedList<>(AdductsLists.MAPMZPOSITIVEADDUCTS.keySet());
+                break;
+            case 2:
+                adducts = new LinkedList<>(AdductsLists.MAPMZNEGATIVEADDUCTS.keySet());
+                break;
+            default:
+                adducts = new LinkedList<>(AdductsLists.MAPNEUTRALADDUCTS.keySet());
+                break;
+        }
         return adducts;
     }
 
@@ -541,17 +544,17 @@ public class AdductProcessing {
      * @param ionMode
      * @return
      */
-    private static Double getAdductValue(String adductName, String ionMode) {
+    private static Double getAdductValue(String adductName, int ionMode) {
 
         Map<String, String> provisionalMap;
         String adductValue;
         double adductDouble;
         switch (ionMode) {
-            case "positive":
+            case 1:
                 provisionalMap = AdductsLists.MAPMZPOSITIVEADDUCTS;
                 adductValue = provisionalMap.get(adductName);
                 break;
-            case "negative":
+            case 2:
                 provisionalMap = AdductsLists.MAPMZNEGATIVEADDUCTS;
                 adductValue = provisionalMap.get(adductName);
                 break;
@@ -571,23 +574,20 @@ public class AdductProcessing {
      * @param ionMode
      * @return
      */
-    public static String detectAdductBasedOnAnotherFeatureAdduct(Double experimentalMass, double molecularMass, String ionMode) {
+    public static String detectAdductBasedOnAnotherFeatureAdduct(Double experimentalMass, double molecularMass, int ionMode) {
 
         Map<String, String> mapAdducts;
         String adductDetected = "";
         switch (ionMode) {
-            case "positive": {
-//                System.out.println("enter positive");
+            case 1: {
                 mapAdducts = AdductsLists.MAPMZPOSITIVEADDUCTS;
                 break;
             }
-            case "negative": {
-//                System.out.println("enter negative");
+            case 2: {
                 mapAdducts = AdductsLists.MAPMZNEGATIVEADDUCTS;
                 break;
             }
             default: {
-//                System.out.println("enter neutral");
                 mapAdducts = null;
             }
         }
@@ -600,12 +600,10 @@ public class AdductProcessing {
             if (adductValue == null) {
                 break;
             }
-            
+
             double theoreticalAdductMass = getMassOfAdductFromMonoWeight(experimentalMass, adductName, ionMode);
             System.out.println("Evaluating adduct " + adductName + " theoretical Mass: " + theoreticalAdductMass + " vs " + molecularMass);
-            //System.out.println("Molecurar Mass (M): "+ molecularMass);
             double difference = Math.abs((theoreticalAdductMass - molecularMass));
-            //System.out.println("Difference: "+difference);
             if (difference < ADDUCT_AUTOMATIC_DETECTION_WINDOW) {
                 System.out.println("    ADDUCT DETECTED");
                 adductDetected = adductName;
@@ -624,7 +622,7 @@ public class AdductProcessing {
      * @param ionMode
      */
     public static void detectAdductBasedOnFeaturesRelation(
-            List<String> adducts, List<Feature> features, String ionMode) {
+            List<String> adducts, List<Feature> features, int ionMode) {
         //ex: imputMass=522.98
 
         String adductDetected;
@@ -636,11 +634,11 @@ public class AdductProcessing {
 
         boolean search = false;
         switch (ionMode) {
-            case "positive": {
+            case 1: {
                 mapAdducts = AdductsLists.MAPMZPOSITIVEADDUCTS;
                 allAdductsForCheckRelation = new LinkedList<>();
                 allAdductsForCheckRelation.addAll(AdductsLists.MAPMZPOSITIVEADDUCTS.keySet());
-                if (ionMode.equals("positive")) {
+                if (ionMode == 1) {
                     search = true;
                 } else {
                     System.out.println("ION MODE BAD SPECIFIED DETECTING AUTOMATIC ADDUCT BASED ON "
@@ -648,11 +646,11 @@ public class AdductProcessing {
                 }
                 break;
             }
-            case "negative": {
+            case 2: {
                 mapAdducts = AdductsLists.MAPMZNEGATIVEADDUCTS;
                 allAdductsForCheckRelation = new LinkedList<>();
                 allAdductsForCheckRelation.addAll(AdductsLists.MAPMZNEGATIVEADDUCTS.keySet());
-                if (ionMode.equals("negative")) {
+                if (ionMode == 2) {
                     search = true;
                 } else {
                     System.out.println("ION MODE BAD SPECIFIED DETECTING AUTOMATIC ADDUCT BASED ON "
@@ -679,8 +677,6 @@ public class AdductProcessing {
                     Double neutralMassBasedOnAdduct;
                     neutralMassBasedOnAdduct = utilities.AdductProcessing.getMassToSearch(inputMass, adductName, adductDouble);//ej.500
 
-                    //System.out.println("HYPOTHESIS ->" + inputMass + " is ADDUCT = " + adductName + " from neutralMass: " + neutralMassBasedOnAdduct);
-                    // Hypothesis -> Peak is adductName
                     for (String adductNameForCheckRelation : allAdductsForCheckRelation) {
                         String adductValueForCheckRelation = mapAdducts.get(adductNameForCheckRelation);
                         if (adductValueForCheckRelation == null) {
@@ -695,14 +691,11 @@ public class AdductProcessing {
                                 if (feature.getEM() != inputMass) {
                                     featureMassValue = feature.getEM();
                                     difference = Math.abs(featureMassValue - massValueToBeCorrespondantAdduct);
-                                    // System.out.println("----Comparing "+featureMassValue+" vs "+massValueToBeCorrespondantAdduct);
                                     if (difference < ADDUCT_AUTOMATIC_DETECTION_WINDOW) {
                                         adductDetected = adductName;
                                         if (featureReference.getAdductAutoDetected().equals("") && !featureReference.isIsAdductAutoDetected()) {
                                             featureReference.setAdductAutoDetected(adductDetected);
                                             featureReference.setIsAdductAutoDetected(true);
-
-                                            // System.out.println("ADDUCT DETECTED: " +adductNameForCheckRelation+" from feature mass "+ featureMassValue+ " with neutral mass: " + neutralMassBasedOnAdduct);
                                         }
 
                                     }
@@ -715,19 +708,17 @@ public class AdductProcessing {
         }
     }
 
-    public static void establishRelationshipAmongFeaturesFromMultipleAdducts(List<Feature> features, String ionMode) {
+    public static void establishRelationshipAmongFeaturesFromMultipleAdducts(List<Feature> features, int ionMode) {
 
         List<Feature> featuresWithAdductAutoDetected = getFeaturesWithAdductAutoDetected(features);
         List<Feature> featuresWithoutAdductAutoDetected = getFeaturesWithoutAdductAutoDetected(features);
         Collections.sort(featuresWithAdductAutoDetected, new EMComparator());
-        //features.removeAll(featuresWithAdductAutoDetected);
         Collections.sort(featuresWithoutAdductAutoDetected, new EMComparator());
 
         for (Feature featureWithAdductAutoDetected : featuresWithAdductAutoDetected) {
             Double inputMass = featureWithAdductAutoDetected.getEM();
             String adduct = featureWithAdductAutoDetected.getAdductAutoDetected();
             Double neutralMassToSearch = AdductProcessing.getMassOfAdductFromMonoWeight(inputMass, adduct, ionMode);
-            System.out.println("LOOKING FOR AN ADDUCT FROM: " + neutralMassToSearch);
 
             for (Feature feature : featuresWithoutAdductAutoDetected) {
 
@@ -739,7 +730,7 @@ public class AdductProcessing {
 
             }
         }
-        //features.addAll(featuresWithAdductAutoDetected);
+
     }
 
     private static List<Feature> getFeaturesWithAdductAutoDetected(List<Feature> features) {
@@ -749,7 +740,6 @@ public class AdductProcessing {
                 featuresWithAdductAutoDetected.add(feature);
             }
         }
-//        System.out.println(featuresWithAdductAutoDetected.size());
         return featuresWithAdductAutoDetected;
     }
 
@@ -760,7 +750,6 @@ public class AdductProcessing {
                 featuresWithAdductAutoDetected.add(feature);
             }
         }
-//        System.out.println(featuresWithAdductAutoDetected.size());
         return featuresWithAdductAutoDetected;
     }
 

@@ -7,21 +7,15 @@ package LCMS;
 
 import List.NoDuplicatesList;
 import facades.MSFacade;
-import java.util.LinkedList;
 import java.util.List;
-import utilities.AdductProcessing;
 import utilities.Constantes;
 import utilities.FeaturesRTProcessing;
 
 /**
- * Experiment. Consist on the data obtained through an experiment in the
- * laboratory. // TODO. IT CAN BE USING THIS XHTML PAGE OR IN ANY OTHER WAY. //
- * THERE SHOULD NOT BE DEPENDENCES BETWEEN XHTML and BACKEND CLASSES. // SO
- * CHANGE FOR this data may be introduced. // THE PROBLEM IS NOT THE COMMENT
- * ITSELF, BUT THE CONCEPT THAT YOU HAVE. // SEE THE CLASSES AS ABSTRACT OBJECTS
- * WITHOUT ANY DEPENDENCE. This data is introduced by the user through
- * lc_ms_search.xhtml An experiment contains several features (tuples of mz,
- * retention times and CS)
+ * ExperimentGroupByRT. Consist on the data obtained through an experiment in
+ * the laboratory. This data is introduced by the user through
+ * lcms_grouped_search.xhtml An experiment contains several features (tuples of
+ * mz, retention times and CS)
  *
  * @author Maria Postigo. San Pablo-CEU
  * @version: 4.0, 24/04/2018
@@ -32,7 +26,6 @@ public class ExperimentGroupByRT extends Experiment {
     private List<FeaturesGroupByRT> allFeaturesGroupByRT;
     private List<FeaturesGroupByRT> significantFeaturesGroupedByRT;
 
-    // Complete constructor
     /**
      * Creates an experiment with an empty list of features that may be filled
      * later with the distinct methods for adding features.
@@ -46,12 +39,13 @@ public class ExperimentGroupByRT extends Experiment {
      * @param inputMassesMode
      * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param adducts
+     * @param RT_window
      */
     public ExperimentGroupByRT(int tolerance, int tolerance_type, int chemicalAlphabet, int modifier, int metabolitesType,
-            List<Integer> databases, int inputMassesMode, int ionizationMode, List<String> adducts) {
+            List<Integer> databases, int inputMassesMode, int ionizationMode, List<String> adducts, Double RT_window) {
         this(new NoDuplicatesList(), new NoDuplicatesList(), false,
                 tolerance, tolerance_type, chemicalAlphabet, modifier, metabolitesType,
-                databases, inputMassesMode, ionizationMode, adducts);
+                databases, inputMassesMode, ionizationMode, adducts, RT_window);
     }
 
     /**
@@ -76,7 +70,7 @@ public class ExperimentGroupByRT extends Experiment {
      * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param adducts select adducts that may be present in the sample
      */
-    public ExperimentGroupByRT(List <Feature> significantFeatures, List <Feature> allFeatures,
+    public ExperimentGroupByRT(List<Feature> significantFeatures, List<Feature> allFeatures,
             List<FeaturesGroupByRT> featuresGroupedByRT, List<FeaturesGroupByRT> significantFeaturesGroupedByRT, boolean isAllFeatures,
             int tolerance, int tolerance_type, int chemicalAlphabet, int modifier,
             int metabolitesType, List<Integer> databases, int inputMassesMode, int ionizationMode, List<String> adducts) {
@@ -103,14 +97,15 @@ public class ExperimentGroupByRT extends Experiment {
      * @param inputMassesMode
      * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param adducts
+     * @param RT_window
      */
-    public ExperimentGroupByRT(List <Feature> significantFeatures, List <Feature> allFeatures, boolean isAllFeatures,
+    public ExperimentGroupByRT(List<Feature> significantFeatures, List<Feature> allFeatures, boolean isAllFeatures,
             int tolerance, int tolerance_type, int chemicalAlphabet, int modifier, int metabolitesType,
-            List<Integer> databases, int inputMassesMode, int ionizationMode, List<String> adducts) {
+            List<Integer> databases, int inputMassesMode, int ionizationMode, List<String> adducts, Double RT_window) {
         super(significantFeatures, allFeatures, isAllFeatures, tolerance, tolerance_type, chemicalAlphabet,
                 modifier, metabolitesType, databases, inputMassesMode, ionizationMode, adducts);
-        this.allFeaturesGroupByRT = FeaturesRTProcessing.groupFeaturesByRT(allFeatures, Constantes.RT_WINDOW);
-        
+        this.allFeaturesGroupByRT = FeaturesRTProcessing.groupFeaturesByRT(allFeatures, RT_window);
+
     }
 
     public List<FeaturesGroupByRT> getSignificantFeaturesGroupedByRT() {
@@ -152,8 +147,8 @@ public class ExperimentGroupByRT extends Experiment {
 
         List<Integer> databasesAsInt = getDatabases();
         int metabolitesTypeInt = getMetabolitesType();
-        int ionizationModeAsInt = getIonizationMode();
-        String ionizationMode = AdductProcessing.getStringIonizationModeFromInt(ionizationModeAsInt);
+        int massesMode = getInputMassesMode();
+        int ionizationMode = getIonizationMode();
         int chemAlphabetInt = getChemicalAlphabet();
         int toleranceTypeAsInt = getTolerance_type();
 
@@ -161,17 +156,17 @@ public class ExperimentGroupByRT extends Experiment {
         if (this.allFeaturesGroupByRT == null) {
             this.allFeaturesGroupByRT = new NoDuplicatesList();
         }
- 
-        
+
         //Detect adduct from relation among features
         FeaturesRTProcessing.setRelationshipAmongFeatures(this.allFeaturesGroupByRT, adducts, ionizationMode);
 
         //For each feature obtain the list of compounds group by adduct  
         FeaturesRTProcessing.setAnnotationsGroupByAdduct(this.allFeaturesGroupByRT, toleranceDouble, toleranceTypeAsInt,
-                adducts, ionizationMode, databasesAsInt, metabolitesTypeInt, chemAlphabetInt, msfacade);
+                adducts, massesMode, ionizationMode, databasesAsInt, metabolitesTypeInt, chemAlphabetInt, msfacade);
 
         //check if the unidentified adducts belongs to fragments
-        FeaturesRTProcessing.setFragments(this.allFeaturesGroupByRT, msfacade);
+        FeaturesRTProcessing.setFragments(this.allFeaturesGroupByRT,
+                Constantes.TOLERANCE_FOR_MSMS_PEAKS_POSSIBLE_FRAGMENTS, msfacade, ionizationMode);
     }
 
     /**
@@ -183,5 +178,4 @@ public class ExperimentGroupByRT extends Experiment {
                 this.allFeaturesGroupByRT, isIsAllFeatures());
     }
 
-    
 }

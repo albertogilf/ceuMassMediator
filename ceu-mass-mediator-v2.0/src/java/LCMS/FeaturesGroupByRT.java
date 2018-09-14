@@ -7,9 +7,7 @@ package LCMS;
 
 import List.NoDuplicatesList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * FeaturesGroupByRT. Consist on a set of features grouped by their retention
@@ -126,9 +124,9 @@ public class FeaturesGroupByRT {
      * @return the number of features in the group of features.
      */
     public Integer getNumFeatures() {
-        // If there is a group of features there is at least one feature, so 
-        // it does not check null
+       if (this.features==null){return 0;}
         return this.features.size();
+        
     }
 
     public String getTitleMessage() {

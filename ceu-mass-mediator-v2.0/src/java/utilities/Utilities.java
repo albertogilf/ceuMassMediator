@@ -32,14 +32,14 @@ public final class Utilities {
      *
      * @param inputMass
      * @param massesMode
-     * @param ionMode
+     * @param ionizationMode
      * @return
      */
-    public static Double calculateMZFromNeutralMass(Double inputMass, String massesMode, String ionMode) {
+    public static Double calculateMZFromNeutralMass(Double inputMass, int massesMode, int ionizationMode) {
         Double mzInputMass = inputMass;
-        if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("positive")) {
+        if (massesMode == 0 && ionizationMode == 1) {
             mzInputMass = inputMass + Constantes.PROTON_WEIGHT;
-        } else if (massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && ionMode.equals("negative")) {
+        } else if (massesMode == 0 && ionizationMode == 2) {
             mzInputMass = inputMass - Constantes.PROTON_WEIGHT;
         }
         return mzInputMass;
@@ -316,6 +316,10 @@ public final class Utilities {
      * @return
      */
     public static Double calculateFAEMFromPIandOtherFAEM(Double ParentIonNeutralMass, Double FAEM1) {
+        if(ParentIonNeutralMass == null || FAEM1 == null)
+        {
+            return null;
+        }
         double FAEM2;
         double neutralMassFAEM1 = FAEM1 + PROTON_WEIGHT - H_WEIGHT;
         // Parent Ion Neutral mass - Mass of the PC Head - FA of Oxidized FA

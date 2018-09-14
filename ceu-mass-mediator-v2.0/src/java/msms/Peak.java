@@ -107,8 +107,7 @@ public class Peak implements Comparable<Peak> {
      * @return true or false according to if the peak is withing the window tolerance
      */
     public boolean peakMatch(Peak libraryPeak, double mzTolerance) {
-        // Data: input_mz, tolerance_mz, candidate_mz
-        // Candidate mz must be within: (input_mz - tolerance_mz, input_mz + tolerance_mz)
+        
         //return  this.mz<= (libraryPeak.getMz() + mzTolerance) &&  this.mz>= (libraryPeak.getMz() - mzTolerance);
         return  libraryPeak.getMz()<= (this.mz + mzTolerance) &&  libraryPeak.getMz()>= (this.mz - mzTolerance);
     }

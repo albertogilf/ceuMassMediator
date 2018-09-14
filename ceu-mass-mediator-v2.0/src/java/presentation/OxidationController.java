@@ -42,7 +42,7 @@ public class OxidationController implements Serializable {
     private String inputModeToleranceForPI;
     
     // Oxidation occurs always in negative mode
-    private final String ionMode;
+    private final int ionMode;
 
     private Double queryParentIonMass;
     private List<Double> queryFattyAcidMasses;
@@ -78,7 +78,7 @@ public class OxidationController implements Serializable {
         this.databasesForPISearch.add("all");
 
         this.oxidationsCandidates = new LinkedList<SelectItem>();
-        this.ionMode = "negative";
+        this.ionMode = 2;
         this.oxidations = new LinkedList<String>();
         this.oxidations.add("allOxidations");
         this.queryInputParentIonMass = "";
@@ -367,7 +367,7 @@ public class OxidationController implements Serializable {
     /**
      * @return The ionization mode
      */
-    public String getIonMode() {
+    public int getIonMode() {
         // System.out.println("ION MODE RETURNED: " + ionMode);
         return ionMode;
     }

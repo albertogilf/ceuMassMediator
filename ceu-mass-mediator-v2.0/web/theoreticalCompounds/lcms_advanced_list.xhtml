@@ -22,7 +22,7 @@
                         <h:commandButton 
                             styleClass="button"
                             value="Generate Excel" 
-                            action="#{LCMSController.exportToExcel(0)}" 
+                            action="#{LCMSController.exportToExcel(1)}" 
                             immediate="true"
                             rendered="#{LCMSController.isThereInputMasses()}">
                         </h:commandButton>
@@ -102,20 +102,22 @@
                                         </p:column>
 
                                         <p:column 
-                                            sortBy="#{annotation.ionizationScore}" style="width:75px"
+                                            sortBy="#{annotation.ionizationScore}" style="width:95px"
                                             styleClass="#{annotation.colorIonizationScore}"
                                             >
                                             <f:facet name="header">
-                                                <h:outputText value="Score1" title="Score based on adduct formation rules"/>
+                                                <h:outputText value="Ionization score " title="Score based on adduct formation rules (see manual for more information)"/>
+                                                <p:graphicImage alt="" value="/images/help_icon.png" title="Score based on adduct formation rules (see manual for more information)" width="15px"/>
                                             </f:facet>
                                             <h:outputText value="#{annotation.ionizationScore>=0 ? annotation.ionizationScore : 'N/A'}" />
                                         </p:column>
 
                                         <p:column 
-                                            sortBy="#{annotation.adductRelationScore}" style="width:75px"
+                                            sortBy="#{annotation.adductRelationScore}" style="width:90px"
                                             styleClass="#{annotation.colorAdductRelationScore}">
                                             <f:facet name="header">
-                                                <h:outputText value="Score2" title="Score based on Adducts relations"/>
+                                                <h:outputText value="Relation Score " title="Score based on Adducts relations between different features (see manual for more information)"/>
+                                                <p:graphicImage alt="" value="/images/help_icon.png" title="Score based on Adducts relations between different features (see manual for more information)" width="15px"/>
                                             </f:facet>
                                             <h:outputText value="#{annotation.adductRelationScore>=0 ? annotation.adductRelationScore : 'N/A'}" />
                                         </p:column>    
@@ -123,32 +125,35 @@
                                         <ui:remove>
                                             <!-- Deleted temporaly-->
                                             <p:column 
-                                                sortBy="#{annotation.precedenceScore}" style="width:75px"
+                                                sortBy="#{annotation.precedenceScore}" style="width:95px"
                                                 styleClass="#{annotation.colorPrecedenceScore}">
                                                 <f:facet name="header">
-                                                    <h:outputText value="Score2" title="Score based on Lipid Type and Retention Time"/>
+                                                    <h:outputText value="Precedence Score " title="Score based on Lipid Type and Retention Time (see manual for more information)"/>
+                                                    <p:graphicImage alt=""  value="/images/help_icon.png" title="Score based on Lipid Type and Retention Time (see manual for more information)" width="15px"/>
                                                 </f:facet>
                                                 <h:outputText value="#{annotation.precedenceScore>=0 ? annotation.precedenceScore : ''}" />
                                             </p:column>    
                                         </ui:remove>
 
                                         <p:column 
-                                            sortBy="#{annotation.RTscore}" style="width:75px"
+                                            sortBy="#{annotation.RTscore}" style="width:90px"
                                             styleClass="#{annotation.colorRTscore}">
                                             <f:facet name="header">
-                                                <h:outputText value="Score3" title="Score based on Retention Time depending on double bonds and chain length"/>
+                                                <h:outputText value="RT Score " title="Score based on Retention Time depending on double bonds and chain length (see manual for more information)"/>
+                                                <p:graphicImage alt="" value="/images/help_icon.png" title="Score based on Retention Time depending on double bonds and chain length (see manual for more information)" width="15px"/>
                                             </f:facet>
                                             <h:outputText value="#{annotation.RTscore>=0 ? annotation.RTscore : 'N/A'}" />
                                         </p:column>  
 
                                         <p:column 
-                                            sortBy="#{annotation.finalScore}" style="width:75px"
+                                            sortBy="#{annotation.finalScore}" style="width:90px"
                                             styleClass="#{annotation.colorFinalScore}">
                                             <f:facet name="header">
-                                                <h:outputText value="Final Score" title="Final score based on previous rules"/>
+                                                <h:outputText value="Final Score " title="Final score based on previous rules (see manual for information)"/>
+                                                <p:graphicImage alt="" title="Final score based on previous rules (see manual for information)" value="/images/help_icon.png" width="15px"/>
                                             </f:facet>
                                             <h:outputText value="#{annotation.finalScore>=0 ? annotation.finalScore : 'N/A'}" />
-                                        </p:column>  
+                                        </p:column>
 
                                         <p:column headerText="Cas" sortBy="#{annotation.cas_id}" style="width:120px">
                                             <h:outputText value="#{annotation.cas_id}"/> 

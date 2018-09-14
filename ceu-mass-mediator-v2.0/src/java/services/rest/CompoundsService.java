@@ -4,7 +4,6 @@ import javax.ws.rs.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,7 +16,6 @@ import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.tomcat.jdbc.pool.DataSource;
-import persistence.theoreticalCompound.NewCompound;
 import facades.TheoreticalCompoundsFacade;
 import utilities.Cadena;
 import com.google.gson.Gson;
@@ -28,6 +26,7 @@ import javax.ejb.EJB;
 import persistence.compoundsFactories.NewCompoundFactory;
 import persistence.theoreticalCompound.TheoreticalCompounds;
 import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
+import utilities.DataFromInterfacesUtilities;
 
 /**
  * Rest Service to get the compounds through the experimental mass
@@ -64,10 +63,10 @@ public class CompoundsService {
         significativeCompounds.add(true);
         queryRetentionTimes.add(0d);
         String chemicalAlphabet = "ALL";
-        String ionMode = "neutral";
+        int ionMode = 0;
         String MassesMode = "neutral";
         List<String> adducts = new LinkedList<String>();
-        adducts.add("allNeutral");
+        adducts.add(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL);
         List<TheoreticalCompoundsGroup> listCompoundsGroup = new LinkedList<TheoreticalCompoundsGroup>();
         List<String> databases = new LinkedList<String>();
         String metabolitesType = "All except peptides";

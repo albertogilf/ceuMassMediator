@@ -648,7 +648,19 @@ public final class QueryConstructor {
         }
         newQuery = newQuery + "(" + aliasName + ".mass >= ? and "
                 + aliasName + ".mass <= ? )";
-        newQuery = newQuery + " order by ABS(" + aliasName + ".mass - ? )";
+        return newQuery;
+    }
+    
+    /**
+     * Fill the query to add the filter from the masses
+     *
+     * @param aliasName alias of the table compounds
+     * @param query previous SQL query built
+     * @return
+     */
+    public static String addOrderByMassesJDBC(String aliasName, String query) {
+        String newQuery;
+        newQuery = query + " order by ABS(" + aliasName + ".mass - ? )";
         return newQuery;
     }
 

@@ -19,9 +19,9 @@ import java.util.List;
 public class Lipids_Classification {
 
     private final String lipidType;
-    private final int numberChains;
-    private final int numberDoubleBounds;
-    private final int numberCarbons;
+    private final Integer numberChains;
+    private final Integer numberDoubleBounds;
+    private final Integer numberCarbons;
     private final List<Chain> chains;
     private final List<Compound> compounds;
 
@@ -32,12 +32,12 @@ public class Lipids_Classification {
      * @param numberDoubleBounds
      * @param numberCarbons
      */
-    public Lipids_Classification(String lipidType, int numberChains, int numberDoubleBounds,
-            int numberCarbons) {
-        this(lipidType, numberChains, numberDoubleBounds,
-                numberCarbons, new LinkedList<Chain>(), new LinkedList<Compound>());
+    public Lipids_Classification(String lipidType, Integer numberChains, 
+            Integer numberCarbons, Integer numberDoubleBounds) {
+        this(lipidType, numberChains, numberCarbons,
+                numberDoubleBounds, new LinkedList<Chain>(), new LinkedList<Compound>());
     }
-    
+
     /**
      *
      * @param lipidType
@@ -46,10 +46,10 @@ public class Lipids_Classification {
      * @param numberCarbons
      * @param chains
      */
-    public Lipids_Classification(String lipidType, int numberChains, int numberDoubleBounds,
-            int numberCarbons, List<Chain> chains) {
-        this(lipidType, numberChains, numberDoubleBounds,
-                numberCarbons, chains, new LinkedList<Compound>());
+    public Lipids_Classification(String lipidType, Integer numberChains, Integer numberCarbons,
+            Integer numberDoubleBounds, List<Chain> chains) {
+        this(lipidType, numberChains, numberCarbons,
+                numberDoubleBounds, chains, new LinkedList<Compound>());
     }
 
     /**
@@ -61,18 +61,19 @@ public class Lipids_Classification {
      * @param chains
      * @param compounds
      */
-    public Lipids_Classification(String lipidType, int numberChains, int numberDoubleBounds,
-            int numberCarbons, List<Chain> chains, List<Compound> compounds) {
-        this.lipidType = lipidType;
-        this.numberChains = numberChains;
-        this.numberDoubleBounds = numberDoubleBounds;
-        this.numberCarbons = numberCarbons;
-        this.chains = chains;
-        this.compounds = compounds;
+    public Lipids_Classification(String lipidType, Integer numberChains, Integer numberCarbons,
+            Integer numberDoubleBounds, List<Chain> chains, List<Compound> compounds) {
+        
+        this.lipidType = lipidType == null ? "" : lipidType;
+        this.numberChains = numberChains == null ? -1 : numberChains;
+        this.numberCarbons = numberCarbons == null ? -1 : numberCarbons;
+        this.numberDoubleBounds = numberDoubleBounds == null ? -1 : numberDoubleBounds;
+        this.chains = chains == null ? new LinkedList() : chains;
+        this.compounds = compounds == null ? new LinkedList() : compounds;
     }
 
     public String getLipidType() {
-        return lipidType;
+        return this.lipidType;
     }
 
     public int getNumberChains() {

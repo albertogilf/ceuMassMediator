@@ -12,7 +12,8 @@ import java.util.LinkedList;
 
 /**
  *
- * @author María 606888798
+ * @author María Postigo. San Pablo-CEU
+ *
  */
 public class NoDuplicatesList <E> extends LinkedList <E> {
 

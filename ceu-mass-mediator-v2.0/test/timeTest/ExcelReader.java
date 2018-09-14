@@ -29,8 +29,6 @@ public class ExcelReader {
          try {
 
             File file = new File(filename);
-            //File file = new File("C:\\Users\\ceu\\Desktop\\fichero.txt");
-            //File file = new File("/home/alberto/Desktop/fichero.txt");
 
             FileReader fr;
             BufferedReader bf;

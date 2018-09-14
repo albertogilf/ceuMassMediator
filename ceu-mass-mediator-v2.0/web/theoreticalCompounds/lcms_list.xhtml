@@ -101,11 +101,12 @@
                                         </p:column>
 
                                         <p:column 
-                                            sortBy="#{annotation.ionizationScore}" style="width:75px"
+                                            sortBy="#{annotation.ionizationScore}" style="width:95px"
                                             styleClass="#{annotation.colorIonizationScore}"
                                             >
                                             <f:facet name="header">
-                                                <h:outputText value="Score1" title="Score based on adduct formation rules"/>
+                                                <h:outputText value="Ionization score " title="Score based on adduct formation rules (see manual for more information)"/>
+                                                <p:graphicImage alt="" title="Score based on adduct formation rules (see manual for more information)" value="/images/help_icon.png" width="15px"/>
                                             </f:facet>
                                             <h:outputText value="#{annotation.ionizationScore>=0 ? annotation.ionizationScore : 'N/A'}" />
                                         </p:column>

@@ -134,8 +134,8 @@
                                 <p:selectOneListbox id="massesmodemenu" 
                                                     value="#{LCMSController.massesMode}"
                                                     style="width:100%">
-                                    <f:selectItem itemValue="neutral" itemLabel="Neutral Masses"/>
-                                    <f:selectItem itemValue="mz" itemLabel="m/z Masses"/>
+                                    <f:selectItem itemValue="0" itemLabel="Neutral Masses"/>
+                                    <f:selectItem itemValue="1" itemLabel="m/z Masses"/>
                                     <!--<f:selectItem itemValue="recalculated" itemLabel="Recalculated m/z Masses"/>-->
                                     <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu 
                                             adductsmenu messageionmode"/>

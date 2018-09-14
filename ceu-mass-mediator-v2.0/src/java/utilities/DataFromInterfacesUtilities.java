@@ -9,10 +9,6 @@
  */
 package utilities;
 
-import LCMS.Feature;
-import List.NoDuplicatesList;
-import facades.MSFacade;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -34,6 +30,10 @@ public final class DataFromInterfacesUtilities {
 
     }
 
+    public static String ALLADDUCTS_NEUTRAL = "allNeutral";
+    public static String ALLADDUCTS_POSITIVE = "allPositives";
+    public static String ALLADDUCTS_NEGATIVE = "allNegatives";
+    
     public static final Map<String, Integer> MAPCHEMALPHABET;
 
     static {
@@ -180,7 +180,7 @@ public final class DataFromInterfacesUtilities {
     }
 
     public static int inputMassModeToInteger(String inputMassMode) {
-        if (inputMassMode.equals("m/z")) {
+        if (inputMassMode.equals("m/z") || inputMassMode.equals("mz")) {
             return 1;
         }
         return 0;
@@ -196,6 +196,47 @@ public final class DataFromInterfacesUtilities {
                 return 2;
             default:
                 return 0;
+        }
+    }
+
+    /**
+     *
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
+     * @param adducts list of adducts
+     * @return the list of adducts for positive, negative or neutral if the adduct is unknown ("all")
+     */
+    public static List<String> getValueAllAductsBasedOnIonMode(int ionizationMode, List<String> adducts) {
+        if (adducts.contains("all")) {
+            List<String> newAdductsList = new LinkedList<>();
+            switch (ionizationMode) {
+                case 0:
+                    newAdductsList.add(ALLADDUCTS_NEUTRAL);
+                    return newAdductsList;
+                case 1:
+                    newAdductsList.add(ALLADDUCTS_POSITIVE);
+                    return newAdductsList;
+                case 2:
+                    newAdductsList.add(ALLADDUCTS_NEGATIVE);
+                    return newAdductsList;
+                default:
+                    newAdductsList.add(ALLADDUCTS_NEUTRAL);
+                    return newAdductsList;
+            }
+        } else {
+            return adducts;
+        }
+    }
+
+    public static String ionizationModeToString(int ionizationMode) {
+        switch (ionizationMode) {
+            case 0:
+                return "neutral";
+            case 1:
+                return "positive";
+            case 2:
+                return "negative";
+            default:
+                return "neutral";
         }
     }
 

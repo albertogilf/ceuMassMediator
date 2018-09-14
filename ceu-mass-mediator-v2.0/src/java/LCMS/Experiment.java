@@ -8,6 +8,7 @@ package LCMS;
 import List.NoDuplicatesList;
 import java.util.LinkedList;
 import java.util.List;
+//import org.kie.api.runtime.KieContainer;
 import ruleengine.ConfigFilter;
 import ruleengine.RuleProcessor;
 import utilities.Constantes;
@@ -16,15 +17,11 @@ import utilities.RulesProcessing;
 
 /**
  * Experiment. Consist on the data obtained through an experiment in the
- * laboratory. // TODO. IT CAN BE USING THIS XHTML PAGE OR IN ANY OTHER WAY. //
- * THERE SHOULD NOT BE DEPENDENCES BETWEEN XHTML and BACKEND CLASSES. // SO
- * CHANGE FOR this data may be introduced. // THE PROBLEM IS NOT THE COMMENT
- * ITSELF, BUT THE CONCEPT THAT YOU HAVE. // SEE THE CLASSES AS ABSTRACT OBJECTS
- * WITHOUT ANY DEPENDENCE. This data is introduced by the user through
- * lc_ms_search.xhtml An experiment contains several features (tuples of mz,
+ * laboratory. This data is introduced by the user through
+ * lcms_search.xhtml An experiment contains several features (tuples of mz,
  * retention times and CS)
  *
- * @author Maria Postigo. San Pablo-CEU
+ * @author Alberto Gil de la Fuente. San Pablo-CEU
  * @version: 4.0, 24/04/2018
  */
 public class Experiment {
@@ -48,7 +45,8 @@ public class Experiment {
     private final int ionizationMode; // 0 negative, 1 positive
     private final List<String> adducts;
 
-    // Complete constructor
+    private int experimentId;
+    
     /**
      * Creates an experiment with an empty list of features that may be filled
      * later with the distinct methods for adding features.
@@ -83,8 +81,9 @@ public class Experiment {
      * @param tolerance tolerance for the experimental masses
      * @param tolerance_type 0 (ppm) 1 (mDa)
      * @param chemicalAlphabet indicates which atoms are included for the
-     * compound search
-     * @param modifier the molecule mixed with the sample to perform the MS
+     * compound search CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3; ALL, 4; ALLD, 5
+     * @param modifier the molecule mixed with the sample to perform the MS. "None", 0;
+     * "NH3", 1; "HCOO", 2; "CH3COO", 3; "HCOONH3", 4; "CH3COONH3", 5;
      * @param metabolitesType all except peptides (0), only lipids (1) 
      * or all including peptides(2)
      * @param databases databases to perform the search on
@@ -107,6 +106,7 @@ public class Experiment {
         this.inputMassesMode = inputMassesMode;
         this.ionizationMode = ionizationMode;
         this.adducts = adducts;
+        this.experimentId=System.identityHashCode(this);
     }
 
     /**
@@ -270,7 +270,9 @@ public class Experiment {
         configFilter.setModifier(this.modifier);
         configFilter.setIonMode(this.ionizationMode);
         configFilter.setAllCompounds(this.isAllFeatures);
+        //KieContainer kContainer = RuleProcessor.getContainer(Integer.toString(experimentId));
         // Execute rules.
+        //RuleProcessor.processRulesFeatures(this.allFeatures, configFilter, kContainer);
         RuleProcessor.processRulesFeatures(this.allFeatures, configFilter);
 
     }
@@ -282,7 +284,9 @@ public class Experiment {
         configFilter.setModifier(this.modifier);
         configFilter.setIonMode(this.ionizationMode);
         configFilter.setAllCompounds(this.isAllFeatures);
+        //KieContainer kContainer = RuleProcessor.getContainer(Integer.toString(experimentId));
         // Execute rules.
+        //RuleProcessor.processSimpleSearchFeatures(this.allFeatures, configFilter, kContainer);
         RuleProcessor.processSimpleSearchFeatures(this.allFeatures, configFilter);
         
     }

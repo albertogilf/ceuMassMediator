@@ -175,7 +175,8 @@ public class OxidationFacade {
                     massToSearchForOxFA = massToSearchForOxFA + oxidationDouble;
 
                     // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
-                    sqlFinal = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
+                    sqlStart = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
+                    sqlFinal = QueryConstructor.addOrderByMassesJDBC(aliasTable, sqlStart);
                     Double delta = Utilities.calculateDeltaPPM(massToSearchForOxFA, toleranceModeForFAs, toleranceForFAs);
                     Double low = massToSearchForOxFA - delta;
                     Double high = massToSearchForOxFA + delta;
@@ -328,7 +329,8 @@ public class OxidationFacade {
                     massToSearchForOxFA = mzOxidizedFAMass + ConstantesForOxidation.H_WEIGHT;
                     massToSearchForOxFA = massToSearchForOxFA + oxidationDouble;
 
-                    sqlFinal = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
+                    sqlStart = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
+                    sqlFinal = QueryConstructor.addOrderByMassesJDBC(aliasTable, sqlStart);
                     Double delta = Utilities.calculateDeltaPPM(massToSearchForOxFA, toleranceModeForFA, toleranceForFA);
                     Double low = massToSearchForOxFA - delta;
                     Double high = massToSearchForOxFA + delta;
@@ -391,7 +393,8 @@ public class OxidationFacade {
                             massToSearchForOxFA = mzOxidizedFAMass + ConstantesForOxidation.H_WEIGHT;
                             massToSearchForOxFA = massToSearchForOxFA + oxidationDouble;
 
-                            sqlFinal = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
+                            sqlStart = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
+                            sqlFinal = QueryConstructor.addOrderByMassesJDBC(aliasTable, sqlStart);
                             delta = Utilities.calculateDeltaPPM(massToSearchForOxFA, toleranceModeForFA, toleranceForFA);
                             low = massToSearchForOxFA - delta;
                             high = massToSearchForOxFA + delta;
@@ -503,6 +506,8 @@ public class OxidationFacade {
 
         // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
         sql = QueryConstructor.addFilterMassesJDBC(aliasCompoundsTable, sql);
+        sql = QueryConstructor.addOrderByMassesJDBC(aliasCompoundsTable, sql);
+        
         Double delta = Utilities.calculateDeltaPPM(massToSearchForNonOxFA, toleranceModeForFA, toleranceForFA);
         Double low = massToSearchForNonOxFA - delta;
         Double high = massToSearchForNonOxFA + delta;
@@ -609,6 +614,8 @@ public class OxidationFacade {
             return;
         }
         sql = QueryConstructor.addFilterMassesJDBC(aliasTable, sql);
+        sql = QueryConstructor.addOrderByMassesJDBC(aliasTable, sql);
+        
 
         Double delta = Utilities.calculateDeltaPPM(massToSearch, toleranceModeForPI, toleranceForPI);
         Double low = massToSearch - delta;
@@ -760,6 +767,7 @@ public class OxidationFacade {
         }
 
         sql = QueryConstructor.addFilterMassesJDBC(aliasTable, sql);
+        sql = QueryConstructor.addOrderByMassesJDBC(aliasTable, sql);
 
         Double delta = Utilities.calculateDeltaPPM(massToSearch, toleranceModeForPI, toleranceForPI);
         Double low = massToSearch - delta;

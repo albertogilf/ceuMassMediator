@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
+import utilities.AdductProcessing;
 import static utilities.Constantes.MIN_RETENTION_TIME_SCORE;
 import static utilities.Utilities.calculatePPMIncrement;
 
@@ -32,12 +34,15 @@ public class CompoundLCMS extends Compound {
     private boolean showPathways;
 
     private final Double EM;
+    private final double massIntroduced;
     private final Double RT;
     // Key of EM_RT for scores
     private final String myKey;
     private final Map<Double, Integer> CS;
     private final Boolean isSignificative;
     private final String adduct;
+    private final int EMMode; // 0 neutral (protonated or deprotonated), 1 m/z
+    private final int ionization_mode; // 0 neutral, 1 positive, 2 negative
     private final Integer incrementPPM;
 
     private Float ionizationScore;
@@ -54,7 +59,7 @@ public class CompoundLCMS extends Compound {
     // Map of Feature ID and List of boolean applied.
     private Map<String, List<Boolean>> mapRTRules;
     private Float finalScore;
-    
+
     private String colorIonizationScore;
     private String colorAdductRelationScore;
     //public String colorPrecedenceScore;
@@ -65,6 +70,8 @@ public class CompoundLCMS extends Compound {
      *
      * @param EM
      * @param adduct
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param isSignificative
      * @param compound_id
      * @param compound_mass
@@ -89,8 +96,7 @@ public class CompoundLCMS extends Compound {
      * @param lipids_classification
      * @param pathways
      */
-    public CompoundLCMS(Double EM, String adduct,
-            Boolean isSignificative,
+    public CompoundLCMS(Double EM, String adduct, int EMMode, int ionizationMode, Boolean isSignificative,
             Integer compound_id, Double compound_mass, String formula, String compound_name,
             String cas_id, Integer formula_type, Integer compound_type, Integer compound_status,
             Integer charge_type, Integer charge_number,
@@ -100,7 +106,7 @@ public class CompoundLCMS extends Compound {
             List<Classyfire_Classification> classyfire_classification,
             Lipids_Classification lipids_classification,
             List<Pathway> pathways) {
-        this(EM, 0d, new LinkedHashMap<Double, Integer>(), adduct, isSignificative,
+        this(EM, 0d, new TreeMap<Double, Integer>(), adduct, EMMode, ionizationMode, isSignificative,
                 compound_id, compound_mass, formula, compound_name, cas_id, formula_type,
                 compound_type, compound_status, charge_type, charge_number, lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id,
                 structure, lm_classification, classyfire_classification, lipids_classification, pathways);
@@ -111,6 +117,8 @@ public class CompoundLCMS extends Compound {
      * @param EM
      * @param CS
      * @param adduct
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param isSignificative
      * @param compound_id
      * @param compound_mass
@@ -135,7 +143,7 @@ public class CompoundLCMS extends Compound {
      * @param lipids_classification
      * @param pathways
      */
-    public CompoundLCMS(Double EM, Map<Double, Integer> CS, String adduct,
+    public CompoundLCMS(Double EM, Map<Double, Integer> CS, String adduct, int EMMode, int ionizationMode,
             Boolean isSignificative,
             Integer compound_id, Double compound_mass, String formula, String compound_name,
             String cas_id, Integer formula_type, Integer compound_type, Integer compound_status,
@@ -147,7 +155,7 @@ public class CompoundLCMS extends Compound {
             List<Classyfire_Classification> classyfire_classification,
             Lipids_Classification lipids_classification,
             List<Pathway> pathways) {
-        this(EM, 0d, CS, adduct, isSignificative,
+        this(EM, 0d, CS, adduct, EMMode, ionizationMode, isSignificative,
                 compound_id, compound_mass, formula, compound_name, cas_id, formula_type,
                 compound_type, compound_status, charge_type, charge_number, lm_id,
                 kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id,
@@ -159,6 +167,8 @@ public class CompoundLCMS extends Compound {
      * @param EM
      * @param RT
      * @param adduct
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param isSignificative
      * @param compound_id
      * @param compound_mass
@@ -183,7 +193,7 @@ public class CompoundLCMS extends Compound {
      * @param lipids_classification
      * @param pathways
      */
-    public CompoundLCMS(Double EM, Double RT, String adduct,
+    public CompoundLCMS(Double EM, Double RT, String adduct, int EMMode, int ionizationMode,
             Boolean isSignificative,
             Integer compound_id, Double compound_mass, String formula, String compound_name,
             String cas_id, Integer formula_type, Integer compound_type, Integer compound_status,
@@ -194,7 +204,7 @@ public class CompoundLCMS extends Compound {
             List<Classyfire_Classification> classyfire_classification,
             Lipids_Classification lipids_classification,
             List<Pathway> pathways) {
-        this(EM, RT, new LinkedHashMap<Double, Integer>(), adduct, isSignificative,
+        this(EM, RT, new TreeMap<Double, Integer>(), adduct, EMMode, ionizationMode, isSignificative,
                 compound_id, compound_mass, formula, compound_name, cas_id, formula_type,
                 compound_type, compound_status, charge_type, charge_number, lm_id,
                 kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id,
@@ -202,12 +212,13 @@ public class CompoundLCMS extends Compound {
     }
 
     /**
-     * Complete contructor
      *
      * @param EM
      * @param RT
      * @param CS
      * @param isSignificative
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param adduct
      * @param compound_id
      * @param compound_mass
@@ -232,7 +243,7 @@ public class CompoundLCMS extends Compound {
      * @param lipids_classification
      * @param pathways
      */
-    public CompoundLCMS(Double EM, Double RT, Map<Double, Integer> CS, String adduct, 
+    public CompoundLCMS(Double EM, Double RT, Map<Double, Integer> CS, String adduct, int EMMode, int ionizationMode,
             Boolean isSignificative, int compound_id, double compound_mass,
             String formula, String compound_name, String cas_id, int formula_type, int compound_type, int compound_status,
             Integer charge_type, Integer charge_number, String lm_id,
@@ -241,8 +252,9 @@ public class CompoundLCMS extends Compound {
             LM_Classification lm_classification, List<Classyfire_Classification> classyfire_classification,
             Lipids_Classification lipids_classification, List<Pathway> pathways) {
         super(compound_id, compound_mass, formula, compound_name, cas_id, formula_type, compound_type, compound_status,
-                charge_type, charge_number, lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id, structure, lm_classification,
-                classyfire_classification, lipids_classification, pathways);
+                charge_type, charge_number,
+                lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id, structure,
+                lm_classification, classyfire_classification, lipids_classification, pathways);
         this.showPathways = false;
         this.EM = EM;
         this.RT = RT;
@@ -250,13 +262,31 @@ public class CompoundLCMS extends Compound {
         this.CS = CS;
         this.isSignificative = isSignificative;
         this.adduct = adduct;
-        this.incrementPPM = calculatePPMIncrement(EM, compound_mass);
-        
+        this.EMMode = EMMode;
+        this.ionization_mode = ionizationMode;
+        double massToSearch = AdductProcessing.getMassToSearch(EM, adduct, this.ionization_mode);
+        this.incrementPPM = calculatePPMIncrement(massToSearch, compound_mass);
+
         this.ionizationScore = -1F;
         this.adductRelationScore = -1F;
         this.RTscore = -1F;
         this.finalScore = -1F;
         this.mapRTRules = new LinkedHashMap<String, List<Boolean>>();
+        if (this.EMMode == 0) {
+            switch (this.ionization_mode) {
+                case 1:
+                    this.massIntroduced = this.EM - utilities.Constantes.PROTON_WEIGHT;
+                    break;
+                case 2:
+                    this.massIntroduced = this.EM + utilities.Constantes.PROTON_WEIGHT;
+                    break;
+                default:
+                    this.massIntroduced = this.EM;
+                    break;
+            }
+        } else {
+            this.massIntroduced = this.EM;
+        }
     }
 
     @Override
@@ -291,8 +321,6 @@ public class CompoundLCMS extends Compound {
         }
         return true;
     }
-    
-    
 
     public Double getEM() {
         return EM;
@@ -470,7 +498,6 @@ public class CompoundLCMS extends Compound {
     public String toString() {
         return "            Name: " + super.getCompound_name() + " Retention time: " + this.RT + " Mass: " + super.getMass();
     }
-    
 
     /**
      * Calculates the RT score
@@ -600,7 +627,6 @@ public class CompoundLCMS extends Compound {
          */
     }
 
-    
     public void createColorIonizationScore() {
         //System.out.println("PAINTING: " + this.getIdentifier());
         String nameStyleLabel = "";
@@ -653,7 +679,6 @@ public class CompoundLCMS extends Compound {
         this.colorPrecedenceScore = nameStyleLabel;
     }
      */
-    
     public void createColorRetentionTimeScore() {
         String nameStyleLabel = "";
         if (this.RTscore >= 0F) {
@@ -749,6 +774,10 @@ public class CompoundLCMS extends Compound {
      */
     public void setColorFinalScore(String colorFinalScore) {
         this.colorFinalScore = colorFinalScore;
+    }
+
+    public double getMassIntroduced() {
+        return massIntroduced;
     }
 
 }

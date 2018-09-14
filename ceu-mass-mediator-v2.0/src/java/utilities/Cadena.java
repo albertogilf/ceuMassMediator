@@ -2,11 +2,11 @@ package utilities;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -310,7 +310,7 @@ public class Cadena {
      */
     static public Map<Double, Integer> extractOneSpectrum(String chain) {
         Map<Double, Integer> peaks;
-        peaks = new LinkedHashMap<Double, Integer>();
+        peaks = new TreeMap<Double, Integer>();
         // Two lines. Ugly way for detecting all the cases
         // (\([0-9]+\.[0-9]+\,\s*[0-9]+\.[0-9]+\))|(\([0-9]+\,\s*[0-9]+\.[0-9]+\))
         // |(\([0-9]+\.[0-9]+\,\s*[0-9]+\))|(\([0-9]+\,\s*[0-9]+\))

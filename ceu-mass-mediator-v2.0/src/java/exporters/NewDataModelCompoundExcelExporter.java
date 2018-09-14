@@ -65,7 +65,7 @@ public class NewDataModelCompoundExcelExporter extends ExcelExporter {
         //int cellTypeString = HSSFCell.CELL_TYPE_STRING;//CELL_TYPE_NUMERIC;
         HSSFCell cell = getRow().createCell(CompoundColumns.EXPERIMENTAL_MASS.getnColumn(), cellTypeNumeric);
         if (compound.getEM() > 0) {
-            cell.setCellValue(Double.valueOf(twoDForm.format(compound.getEM()).replace(",", ".")));
+            cell.setCellValue(Double.valueOf(twoDForm.format(compound.getMassIntroduced()).replace(",", ".")));
         } else {
             cell.setCellValue("--------");
         }

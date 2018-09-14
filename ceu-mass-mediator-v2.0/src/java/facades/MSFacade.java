@@ -24,9 +24,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import pathway.Pathway;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import msms.MSMSCompound;
 import msms.Peak;
+import utilities.AdductProcessing;
 import static utilities.DataFromInterfacesUtilities.MAPDATABASES;
 import utilities.Utilities;
 import static utilities.Utilities.escapeSQLForREGEXP;
@@ -50,17 +51,18 @@ import static utilities.Utilities.escapeSQLForREGEXP;
  *
  * @author Alberto Gil de la Fuente
  */
-public class MSFacade {
-
+public class MSFacade implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private final DBManager dbm;
     private Connection conn;
-    public long JDBCcounter;
-    public long objectLCMSCompoundCounter;
-    public long queryCreation;
-    public long structureCounter;
-    public long pathwayCounter;
-    public long LMClassificationCounter;
-    public long lipidsClassificationCounter;
+    //public long JDBCcounter;
+    //public long objectLCMSCompoundCounter;
+    //public long queryCreation;
+    //public long structureCounter;
+    //public long pathwayCounter;
+    //public long LMClassificationCounter;
+    //public long lipidsClassificationCounter;
     //public long classifierClassificationCounter;
 
     /**
@@ -78,24 +80,11 @@ public class MSFacade {
     }
      */
     private void connect() {
-        try {
-            // MySQL driver registered 
-            DriverManager.registerDriver(new org.gjt.mm.mysql.Driver());
 
-            // get DatabaseConnection
-            // INSTEAD of writing directly the DB credentials, read them from a FILE out of the REPO!
-            List<String> dataForConnection = getDataForConnection();
-
-            conn = DriverManager.getConnection(dataForConnection.get(0), dataForConnection.get(1), dataForConnection.get(2));
-
-            //this.conn = this.dbm.connect();
-        } catch (SQLException ex) {
-            Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.conn = this.dbm.connect();
     }
-//TODO CHANGE TO PRIVATE AFTER TESTING
 
-    public void disconnect() {
+    private void disconnect() {
         try {
             this.conn.close();
         } catch (SQLException ex) {
@@ -111,7 +100,7 @@ public class MSFacade {
      * tolerances, metaboliteTypes and chemAlphabet
      *
      * @param feature
-     * @param massToSearch
+     * @param EM
      * @param adduct
      * @param tolerance
      * @param toleranceMode
@@ -119,53 +108,62 @@ public class MSFacade {
      * @param metabolitesType
      * @param chemAlphabet CHNOPS -> 0, CHNOPSD -> 1, CHNOPSCL -> 2, CHNOPSCLD
      * -> 3, ALL -> 4 , ALLD -> 5
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @return
      */
     public List<CompoundLCMS> getCompoundsFromExperiment_byMassAndTolerance(
-            Feature feature, double massToSearch, String adduct, Double tolerance,
+            Feature feature, double EM, String adduct, Double tolerance,
             Integer toleranceMode, List<Integer> databases, int metabolitesType,
-            int chemAlphabet) {
+            int chemAlphabet, int EMMode, int ionizationMode) {
         List<CompoundLCMS> compoundsList;
-
         // If the search is only in MINE, it goes directly to findRangeGeneratedAdvanced
         if (databases.size() == 1 && databases.contains(MAPDATABASES.get("MINE (Only In Silico Compounds)"))) {
             compoundsList = getInSilicoCompoundsFromExperiment_byMassAndTolerance(
                     feature,
-                    massToSearch,
+                    EM,
                     adduct,
                     tolerance,
                     toleranceMode,
                     databases,
-                    chemAlphabet);
+                    chemAlphabet,
+                    EMMode,
+                    ionizationMode);
         } else if (databases.size() > 1 && databases.contains(MAPDATABASES.get("MINE (Only In Silico Compounds)"))) {
             compoundsList = getExperimentalCompoundsFromExperiment_byMassAndTolerance(
                     feature,
-                    massToSearch,
+                    EM,
                     adduct,
                     tolerance,
                     toleranceMode,
                     databases,
                     metabolitesType,
-                    chemAlphabet);
+                    chemAlphabet,
+                    EMMode,
+                    ionizationMode);
             List<CompoundLCMS> InSilicoCompoundsList = getInSilicoCompoundsFromExperiment_byMassAndTolerance(
                     feature,
-                    massToSearch,
+                    EM,
                     adduct,
                     tolerance,
                     toleranceMode,
                     databases,
-                    chemAlphabet);
+                    chemAlphabet,
+                    EMMode,
+                    ionizationMode);
             compoundsList.addAll(InSilicoCompoundsList);
         } else {
             compoundsList = getExperimentalCompoundsFromExperiment_byMassAndTolerance(
                     feature,
-                    massToSearch,
+                    EM,
                     adduct,
                     tolerance,
                     toleranceMode,
                     databases,
                     metabolitesType,
-                    chemAlphabet);
+                    chemAlphabet,
+                    EMMode,
+                    ionizationMode);
         }
         return compoundsList;
     }
@@ -176,18 +174,21 @@ public class MSFacade {
      * a tolerance
      *
      * @param feature
-     * @param massToSearch
+     * @param EM
      * @param adduct
      * @param tolerance
      * @param toleranceMode
      * @param databases
      * @param metabolitesType
      * @param chemAlphabet
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @return
      */
     public List<CompoundLCMS> getExperimentalCompoundsFromExperiment_byMassAndTolerance(Feature feature,
-            double massToSearch, String adduct, Double tolerance, int toleranceMode,
-            List<Integer> databases, int metabolitesType, int chemAlphabet) {
+            double EM, String adduct, Double tolerance, int toleranceMode,
+            List<Integer> databases, int metabolitesType, int chemAlphabet, int EMMode, int ionizationMode) {
+        double massToSearch = AdductProcessing.getMassToSearch(EM, adduct, ionizationMode);
         // Search in the database
         String sql;
         ResultSet rs;
@@ -197,46 +198,33 @@ public class MSFacade {
         Map<Double, Integer> CS = feature.getCS();
         boolean isSignificative = feature.isIsSignificativeFeature();
 
-        //System.out.println("Entering database connection, search by facade");
-        // List<String> databasesString = DataFromInterfacesUtilities.returnDatabasesString(databases);
-        /*
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+databasesString.size());
-        System.out.println(databasesString.get(0));
-        System.out.println(databasesString.get(1));
-         */
-        long start = System.currentTimeMillis();
-        //sql = QueryConstructor.createStartSQLCompoundWithDBIds();
+        //long start = System.currentTimeMillis();
         sql = QueryConstructor.createSQLCompoundViewWithDBIds();
-
-        // THESE FILTERS REMAINS EQUAL
+        sql = QueryConstructor.addFilterDatabasesCompoundsViewJDBC(sql, databases);
         sql = QueryConstructor.addFilterMetabolitesTypeJDBC(sql, metabolitesType);
         sql = QueryConstructor.addFilterIntegerFormulaTypeJDBC(aliasTable, sql, chemAlphabet);
         sql = QueryConstructor.addFilterMassesJDBC(aliasTable, sql);
-        //sql = QueryConstructor.addFilterDatabasesJDBC(sql, databases);
-        sql = QueryConstructor.addFilterDatabasesCompoundsViewJDBC(sql, databases);
-
-        long end = System.currentTimeMillis();
-        queryCreation = queryCreation + (end - start);
-        //System.out.println(sql);
+        sql = QueryConstructor.addOrderByMassesJDBC(aliasTable, sql);
+        
+        // System.out.println("SQL: " + sql);
+        //long end = System.currentTimeMillis();
+        //queryCreation = queryCreation + (end - start);
         List<CompoundLCMS> compounds = new LinkedList<>();
-        CompoundLCMS compound;
 
         try {
             tolerance = Utilities.calculateDeltaPPM(massToSearch, toleranceMode, tolerance);
-            //System.out.println("-----------> Tolerance between: " + (massToSearch - tolerance) + " and " + (massToSearch + tolerance));
-            //System.out.println("tolerance: " + tolerance);
             prepSt = conn.prepareStatement(sql);
             prepSt.setDouble(1, (massToSearch - tolerance));
             prepSt.setDouble(2, (massToSearch + tolerance));
             prepSt.setDouble(3, tolerance);
-            start = System.currentTimeMillis();
+            //start = System.currentTimeMillis();
             rs = prepSt.executeQuery();
-            end = System.currentTimeMillis();
+            //end = System.currentTimeMillis();
             //System.out.println("Time executing query: "+(end-start));
-            JDBCcounter = JDBCcounter + (end - start);
+            //JDBCcounter = JDBCcounter + (end - start);
 
             while (rs.next()) {
-                start = System.currentTimeMillis();
+                //start = System.currentTimeMillis();
 
                 int compound_id = rs.getInt(1);
                 double mass = rs.getDouble(2);
@@ -263,9 +251,9 @@ public class MSFacade {
 
                 // Variables forLipid Classification
                 String lipid_type = rs.getString(20);
-                int num_chains = rs.getInt(21);
-                int number_carbons = rs.getInt(22);
-                int double_bonds = rs.getInt(23);
+                Integer num_chains = rs.wasNull() ? null : rs.getInt(21);
+                Integer number_carbons = rs.wasNull() ? null : rs.getInt(22);
+                Integer double_bonds = rs.wasNull() ? null : rs.getInt(23);
 
                 // Variables for LM Classification
                 String category = rs.getString(24);
@@ -273,46 +261,55 @@ public class MSFacade {
                 String sub_class = rs.getString(26);
                 String class_level4 = rs.getString(27);
 
-                long start2 = System.currentTimeMillis();
-
+                //long start2 = System.currentTimeMillis();
                 Structure structure = new Structure(inchi, inchi_key, smiles);
 
-                long end2 = System.currentTimeMillis();
-                structureCounter = structureCounter + (end2 - start2);
+                //long end2 = System.currentTimeMillis();
+                //structureCounter = structureCounter + (end2 - start2);
+                //start2 = System.currentTimeMillis();
+                Lipids_Classification lipids_classification;
+                if (num_chains == null || number_carbons == null || double_bonds == null) {
+                    lipids_classification = null;
+                } else {
+                    lipids_classification = new Lipids_Classification(lipid_type, num_chains, number_carbons, double_bonds);
+                }
 
-                start2 = System.currentTimeMillis();
-                Lipids_Classification lipids_classification = new Lipids_Classification(lipid_type, num_chains, number_carbons, double_bonds);
-                end2 = System.currentTimeMillis();
-                lipidsClassificationCounter = lipidsClassificationCounter + (end2 - start2);
-                start2 = System.currentTimeMillis();
-                LM_Classification lm_classification = new LM_Classification(category, main_class, sub_class, class_level4);
-                end2 = System.currentTimeMillis();
-                LMClassificationCounter = LMClassificationCounter + (end2 - start2);
+                //end2 = System.currentTimeMillis();
+                //lipidsClassificationCounter = lipidsClassificationCounter + (end2 - start2);
+                //start2 = System.currentTimeMillis();
+                LM_Classification lm_classification;
+                if (category == null) {
+                    lm_classification = null;
+                } else {
+                    lm_classification = new LM_Classification(category, main_class, sub_class, class_level4);
+                }
+
+                //end2 = System.currentTimeMillis();
+                //LMClassificationCounter = LMClassificationCounter + (end2 - start2);
                 //To null since its not used so is not filled yet 
                 //List<Classyfire_Classification> classyfire_classifications =getClassyfire_ClassificationByCompound_id(compound_id);
                 List<Classyfire_Classification> classyfire_classifications = null;
 
-                start2 = System.currentTimeMillis();
+                //start2 = System.currentTimeMillis();
                 List<Pathway> pathways = getPathwaysByCompound_id(compound_id);
-                end2 = System.currentTimeMillis();
-                pathwayCounter = pathwayCounter + (end2 - start2);
+                //end2 = System.currentTimeMillis();
+                //pathwayCounter = pathwayCounter + (end2 - start2);
 
-                CompoundLCMS compoundLCMS = new CompoundLCMS(massToSearch, RT, CS, adduct, isSignificative,
+                CompoundLCMS compoundLCMS = new CompoundLCMS(EM, RT, CS, adduct, EMMode, ionizationMode, isSignificative,
                         compound_id, mass, formula, name, cas_id, formula_type_int, compound_type,
                         compound_status, charge_type, charge_number,
                         lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id,
                         structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
-                end = System.currentTimeMillis();
+                //end = System.currentTimeMillis();
                 //System.out.println("Time creating object: "+(end-start));
-                objectLCMSCompoundCounter = objectLCMSCompoundCounter + (end - start);
+                //objectLCMSCompoundCounter = objectLCMSCompoundCounter + (end - start);
                 compounds.add(compoundLCMS);
 
             }
         } catch (SQLException ex) {
             Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
-            //return null;
+
         }
-        //System.out.println("Compounds number: " + compounds.size());
         return compounds;
     }
 
@@ -322,17 +319,20 @@ public class MSFacade {
      * a tolerance
      *
      * @param feature
-     * @param massToSearch
+     * @param EM
      * @param adduct
      * @param tolerance
      * @param toleranceMode
      * @param databases
      * @param chemAlphabet
+     * @param EMMode 0 neutral mass (m/z protonated or deprotonated), 1 m/z
+     * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @return
      */
     public List<CompoundLCMS> getInSilicoCompoundsFromExperiment_byMassAndTolerance(Feature feature,
-            double massToSearch, String adduct, Double tolerance,
-            Integer toleranceMode, List<Integer> databases, int chemAlphabet) {
+            double EM, String adduct, Double tolerance, Integer toleranceMode,
+            List<Integer> databases, int chemAlphabet, int EMMode, int ionizationMode) {
+        double massToSearch = AdductProcessing.getMassToSearch(EM, adduct, ionizationMode);
         // Search in the database
         String sql;
         ResultSet rs;
@@ -343,24 +343,19 @@ public class MSFacade {
         boolean isSignificative = feature.isIsSignificativeFeature();
 
         sql = QueryConstructor.createSQLInSilicoCompoundViewWithDBIds();
-        // THESE FILTERS REMAINS EQUAL
         sql = QueryConstructor.addFilterIntegerFormulaTypeJDBC(aliasTable, sql, chemAlphabet);
         sql = QueryConstructor.addFilterMassesJDBC(aliasTable, sql);
-
-
-        //System.out.println(sql);
+        sql = QueryConstructor.addOrderByMassesJDBC(aliasTable, sql);
+        
         List<CompoundLCMS> compounds = new LinkedList<>();
 
         try {
             tolerance = Utilities.calculateDeltaPPM(massToSearch, toleranceMode, tolerance);
-            //System.out.println("-----------> Tolerance between: " + (massToSearch - tolerance) + " and " + (massToSearch + tolerance));
-            //System.out.println("tolerance: " + tolerance);
             prepSt = conn.prepareStatement(sql);
             prepSt.setDouble(1, (massToSearch - tolerance));
             prepSt.setDouble(2, (massToSearch + tolerance));
             prepSt.setDouble(3, tolerance);
             rs = prepSt.executeQuery();
-            //System.out.println("Time executing query: "+(end-start));
 
             while (rs.next()) {
 
@@ -392,7 +387,7 @@ public class MSFacade {
                 List<Pathway> pathways = null;
                 Structure structure = new Structure(inchi, inchi_key, smiles);
 
-                CompoundLCMS compoundLCMS = new CompoundLCMS(massToSearch, RT, CS, adduct, isSignificative,
+                CompoundLCMS compoundLCMS = new CompoundLCMS(EM, RT, CS, adduct, EMMode, ionizationMode, isSignificative,
                         compound_id, mass, formula, name, cas_id, formula_type_int, compound_type,
                         compound_status, charge_type, charge_number,
                         lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, mine_id,
@@ -401,9 +396,9 @@ public class MSFacade {
             }
         } catch (SQLException ex) {
             Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
-            //return null;
+
         }
-        //System.out.println("Compounds number: " + compounds.size());
+
         return compounds;
     }
 
@@ -419,9 +414,7 @@ public class MSFacade {
         String sql;
         ResultSet rs;
         PreparedStatement prepSt;
-        // CREATE SQL TO OBTAIN ALL THE ATTRIBUTES NEEDED IN COMPOUND
         sql = QueryConstructor.createSQLCompoundViewWithDBIds();
-        // FILTERS REMAINS EQUAL
         sql = sql + " c.compound_id = ?";
         Compound compound;
         try {
@@ -458,11 +451,8 @@ public class MSFacade {
             String sub_class = rs.getString(26);
             String class_level4 = rs.getString(27);
 
-            //Structure structure = getStructureByCompound_id(compound_id);
             Structure structure = new Structure(inchi, inchi_key, smiles);
-            //Lipids_Classification lipids_classification = getLipids_classificationByCompound_id(compound_id);
             Lipids_Classification lipids_classification = new Lipids_Classification(lipid_type, num_chains, number_carbons, double_bonds);
-            //LM_Classification lm_classification = getLM_ClassificationByCompound_id(compound_id);
             LM_Classification lm_classification = new LM_Classification(category, main_class, sub_class, class_level4);
             //To null since its not used so is not filled yet 
             List<Classyfire_Classification> classyfire_classifications = null;
@@ -488,7 +478,6 @@ public class MSFacade {
      * @return
      */
     protected LM_Classification getLM_ClassificationByCompound_id(int compound_id) {
-        //long start = System.currentTimeMillis();
         String sql = "SELECT category, main_class, sub_class, class_level4 FROM compounds_lm_classification "
                 + "WHERE compound_id= ?";
         PreparedStatement prepSt;
@@ -511,8 +500,6 @@ public class MSFacade {
             Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-        //long end = System.currentTimeMillis();
-        //LMClassificationCounter = LMClassificationCounter + (end - start);
         return lm_classification;
     }
 
@@ -524,7 +511,7 @@ public class MSFacade {
      * @return
      */
     protected Lipids_Classification getLipids_classificationByCompound_id(int compound_id) {
-        //long start = System.currentTimeMillis();
+
         String sql = "SELECT lipid_type, num_chains, number_carbons, double_bonds "
                 + "FROM compounds_lipids_classification "
                 + "WHERE compound_id=?";
@@ -548,8 +535,6 @@ public class MSFacade {
             Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-        //long end = System.currentTimeMillis();
-        // lipidsClassificationCounter = lipidsClassificationCounter + (end - start);
         return lipids_classification;
     }
 
@@ -598,7 +583,6 @@ public class MSFacade {
      * @return List of chain object
      */
     protected List<Pathway> getPathwaysByCompound_id(int compound_id) {
-        long start = System.currentTimeMillis();
         String sql = "SELECT p.pathway_id, p.pathway_map, p.pathway_name "
                 + "FROM pathways p INNER JOIN compounds_pathways cp "
                 + "WHERE p.pathway_id=cp.pathway_id "
@@ -621,8 +605,6 @@ public class MSFacade {
             Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-        long end = System.currentTimeMillis();
-        pathwayCounter = pathwayCounter + (end - start);
         return pathways;
     }
 
@@ -758,7 +740,7 @@ public class MSFacade {
      * @return List of chain object
      */
     protected Structure getStructureByCompound_id(int compound_id) {
-        //long start = System.currentTimeMillis();
+
         String sql = "SELECT inchi, inchi_key, smiles "
                 + "FROM compound_identifiers "
                 + "WHERE compound_id= ?";
@@ -781,7 +763,7 @@ public class MSFacade {
             return null;
         }
         long end = System.currentTimeMillis();
-        //structureCounter = structureCounter + (end - start);
+
         return structure;
     }
 
@@ -854,6 +836,42 @@ public class MSFacade {
         return msmsCompounds;
     }
 
+    /**
+     * Return the number of peaks that has an mz within an specified window and
+     * from a specific compound.
+     *
+     * @param compound_id
+     * @param peak_mass
+     * @param tolerance
+     * @return
+     */
+    public int countMSMSFromCompoundID(int compound_id, double peak_mass, double tolerance) {
+        String sql = "SELECT count(*) AS rowcount FROM msms_peaks join msms where msms.compound_id=? and msms_peaks.mz between ? and ?;";
+        ResultSet rs;
+        PreparedStatement prepSt;
+        int count = 0;
+        try {
+            prepSt = conn.prepareStatement(sql);
+            prepSt.setInt(1, compound_id);
+            prepSt.setDouble(2, peak_mass - tolerance);
+            prepSt.setDouble(3, peak_mass + tolerance);
+            rs = prepSt.executeQuery();
+            rs.next();
+            count = rs.getInt("rowcount");
+
+        } catch (SQLException ex) {
+            Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return count;
+    }
+
+    /**
+     * get the msms from compound with compound id= compounds_id
+     *
+     * @param compound_id
+     * @return
+     */
     public List<MSMSCompound> getMSMSFromCompoundID(int compound_id) {
         String sql = "SELECT m.ionization_mode, m.voltage, m.voltage_level, m.predicted, m.msms_id, m.compound_id, m.hmdb_id "
                 + "FROM msms as m where m.compound_id=?";
@@ -868,10 +886,45 @@ public class MSFacade {
             while (rs.next()) {
                 int msms_id = rs.getInt("msms_id");
                 compound_id = rs.getInt("compound_id");
-                //String name = rs.getString("compound_name");
                 String hmdb_id = rs.getString("hmdb_id");
-                //String formula = rs.getString("formula");
-                //double compound_mass = rs.getDouble("mass");
+                int ionizationMode = rs.getInt("ionization_mode");
+                int spectraType = rs.getInt("predicted");
+                int voltage = rs.getInt("voltage");
+                String voltage_level = rs.getString("voltage_level");
+                List<Peak> peaks = getPeaksFromMsms_id(msms_id);
+                compoundmsms = new MSMSCompound(msms_id, compound_id, hmdb_id, ionizationMode, voltage, voltage_level, peaks, spectraType);
+                msmsCompounds.add(compoundmsms);
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return msmsCompounds;
+    }
+
+    /**
+     * Get the corresponding msms of a compound with id compound_id and ionMode.
+     *
+     * @param compound_id
+     * @param ionMode
+     * @return
+     */
+    public List<MSMSCompound> getMSMSFromCompoundIDandIonMode(int compound_id, int ionMode) {
+        String sql = "SELECT m.ionization_mode, m.voltage, m.voltage_level, m.predicted, m.msms_id, m.compound_id, m.hmdb_id "
+                + "FROM msms as m where m.compound_id=? and m.ionization_mode=?";
+        ResultSet rs;
+        PreparedStatement prepSt;
+        MSMSCompound compoundmsms;
+        List<MSMSCompound> msmsCompounds = new LinkedList<>();
+        try {
+            prepSt = conn.prepareStatement(sql);
+            prepSt.setInt(1, compound_id);
+            prepSt.setInt(2, ionMode);
+            rs = prepSt.executeQuery();
+            while (rs.next()) {
+                int msms_id = rs.getInt("msms_id");
+                compound_id = rs.getInt("compound_id");
+                String hmdb_id = rs.getString("hmdb_id");
                 int ionizationMode = rs.getInt("ionization_mode");
                 int spectraType = rs.getInt("predicted");
                 int voltage = rs.getInt("voltage");
@@ -1017,7 +1070,6 @@ public class MSFacade {
                     // is returned before
                     return compoundsList;
             }
-            //System.out.println("SQL: " + sql);
             rs = prepSt.executeQuery();
             while (rs.next()) {
                 int compound_id = rs.getInt(1);
@@ -1049,11 +1101,10 @@ public class MSFacade {
                 String sub_class = rs.getString(26);
                 String class_level4 = rs.getString(27);
 
-                //Structure structure = getStructureByCompound_id(compound_id);
                 Structure structure = new Structure(inchi, inchi_key, smiles);
-                //Lipids_Classification lipids_classification = getLipids_classificationByCompound_id(compound_id);
+
                 Lipids_Classification lipids_classification = new Lipids_Classification(lipid_type, num_chains, number_carbons, double_bonds);
-                //LM_Classification lm_classification = getLM_ClassificationByCompound_id(compound_id);
+
                 LM_Classification lm_classification = new LM_Classification(category, main_class, sub_class, class_level4);
 
                 //List<Classyfire_Classification> classyfire_classifications = getClassyfire_ClassificationByCompound_id(compound_id);
@@ -1068,14 +1119,9 @@ public class MSFacade {
             }
         } catch (SQLException ex) {
             Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
-            //return null;
+
         }
 
-        /*
-            compoundsList.forEach((c) -> {
-                System.out.println("Compound: " + c.getCompound_id());
-            });
-         */
         return compoundsList;
     }
 
@@ -1097,7 +1143,6 @@ public class MSFacade {
             String formulaQuery,
             boolean exactFormula) {
         List<Compound> compoundsList = new LinkedList<>();
-        //System.out.println("Databases " + databases);
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
         String sql;
@@ -1126,8 +1171,7 @@ public class MSFacade {
 
                 numberParameters++;
             }
-            //finalQuery = finalQuery + " limit 500";
-        } else if (!(formulaQuery.length() < 3)) {
+
             if (exactFormula) {
                 sql = sql + " c.formula = ?";
             } else {
@@ -1197,19 +1241,14 @@ public class MSFacade {
             }
         } catch (SQLException ex) {
             Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
-            //return null;
+
         }
-        /*
-            compoundsList.forEach((c) -> {
-                System.out.println("Compound: " + c.getCompound_id());
-            });
-         */
 
         return compoundsList;
     }
 
     private List<Peak> getPeaksFromMsms_id(int msms_id) {
-        String sql = "SELECT * FROM compounds_new.msms_peaks where msms_id=?";
+        String sql = "SELECT * FROM msms_peaks where msms_id=?";
         PreparedStatement prepSt;
         ResultSet rs;
         Peak peak;
@@ -1232,12 +1271,14 @@ public class MSFacade {
         }
         return peaks;
     }
-
+    
     private List<String> getDataForConnection() {
         List<String> dataToConnect = new LinkedList<>();
         try {
 
-            File file = new File("/home/alberto/Desktop/fichero.txt");
+            //File file = new File("C:\\Users\\María 606888798\\Desktop\\fichero.txt");
+            File file = new File("C:\\Users\\ceu\\Desktop\\fichero.txt");
+            //File file = new File("/home/alberto/Desktop/fichero.txt");
 
             FileReader fr;
             BufferedReader bf;

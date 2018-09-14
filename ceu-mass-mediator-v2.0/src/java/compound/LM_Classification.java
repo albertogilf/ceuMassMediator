@@ -21,10 +21,10 @@ public class LM_Classification {
     private final String class_level4;
 
     public LM_Classification(String category, String mainClass, String subClass, String class_level4) {
-        this.category = category;
-        this.mainClass = mainClass;
-        this.subClass = subClass;
-        this.class_level4 = class_level4;
+        this.category = category == null ? "" : category;
+        this.mainClass = mainClass == null ? "" : mainClass;
+        this.subClass = subClass == null ? "" : subClass;
+        this.class_level4 = class_level4 == null ? "" : class_level4;
     }
 
     public String getCategory() {

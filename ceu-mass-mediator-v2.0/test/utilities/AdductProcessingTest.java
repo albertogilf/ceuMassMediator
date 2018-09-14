@@ -9,11 +9,10 @@
  */
 package utilities;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -54,7 +53,7 @@ public class AdductProcessingTest {
     }
 
     /**
-     * Test of calculateNeutralMass method, of class AdductProcessing.
+     * Test of calculateNeutralMassFromHAdduct method, of class AdductProcessing.
      */
     @Test
     public void testCalculateNeutralMass() {
@@ -63,19 +62,19 @@ public class AdductProcessingTest {
         int ionizationMode = 1;
         double mzMass = 400.3432;
         double expResult = 399.3359;
-        double result = AdductProcessing.calculateNeutralMass(ionizationMode, mzMass);
+        double result = AdductProcessing.calculateNeutralMassFromHAdduct(ionizationMode, mzMass);
         assertEquals(expResult, result, 0.0001);
         // negative mode
-        ionizationMode = 0;
+        ionizationMode = 2;
         mzMass = 399.3359;
         expResult = 400.3432;
-        result = AdductProcessing.calculateNeutralMass(ionizationMode, mzMass);
+        result = AdductProcessing.calculateNeutralMassFromHAdduct(ionizationMode, mzMass);
         assertEquals(expResult, result, 0.0001);
 
     }
 
     /**
-     * Test of calculateMZ method, of class AdductProcessing.
+     * Test of calculateMZFromHAdduct method, of class AdductProcessing.
      */
     @Test
     public void testCalculateMZ() {
@@ -84,13 +83,13 @@ public class AdductProcessingTest {
         int ionizationMode = 1;
         double neutralMass = 399.3359;
         double expResult = 400.3432;
-        double result = AdductProcessing.calculateMZ(ionizationMode, neutralMass);
+        double result = AdductProcessing.calculateMZFromHAdduct(ionizationMode, neutralMass);
         assertEquals(expResult, result, 0.0001);
         // negative mode
-        ionizationMode = 0;
+        ionizationMode = 2;
         neutralMass = 400.3432;
         expResult = 399.3359;
-        result = AdductProcessing.calculateMZ(ionizationMode, neutralMass);
+        result = AdductProcessing.calculateMZFromHAdduct(ionizationMode, neutralMass);
         assertEquals(expResult, result, 0.0001);
     }
 
@@ -203,12 +202,12 @@ public class AdductProcessingTest {
         System.out.println("detectAdductBasedOnCompositeSpectrum");
         // positive M+H
         String massesMode = "mz";
-        String ionMode = "positive";
+        int ionMode = 1;
         Double inputMass = 281.24765d;
         Map<String, String> provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         List<String> adducts = new LinkedList();
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
-        Map<Double, Integer> compositeSpectrum = new LinkedHashMap();
+        Map<Double, Integer> compositeSpectrum = new TreeMap();
 
         compositeSpectrum.put(561.4858d, 236);
         compositeSpectrum.put(141.1306, 297);
@@ -226,12 +225,12 @@ public class AdductProcessingTest {
 
         // positive M+H-H2O
         massesMode = "mz";
-        ionMode = "positive";
+        ionMode = 1;
         inputMass = 265.25244d;
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = new LinkedList();
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
-        compositeSpectrum = new LinkedHashMap();
+        compositeSpectrum = new TreeMap();
 
         compositeSpectrum.put(265.25244, 2643);
         compositeSpectrum.put(266.2552, 546);
@@ -247,12 +246,12 @@ public class AdductProcessingTest {
     @Test
     public void testDetectionOfAdductH() {
         String massesMode = "mz";
-        String ionMode = "positive";
+        int ionMode = 1;
         Map<String, String> provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         double inputMass = 281.24765d;
         List<String> adducts = new LinkedList();
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
-        Map<Double, Integer> compositeSpectrum = new LinkedHashMap();
+        Map<Double, Integer> compositeSpectrum = new TreeMap();
         compositeSpectrum.put(561.4858d, 0);
         compositeSpectrum.put(563.4868d, 0);
         compositeSpectrum.put(141.1306d, 0);
@@ -273,12 +272,12 @@ public class AdductProcessingTest {
     @Test
     public void testDetectionOfAdductHH2O() {
         String massesMode = "mz";
-        String ionMode = "positive";
+        int ionMode = 1;
         double inputMass = 265.25244d;
         Map<String, String> provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         List<String> adducts = new LinkedList();
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
-        Map<Double, Integer> compositeSpectrum = new LinkedHashMap();
+        Map<Double, Integer> compositeSpectrum = new TreeMap();
         compositeSpectrum.put(265.25244d, 0);
         compositeSpectrum.put(266.2552d, 0);
         compositeSpectrum.put(305.24606d, 0);
@@ -293,18 +292,18 @@ public class AdductProcessingTest {
 
     @Test
     public void testGetMonoPeaksFromCS() {
-        Map<Double, Integer> compositeSpectrum = new LinkedHashMap();
+        Map<Double, Integer> compositeSpectrum = new TreeMap();
         compositeSpectrum.put(265.25244d, 0);
         compositeSpectrum.put(266.2552d, 0);
         compositeSpectrum.put(305.24606d, 0);
         compositeSpectrum.put(306.2479d, 0);
-        Map<Double, Integer> expResult = new LinkedHashMap();
+        Map<Double, Integer> expResult = new TreeMap();
         expResult.put(265.25244d, 0);
         expResult.put(305.24606d, 0);
         Map<Double, Integer> result;
         result = AdductProcessing.getMonoPeaksFromCS(compositeSpectrum);
         assertThat(expResult, is(result));
-        compositeSpectrum = new LinkedHashMap();
+        compositeSpectrum = new TreeMap();
         compositeSpectrum.put(561.4858d, 0);
         compositeSpectrum.put(563.4868d, 0);
         compositeSpectrum.put(141.1306d, 0);
@@ -315,7 +314,7 @@ public class AdductProcessingTest {
         compositeSpectrum.put(303.2296d, 0);
         compositeSpectrum.put(304.2393d, 0);
         compositeSpectrum.put(305.23438d, 0);
-        expResult = new LinkedHashMap();
+        expResult = new TreeMap();
         expResult.put(561.4858d, 0);
         expResult.put(141.1306d, 0);
         expResult.put(281.24765d, 0);
@@ -333,19 +332,19 @@ public class AdductProcessingTest {
         System.out.println("chooseprovisionalMapAdducts");
         // Positive
         String massesMode = "mz";
-        String ionMode = "positive";
+        int ionMode = 1;
         Map<String, String> expResult = AdductsLists.MAPMZPOSITIVEADDUCTS;
         Map<String, String> result = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         //System.out.println("result: " + result);
         //System.out.println("expResult: " + expResult);
         assertThat(result, is(expResult));
         // Negative
-        ionMode = "negative";
+        ionMode = 2;
         expResult = AdductsLists.MAPMZNEGATIVEADDUCTS;
         result = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         assertThat(result, is(expResult));
         // Neutral
-        ionMode = "neutral";
+        ionMode = 0;
         expResult = AdductsLists.MAPNEUTRALADDUCTS;
         result = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         assertThat(result, is(expResult));
@@ -360,22 +359,22 @@ public class AdductProcessingTest {
         System.out.println("chooseAdducts");
         // Positive adducts empty
         String massesMode = "mz";
-        String ionMode = "positive";
+        int ionMode = 1;
         Map<String, String> provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         List<String> adducts = new LinkedList();
-        List<String> expResult = new LinkedList<String>(AdductsLists.MAPMZPOSITIVEADDUCTS.keySet());
+        List<String> expResult = new LinkedList(AdductsLists.MAPMZPOSITIVEADDUCTS.keySet());
         List<String> result = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
         assertThat(result, is(expResult));
         // Positive adducts all
-        ionMode = "positive";
+        ionMode = 1;
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = new LinkedList();
-        adducts.add("allPositives");
+        adducts.add(DataFromInterfacesUtilities.ALLADDUCTS_POSITIVE);
         expResult = new LinkedList<String>(AdductsLists.MAPMZPOSITIVEADDUCTS.keySet());
         result = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
         assertThat(result, is(expResult));
         // Positive adducts 
-        ionMode = "positive";
+        ionMode = 1;
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = new LinkedList();
         adducts.add("M+H");
@@ -386,22 +385,22 @@ public class AdductProcessingTest {
         assertThat(result, is(expResult));
 
         // Negative adducts empty
-        ionMode = "negative";
+        ionMode = 2;
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = new LinkedList();
         expResult = new LinkedList<String>(AdductsLists.MAPMZNEGATIVEADDUCTS.keySet());
         result = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
         assertThat(result, is(expResult));
         // Positive adducts all
-        ionMode = "negative";
+        ionMode = 2;
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = new LinkedList();
-        adducts.add("allNegatives");
+        adducts.add(DataFromInterfacesUtilities.ALLADDUCTS_NEGATIVE);
         expResult = new LinkedList<String>(AdductsLists.MAPMZNEGATIVEADDUCTS.keySet());
         result = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
         assertThat(result, is(expResult));
         // Positive adducts 
-        ionMode = "negative";
+        ionMode = 2;
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = new LinkedList();
         adducts.add("M-H");
@@ -418,15 +417,15 @@ public class AdductProcessingTest {
     @Test
     public void testGetAllAdducts() {
         System.out.println("getAllAdducts");
-        String ionMode = "positive";
+        int ionMode = 1;
         List<String> expResult = new LinkedList(AdductsLists.MAPMZPOSITIVEADDUCTS.keySet());
         List<String> result = AdductProcessing.getAllAdducts(ionMode);
         assertThat(expResult, is(result));
-        ionMode = "negative";
+        ionMode = 2;
         expResult = new LinkedList(AdductsLists.MAPMZNEGATIVEADDUCTS.keySet());
         result = AdductProcessing.getAllAdducts(ionMode);
         assertThat(expResult, is(result));
-        ionMode = "neutral";
+        ionMode = 0;
         expResult = new LinkedList(AdductsLists.MAPNEUTRALADDUCTS.keySet());
         result = AdductProcessing.getAllAdducts(ionMode);
         assertThat(expResult, is(result));
@@ -465,21 +464,21 @@ public class AdductProcessingTest {
     public void testDetectAdductBasedOnFeaturesData()
     {
         System.out.println("detectAdductBasedOnFeaturesData");
-        String ionMode="positive";
+        int ionMode = 1;
         double molecularMass= 300;
         double experimentalMass= (300-38.963158);
         String expectedResult= "M+K";
         String result= AdductProcessing.detectAdductBasedOnAnotherFeatureAdduct(experimentalMass, molecularMass, ionMode);
         assertThat(expectedResult, is(result));
         
-        ionMode="negative";
+        ionMode=2;
         molecularMass= 556;
         experimentalMass= (556+1.007276); 
         expectedResult= "M-H";
         result= AdductProcessing.detectAdductBasedOnAnotherFeatureAdduct(experimentalMass, molecularMass, ionMode);
         assertThat(expectedResult, is(result));
         
-        ionMode="neutral";
+        ionMode=0;
         molecularMass= 435;
         experimentalMass= 435; 
         expectedResult= "M";

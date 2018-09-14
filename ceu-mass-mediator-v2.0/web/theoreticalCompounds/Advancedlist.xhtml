@@ -31,7 +31,7 @@
                             rendered="#{theoreticalCompoundsController.isThereTheoreticalCompounds()}">
                             <ui:remove>
                                 <!-- Property before refactorization -->
-                            <f:setPropertyActionListener target="#{theoreticalCompoundsController.flag}" value="1" />
+                                <f:setPropertyActionListener target="#{theoreticalCompoundsController.flag}" value="1" />
                             </ui:remove>
                         </h:commandButton>
                         &nbsp;
@@ -98,54 +98,58 @@
                                     </p:column>                            
 
                                     <p:column 
-                                        sortBy="#{compound.ionizationScore}" style="width:75px"
+                                        sortBy="#{compound.ionizationScore}" style="width:95px"
                                         styleClass="#{compound.colorIonizationScore}"
                                         >
                                         <f:facet name="header">
-                                            <h:outputText value="Score1" title="Score based on adduct formation rules"/>
+                                            <h:outputText value="Ionization score " title="Score based on adduct formation rules (see manual for more information)"/>
+                                            <p:graphicImage alt="" value="/images/help_icon.png" title="Score based on adduct formation rules (see manual for more information)" width="15px"/>
                                         </f:facet>
                                         <h:outputText value="#{compound.ionizationScore>=0 ? compound.ionizationScore : 'N/A'}" />
                                     </p:column>
-                                    
+
                                     <p:column 
-                                            sortBy="#{compound.adductRelationScore}" style="width:75px"
-                                            styleClass="#{compound.colorAdductRelationScore}">
-                                            <f:facet name="header">
-                                                <h:outputText value="Score2" title="Score based on Adducts relations"/>
-                                            </f:facet>
-                                            <h:outputText value="#{compound.adductRelationScore>=0 ? compound.adductRelationScore : 'N/A'}" />
-                                            
-                                        </p:column>    
+                                        sortBy="#{compound.adductRelationScore}" style="width:90px"
+                                        styleClass="#{compound.colorAdductRelationScore}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Relation Score " title="Score based on Adducts relations between different features (see manual for more information)"/>
+                                            <p:graphicImage alt="" value="/images/help_icon.png" title="Score based on Adducts relations between different features (see manual for more information)" width="15px"/>
+                                        </f:facet>
+                                        <h:outputText value="#{compound.adductRelationScore>=0 ? compound.adductRelationScore : 'N/A'}" />
+                                    </p:column>    
 
                                     <ui:remove>
                                         <!-- Deleted temporaly-->
                                         <p:column 
-                                            sortBy="#{compound.precedenceScore}" style="width:75px"
+                                            sortBy="#{compound.precedenceScore}" style="width:95px"
                                             styleClass="#{compound.colorPrecedenceScore}">
                                             <f:facet name="header">
-                                                <h:outputText value="Score2" title="Score based on Lipid Type and Retention Time"/>
+                                                <h:outputText value="Precedence Score " title="Score based on Lipid Type and Retention Time (see manual for more information)"/>
+                                                <p:graphicImage alt=""  value="/images/help_icon.png" title="Score based on Lipid Type and Retention Time (see manual for more information)" width="15px"/>
                                             </f:facet>
                                             <h:outputText value="#{compound.precedenceScore>=0 ? compound.precedenceScore : ''}" />
                                         </p:column>    
                                     </ui:remove>
-                                    
+
                                     <p:column 
-                                        sortBy="#{compound.retentionTimeScore}" style="width:75px"
+                                        sortBy="#{compound.retentionTimeScore}" style="width:90px"
                                         styleClass="#{compound.colorRetentionTimeScore}">
                                         <f:facet name="header">
-                                            <h:outputText value="Score3" title="Score based on Retention Time depending on double bonds and chain length"/>
+                                            <h:outputText value="RT Score " title="Score based on Retention Time depending on double bonds and chain length (see manual for more information)"/>
+                                            <p:graphicImage alt="" value="/images/help_icon.png" title="Score based on Retention Time depending on double bonds and chain length (see manual for more information)" width="15px"/>
                                         </f:facet>
                                         <h:outputText value="#{compound.retentionTimeScore>=0 ? compound.retentionTimeScore : 'N/A'}" />
                                     </p:column>  
-                                    
+
                                     <p:column 
-                                        sortBy="#{compound.finalScore}" style="width:75px"
+                                        sortBy="#{compound.finalScore}" style="width:90px"
                                         styleClass="#{compound.colorFinalScore}">
                                         <f:facet name="header">
-                                            <h:outputText value="Final Score" title="Final score based on previous rules"/>
+                                            <h:outputText value="Final Score " title="Final score based on previous rules (see manual for information)"/>
+                                            <p:graphicImage alt="" title="Final score based on previous rules (see manual for information)" value="/images/help_icon.png" width="15px"/>
                                         </f:facet>
                                         <h:outputText value="#{compound.finalScore>=0 ? compound.finalScore : 'N/A'}" />
-                                    </p:column>  
+                                    </p:column>
 
                                     <p:column headerText="Cas" sortBy="#{compound.casId}" style="width:120px">
                                         <h:outputText value="#{compound.casId}" />

@@ -58,7 +58,7 @@ public class BrowseSearchControllerJDBC implements Serializable {
     private final List<SelectItem> metabolitesTypecandidates;
 
     private List<Compound> items;
-    @EJB
+    
     private final facades.MSFacade msFacade;
 
     /**

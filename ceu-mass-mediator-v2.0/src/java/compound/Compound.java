@@ -15,6 +15,7 @@ import static utilities.Constantes.WEB_COMPUESTO_LM;
 import static utilities.Constantes.WEB_COMPUESTO_METLIN;
 import static utilities.Constantes.WEB_COMPOUND_MINE_START;
 import static utilities.Constantes.WEB_COMPOUND_MINE_SUFFIX;
+import static utilities.Constantes.WEB_COMPUESTO_PUBCHEMICHAL;
 
 /**
  * Compound. Represents a chemical compound. The data is obtained from de
@@ -285,7 +286,7 @@ public class Compound implements Serializable {
         if (null == this.pc_id || this.pc_id.equals("")) {
             return "";
         }
-        return WEB_COMPUESTO_METLIN + getPc_id();
+        return WEB_COMPUESTO_PUBCHEMICHAL + getPc_id();
     }
     
     public String getMINE_id() {

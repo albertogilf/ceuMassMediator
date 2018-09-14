@@ -13,9 +13,14 @@ import javax.faces.validator.ValidatorException;
 import msms.MSMSCompound;
 import static utilities.Constantes.*;
 import msms.Msms;
+import msms.ScoreComparator;
 
 import msms.Peak;
 import facades.MSMSFacade;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Controller (Bean) of the application
@@ -28,14 +33,14 @@ import facades.MSMSFacade;
 public class MSMSController implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String parentIonMass;
+    private String precursorIonMass;
     private String inputPeaks;
-    private String parentIonTolerance;
+    private String precursorIonTolerance;
     private String mzTolerance;
-    private String ionizationMode;
+    private int ionizationMode;
     private int ionizationVoltage;
     private String ionizationVoltageLevel;
-    private String parentIonToleranceMode;
+    private String precursorIonToleranceMode;
     private String mzToleranceMode;
     // List of candidates is within msms, attribute annotations
     private Msms msms;
@@ -53,8 +58,8 @@ public class MSMSController implements Serializable {
 
     public MSMSController() {
         this.mzToleranceMode = TOLERANCE_MODE_INICITAL_VALUE;
-        this.parentIonToleranceMode = TOLERANCE_MODE_INICITAL_VALUE;
-        this.ionizationMode = "positive";
+        this.precursorIonToleranceMode = TOLERANCE_MODE_INICITAL_VALUE;
+        this.ionizationMode = 1;
         this.ionizationVoltage = 10;
         this.ionizationVoltageLevel = "low";
         this.spectraType = new LinkedList<String>();
@@ -128,12 +133,12 @@ public class MSMSController implements Serializable {
         this.inputPeaks = inputPeaks;
     }
 
-    public String getParentIonTolerance() {
-        return parentIonTolerance;
+    public String getPrecursorIonTolerance() {
+        return precursorIonTolerance;
     }
 
-    public void setParentIonTolerance(String parentIonTolerance) {
-        this.parentIonTolerance = parentIonTolerance;
+    public void setPrecursorIonTolerance(String precursorIonTolerance) {
+        this.precursorIonTolerance = precursorIonTolerance;
     }
 
     public String getMzTolerance() {
@@ -144,28 +149,14 @@ public class MSMSController implements Serializable {
         this.mzTolerance = mzTolerance;
     }
 
-    public String getIonizationMode() {
+    public int getIonizationMode() {
         return ionizationMode;
     }
 
-    public void setIonizationMode(String ionizationMode) {
+    public void setIonizationMode(int ionizationMode) {
         this.ionizationMode = ionizationMode;
     }
 
-    /**
-     *
-     * @param ionizationMode
-     * @return
-     */
-    public int getIonizationModeAsIint(String ionizationMode) {
-        if (ionizationMode.equalsIgnoreCase("positive")) {
-            return 1;
-        }
-        if (ionizationMode.equalsIgnoreCase("negative")) {
-            return 0;
-        }
-        return -1;
-    }
 
     public int getIonizationVoltage() {
         return ionizationVoltage;
@@ -205,12 +196,12 @@ public class MSMSController implements Serializable {
 
     }
 
-    public String getParentIonMass() {
-        return parentIonMass;
+    public String getPrecursorIonMass() {
+        return precursorIonMass;
     }
 
-    public void setParentIonMass(String parentIonMass) {
-        this.parentIonMass = parentIonMass;
+    public void setPrecursorIonMass(String precursorIonMass) {
+        this.precursorIonMass = precursorIonMass;
     }
 
     public void setItemsPeaks(List<Peak> itemsPeaks) {
@@ -229,12 +220,12 @@ public class MSMSController implements Serializable {
         return getItemsMSCompound().size() >= 0;
     }
 
-    public String getParentIonToleranceMode() {
-        return parentIonToleranceMode;
+    public String getPrecursorIonToleranceMode() {
+        return precursorIonToleranceMode;
     }
 
-    public void setParentIonToleranceMode(String parentIonToleranceMode) {
-        this.parentIonToleranceMode = parentIonToleranceMode;
+    public void setPrecursorIonToleranceMode(String precursorIonToleranceMode) {
+        this.precursorIonToleranceMode = precursorIonToleranceMode;
     }
 
     public String getMzToleranceMode() {
@@ -253,12 +244,12 @@ public class MSMSController implements Serializable {
         this.inputPeaks = null;
         this.itemsMSCompound = null;
         this.itemsPeaks = null;
-        this.ionizationMode = "positive";
+        this.ionizationMode = 1;
         ionizationVoltage = 0;
         this.ionizationVoltageLevel = "low";
         this.mzTolerance = "";
-        this.parentIonMass = "";
-        this.parentIonTolerance = "";
+        this.precursorIonMass = "";
+        this.precursorIonTolerance = "";
         this.queryPeaks = "";
     }
 
@@ -272,81 +263,95 @@ public class MSMSController implements Serializable {
         //load the peaks
 
         this.itemsPeaks = peaks;
-        /*Iterator it = this.itemsPeaks.iterator();
-        while(it.hasNext())
-        {
-            Peak p = (Peak)it.next();
-            System.out.println(p.toString());
-        }*/
+        
         //load the input msms
-        double parentIonMZ = Double.parseDouble(this.parentIonMass);
-        this.msms = new Msms(parentIonMZ, this.getIonizationModeAsIint(ionizationMode),
+        double precursorIonMZ = Double.parseDouble(this.precursorIonMass);
+        this.msms = new Msms(precursorIonMZ, this.ionizationMode,
                 this.ionizationVoltage,
                 this.ionizationVoltageLevel, peaks, this.getSpectraTypeAsInt());
-        //System.out.println("PARENT ION MASS "+this.parentIonMass);
-
-        System.out.println("PREDICTED========" + this.msms.getSpectraType());
-        System.out.println("MSMS tostring " + this.msms.toString());
+        
         
 
         //2. Set the candidates
         // First, search the candidates.
         List<MSMSCompound> listCandidates
-                = this.msmsFacade.getMsmsCandidates(this.msms, Double.parseDouble(this.parentIonTolerance), this.parentIonToleranceMode);
-        System.out.println("Number of msms candidates: " + listCandidates.size());
+                = this.msmsFacade.getMsmsCandidates(this.msms, Double.parseDouble(this.precursorIonTolerance), this.precursorIonToleranceMode);
+        //System.out.println("Number of msms candidates: " + listCandidates.size());
         //3. Score the peaks
         // Then score the candidates
         List<MSMSCompound> candidatesScored
                 = this.msmsFacade.scoreMatchedPeaks(this.msms, listCandidates, Double.parseDouble(this.mzTolerance), this.mzToleranceMode);
-        //System.out.println("Candidates scored at msms controller: "+ this.msms.getAnnotations().getCompound().size());
-
+        
+        
         //4. Get only the top N matches, we will use top 10
         this.itemsMSCompound = msmsFacade.getTopNMatches(candidatesScored, candidatesScored.size());
         this.msms.setCompounds(this.itemsMSCompound);
+        Collections.sort(this.itemsMSCompound, new ScoreComparator());
         System.out.println("Top number: " + this.itemsMSCompound.size());
-        /* Iterator it= this.itemsMSCompound.iterator();
-        
-        while (it.hasNext())
-        {
-            System.out.println(((MSMSCompound)it).toString());
-
-        }*/
-        //this.msmsFacade.disconnect();
-
+       
     }
 
     public void setDemo() {
         this.setQueryPeaks(DEMOPEAKS);
-        this.setParentIonMass(DEMOPARENTIONMASS);
-        this.setParentIonTolerance(DEMOPARENTIONMASSTOLERANCE);
-        this.setParentIonToleranceMode("Da");
+        this.setPrecursorIonMass(DEMOPRECUSRORIONMASS);
+        this.setPrecursorIonTolerance(DEMOPRECURSORIONMASSTOLERANCE);
+        this.setPrecursorIonToleranceMode("Da");
         this.setMzTolerance(DEMOMZTOLERANCE);
         this.setMzToleranceMode("Da");
-        this.setIonizationMode("positive");
+        this.setIonizationMode(1);
         this.setIonizationVoltage(10);
         this.setIonizationVoltageLevel("low");
         
     }
 
-    public void validateParentIonMass(FacesContext arg0, UIComponent arg1, Object arg2)
+    public void validatePrecursorIonMass(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputParent =-1;
-        float inputParent = -1;
+        
+        float inputPrecursorMZ = -1;
         try {
             String input = (String) arg2;
             input = input.replace(",", ".");
-            inputParent = Float.parseFloat((String) input);
-            //  inputParent = Integer.valueOf((String) arg2); 
+            inputPrecursorMZ = Float.parseFloat((String) input);
+            
         } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("The parent ion mass should be a number between 0 and 2000"));
+            throw new ValidatorException(new FacesMessage("The precursor ion mass should be a number between 0 and 2000"));
         }
-        if (inputParent <= 0) {
-            throw new ValidatorException(new FacesMessage("The parent ion mass should be between 0 and 2000"));
-        } else if (inputParent > 2000) {
-            throw new ValidatorException(new FacesMessage("The parent ion mass should be between 0 and 2000"));
+        if (inputPrecursorMZ <= 0) {
+            throw new ValidatorException(new FacesMessage("The precursor ion mass should be between 0 and 2000"));
+        } else if (inputPrecursorMZ > 2000) {
+            throw new ValidatorException(new FacesMessage("The precursor ion mass should be between 0 and 2000"));
         }
     }
+    
+    public void validatePeaks (FacesContext arg0, UIComponent arg1, Object arg2)
+            throws ValidatorException {
 
+            String input = (String) arg2;
+            String[] p = input.split("\n");
+
+        for (String p1 : p) {
+            String[] mzi = p1.split(" ");
+            //System.out.println(mzi[0]);
+            //System.out.println(mzi[1]);
+            if(!isNumeric(mzi[0])){throw new ValidatorException(new FacesMessage("The peaks must be a list of numbers, one per line: m/z [space] intensity"));}
+            if(!isNumeric(mzi[1])){throw new ValidatorException(new FacesMessage("The peaks must be a list of numbers, one per line: m/z [space] intensity"));}
+            
+        }
+            
+        
+    }
+    
+    private static boolean isNumeric(String cadena){
+	try {
+		Double.parseDouble(cadena);
+		return true;
+	} catch (NumberFormatException nfe){
+		return false;
+	}
+}
+
+    
+   
     public void validateTolerance(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
         // int inputTol =-1;
@@ -357,12 +362,12 @@ public class MSMSController implements Serializable {
             inputTol = Float.parseFloat((String) input);
             //  inputTol = Integer.valueOf((String) arg2); 
         } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("Input tolerance should be a number between 0 and 10000"));
+            throw new ValidatorException(new FacesMessage("The input tolerance should be a number between 0 and 1000"));
         }
         if (inputTol <= 0) {
-            throw new ValidatorException(new FacesMessage("Input tolerance should be between 0 and 10000"));
-        } else if (inputTol > 10000) {
-            throw new ValidatorException(new FacesMessage("Input tolerance should be between 0 and 10000"));
+            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
+        } else if (inputTol > 1000) {
+            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
         }
     }
 

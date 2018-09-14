@@ -15,7 +15,14 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import utilities.Cadena;
+import utilities.Constantes;
+import static utilities.Constantes.EXAMPLEDEMOMASSES;
+import static utilities.Constantes.EXAMPLEDEMORTS;
 import utilities.DataFromInterfacesUtilities;
 import utilities.FeaturesRTProcessing;
 
@@ -29,6 +36,7 @@ import utilities.FeaturesRTProcessing;
 @Named("LCMSControllerGroupByRT")
 public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
 
+    private String RT_window;
     private List<FeaturesGroupByRT> allFeaturesGroupByRT;
     private List<FeaturesGroupByRT> significativeFeaturesGroupedByRT;
     private ExperimentGroupByRT experimentGroupByRT;
@@ -36,12 +44,14 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
     public LCMSControllerGroupByRT() {
         super();
         this.allFeaturesGroupByRT = new NoDuplicatesList<>();
+        this.RT_window = String.valueOf(Constantes.RT_WINDOW);
     }
 
     /**
      * Method that permits to create a excel from the current results. Flag
-     * indicates if the excel generated contains RT field or not. 1 yes 0 no
-     * // TODO ALBERTO EXPORT TO EXCEL THE POSSIBLE FRAGMENTS
+     * indicates if the excel generated contains RT field or not. 1 yes 0 no //
+     * TODO ALBERTO EXPORT TO EXCEL THE POSSIBLE FRAGMENTS
+     *
      * @param flag
      */
     @Override
@@ -62,7 +72,7 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
         List<Double> massesAux; // auxiliar List for input Masses
         int numInputMasses;
         if (getAllInputMasses().equals("")) {
-            setAllFeatures(false);
+            setIsAllFeatures(false);
             //Method returns an ArrayList because it is acceded by index
             massesAux = Cadena.extractDoubles(getQueryInputMasses());
             List<Double> massesMZFromNeutral = new LinkedList<>();
@@ -86,13 +96,11 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
 
             processGroupedCompoundsAdvanced(significantFeatures, significantFeatures);
 
-            //TODO MARIA REMOVE AFTER TESTING
-            printResults(this.allFeaturesGroupByRT);
+            
 
         } else {
-            // IGUAL QUE SI FUESEN TODAS SIGNIFICATIVAS DE MOMENTO. 
 
-            setAllFeatures(true);
+            setIsAllFeatures(true);
             // significant features
             massesAux = Cadena.extractDoubles(getQueryInputMasses());
             List<Double> massesMZFromNeutral = new LinkedList<>();
@@ -137,9 +145,27 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
             FeaturesRTProcessing.setSignificantFeatures(significantFeatures, allFeatures);
 
             processGroupedCompoundsAdvanced(significantFeatures, allFeatures);
-            //TODO MARIA REMOVE AFTER TESTING
-            printResults(this.allFeaturesGroupByRT);
+            
         }
+    }
+    
+    /**
+     * This method is used to load a list of queryMasses declared in the class
+     * Constantes
+     */
+    @Override
+    public void setAdvancedDemoMasses() {
+        this.setQueryInputMasses(EXAMPLEDEMOMASSES);
+        this.setQueryInputRetentionTimes(EXAMPLEDEMORTS);
+        //this.setQueryInputCompositeSpectra(NEWDEMOSPECTRUM);
+        super.setChemAlphabet("CHNOPS");
+        super.setIncludeDeuterium(false);
+        super.setIonMode(1);
+        super.setMassesMode(1);
+        super.setAdductsCandidates(super.getPositiveCandidates());
+        super.getAdducts().clear();
+        super.getAdducts().add("M+H");
+        super.getAdducts().add("M+Na");
     }
 
     /**
@@ -148,6 +174,7 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
     @Override
     protected void resetItems() {
         this.allFeaturesGroupByRT.clear();
+        this.RT_window = String.valueOf(Constantes.RT_WINDOW);
     }
 
     public List<FeaturesGroupByRT> getAllFeaturesGroupByRT() {
@@ -181,15 +208,15 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
      * grouping the features by retention time)
      */
     private void processGroupedCompoundsAdvanced(List<Feature> significantFeatures, List<Feature> allFeatures) {
-        System.out.println("Entering process advanced GROUPED");
+       //System.out.println("Entering process advanced GROUPED");
 
         int tolerance = Integer.parseInt(getInputTolerance());
-        boolean isAllFeatures = isAllFeatures();
+        boolean isAllFeatures = isIsAllFeatures();
 
         List<Integer> databasesAsInt = DataFromInterfacesUtilities.getDatabasesAsInt(getDatabases());
         int metabolitesTypeInt = DataFromInterfacesUtilities.metabolitesTypeToInteger(getMetabolitesType());
-        int inputMassModeAsInt = DataFromInterfacesUtilities.inputMassModeToInteger(getMassesMode());
-        int ionizationModeAsInt = DataFromInterfacesUtilities.ionizationModeToInteger(getIonMode());
+        int inputMassModeAsInt = getMassesMode();
+        int ionMode = getIonMode();
         int chemAlphabetInt = DataFromInterfacesUtilities.getChemAlphabetAsInt(getChemAlphabet());
         int toleranceTypeAsInt = DataFromInterfacesUtilities.toleranceTypeToInteger(getInputModeTolerance());
         int modifierInt = DataFromInterfacesUtilities.modifierToInteger(getModifier());
@@ -198,11 +225,12 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
 
         List<String> adducts = getAdducts();
 
-        //1. Group features by RT (is within experiment constructor)
+        Double RT_window_double = Double.parseDouble(this.RT_window);
+        // Group features by RT (is within experiment constructor)
         this.experimentGroupByRT = new ExperimentGroupByRT(significantFeatures, allFeatures, isAllFeatures,
                 tolerance, toleranceTypeAsInt,
                 chemAlphabetInt, modifierInt, metabolitesTypeInt,
-                databasesAsInt, inputMassModeAsInt, ionizationModeAsInt, adducts);
+                databasesAsInt, inputMassModeAsInt, ionMode, adducts, RT_window_double);
 
         this.allFeaturesGroupByRT = experimentGroupByRT.getAllFeaturesGroupByRT();
         // processing of the groups inside the experiment!
@@ -224,38 +252,51 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
         this.significativeFeaturesGroupedByRT = this.experimentGroupByRT.getSignificantFeaturesGroupedByRT();
     }
 
-    //TODO: remove after testing
-    public static void printResults(List<FeaturesGroupByRT> featuresGroups_byRT) {
-        System.out.println("****FINAL OUTPUT*****");
-        System.out.println("Number of features groups: " + featuresGroups_byRT.size());
-        for (FeaturesGroupByRT featuresGroup_byRT : featuresGroups_byRT) {
-            System.out.println("FGBRT RT: " + featuresGroup_byRT.getRT());
-            System.out.println("Number of features: " + featuresGroup_byRT.getFeatures().size());
-            for (Feature f : featuresGroup_byRT.getFeatures()) {
-                System.out.println("    FEATURE EM: " + f.getEM() + " ADDUCT: " + f.getAdductAutoDetected());
-                if (f.isPossibleFragment()) {
-                    System.out.println("        ---> is a possible fragment.");
-                }
-                if (!f.getPossibleParentCompounds().isEmpty() || f.isPossibleFragment()) {
-                    List<CompoundLCMS> parentCompounds = f.getPossibleParentCompounds();
-                    for (CompoundLCMS parentCompound : parentCompounds) {
-                        System.out.println("           ---->Fragment from " + parentCompound.getCompound_name() + " id: " + parentCompound.getCompound_id()
-                                + " EM: " + parentCompound.getEM() + " RT: " + parentCompound.getRT());
-                    }
-                } else if (!f.getAnnotationsGroupedByAdduct().isEmpty()) {
-                    for (CompoundsLCMSGroupByAdduct cg : f.getAnnotationsGroupedByAdduct()) {
-                        if (cg != null) {
-                            System.out.println("Compounds size: " + cg.getCompounds().size());
-                            System.out.println("        Compounds group by Adduct: ");
-                            for (CompoundLCMS c : cg.getCompounds()) {
-                                System.out.println("            Compound " + c.getCompound_name() + " with mass " + c.getMass());
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    public String getRT_window() {
+        return RT_window;
     }
+
+    public void setRT_window(String RT_window) {
+        this.RT_window = RT_window;
+    }
+
+    //TODO: remove after testing
+//    public static void printResults(List<FeaturesGroupByRT> featuresGroups_byRT) {
+//        System.out.println("****FINAL OUTPUT*****");
+//        System.out.println("Number of features groups: " + featuresGroups_byRT.size());
+//        for (FeaturesGroupByRT featuresGroup_byRT : featuresGroups_byRT) {
+//            System.out.println("FGBRT RT: " + featuresGroup_byRT.getRT());
+//            System.out.println("Number of features: " + featuresGroup_byRT.getFeatures().size());
+//            for (Feature f : featuresGroup_byRT.getFeatures()) {
+//                System.out.println("    FEATURE EM: " + f.getEM() + " ADDUCT: " + f.getAdductAutoDetected());
+//                if (f.isPossibleFragment()) {
+//                    System.out.println("        ---> is a possible fragment.");
+//                }
+//                if (!f.getPossibleParentCompounds().isEmpty() || f.isPossibleFragment()) {
+//                    Map<String, List<CompoundLCMS>> parentCompounds = f.getPossibleParentCompounds();
+//                    for (Map.Entry<String,List<CompoundLCMS>> entry : parentCompounds.entrySet()) {
+//                        String adduct = entry.getKey();
+//                        System.out.println("ADDUCT: " + adduct);
+//                        List<CompoundLCMS> listParentCompoundsForAdduct = entry.getValue();
+//                        for (CompoundLCMS parentCompound : listParentCompoundsForAdduct) {
+//                            System.out.println("           ---->Fragment from " + parentCompound.getCompound_name() + " id: " + parentCompound.getCompound_id()
+//                                    + " EM: " + parentCompound.getEM() + " RT: " + parentCompound.getRT());
+//                        }
+//                    }
+//                } else if (!f.getAnnotationsGroupedByAdduct().isEmpty()) {
+//                    for (CompoundsLCMSGroupByAdduct cg : f.getAnnotationsGroupedByAdduct()) {
+//                        if (cg != null) {
+//                            System.out.println("Compounds size: " + cg.getCompounds().size());
+//                            System.out.println("        Compounds group by Adduct: ");
+//                            for (CompoundLCMS c : cg.getCompounds()) {
+//                                System.out.println("            Compound " + c.getCompound_name() + " with mass " + c.getMass());
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     @Override
     protected void calculateScores() {
@@ -266,5 +307,30 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
     public void submitLCMSSimpleSearch() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
+    /**
+     * Validates the input Tolerance to be a float between 0 and 10000
+     *
+     * @param arg0 FacesContext of the form
+     * @param arg1 Component of the form
+     * @param arg2 Input of the user in the component arg1
+     *
+     */
+    public void validateInputRTTolerance(FacesContext arg0, UIComponent arg1, Object arg2)
+            throws ValidatorException {
+        float inputRTTol = -1;
+        try {
+            String input = (String) arg2;
+            input = input.replace(",", ".");
+            inputRTTol = Float.parseFloat((String) input);
+            //  inputTol = Integer.valueOf((String) arg2); 
+        } catch (NumberFormatException nfe) {
+            throw new ValidatorException(new FacesMessage("The RT window should be a number between 0 and 5"));
+        }
+        if (inputRTTol <= 0) {
+            throw new ValidatorException(new FacesMessage("The RT window should be between 0 and 5"));
+        } else if (inputRTTol > 5) {
+            throw new ValidatorException(new FacesMessage("The RT window should be between 0 and 5"));
+        }
+    }
 }

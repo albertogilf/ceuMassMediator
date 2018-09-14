@@ -8,7 +8,6 @@ package msms;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import utilities.Utilities;
 
 /**
  * MSMS Object. 
@@ -18,19 +17,30 @@ import utilities.Utilities;
  */
 public class Msms {
 
-    private final int ionizationMode; //0=negative, 1=positive
+    //0=negative, 1=positive
+    private final int ionizationMode; 
     private final int voltage;
-    private final String voltageLevel;//low=10, med=20-30, high>=40
+    //low=10-20, med=20-40, high>=40
+    private final String voltageLevel;
     private final List<Peak> normalizedPeaks;
     private final List<Peak> absolutePeaks;
     protected double parentIonNeutralMass;
     protected double parentIonMZ;
     private final int spectraType;
 
+    public String getName() {
+        return name;
+    }
+    //maria borra
+    private String name;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     // Putative annotations from database info. 
     private List<MSMSCompound> compounds;
-    // Within MSAnnotation class -> List MSMSCompound (formula, mass, name, etc..), score. 
-    // jdbc queryies fill the MSMSCompound from database
+    
 
     /**
      *
@@ -64,7 +74,8 @@ public class Msms {
             String voltageLevel, List<Peak> peaks, int spectraType) {
         this.parentIonMZ = parentIonMZ;
         this.ionizationMode = ionizationMode;
-        this.parentIonNeutralMass = utilities.AdductProcessing.calculateNeutralMass(ionizationMode, this.parentIonMZ);
+        //this.parentIonNeutralMass = utilities.AdductProcessing.getMassToSearch(this.parentIonMZ, "M+H", ionizationMode);
+        this.parentIonNeutralMass = utilities.AdductProcessing.calculateNeutralMassFromHAdduct(ionizationMode, this.parentIonMZ);
         this.voltage = voltage;
         this.voltageLevel = voltageLevel;
         this.absolutePeaks = peaks;
@@ -139,11 +150,11 @@ public class Msms {
     }
 
 
-    public double getParentIonNeutralMass() {
+    public double getPrecursorIonNeutralMass() {
         return parentIonNeutralMass;
     }
 
-    public double getParentIonMZ() {
+    public double getPrecursorIonMZ() {
         return parentIonMZ;
     }
 

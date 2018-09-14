@@ -23,6 +23,7 @@ import utilities.ConstantesForOxidation;
 import static utilities.OxidationLists.MAPOXIDATIONS;
 import persistence.oxidizedTheoreticalCompound.OxidizedTheoreticalCompound;
 import utilities.AdductProcessing;
+import utilities.DataFromInterfacesUtilities;
 import static utilities.OxidationLists.LIST_LONG_CHAIN_OXIDATION_TYPES;
 import static utilities.OxidationLists.LIST_SHORT_CHAIN_OXIDATION_TYPES;
 import utilities.OxidationProcessing;
@@ -35,7 +36,7 @@ import static utilities.Utilities.calculateFAEMFromPIandOtherFAEM;
  * @version: 4.0, 20/07/2016. Modified by Alberto Gil de la Fuente Last
  * Modified: 22/05/2018
  */
-@Stateless
+@Stateless(name = "TheoreticalCompoundsFacade")
 public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompounds> {
 
     private static final long serialVersionUID = 1L;
@@ -427,7 +428,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<Double> masses,
             String toleranceMode,
             Double tolerance,
-            String ionMode,
+            int ionMode,
             String massesMode,
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
@@ -436,7 +437,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         long simpleJPA = 0;
         long start = System.currentTimeMillis();
         List<TheoreticalCompounds> theoreticalCompoundList;
-        
+
         // If the search is only in MINE, it goes directly to findRangeGeneratedAdvanced
         if (databases.size() == 1 && databases.contains("MINE (Only In Silico Compounds)")) {
             theoreticalCompoundList = findRangeGeneratedSimple(
@@ -485,7 +486,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<Double> masses,
             String toleranceMode,
             Double tolerance,
-            String ionMode,
+            int ionMode,
             String massesMode,
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
@@ -503,6 +504,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
+        int massesModeInt = utilities.DataFromInterfacesUtilities.inputMassModeToInteger(massesMode);
         /*
         System.out.println("PROVISIONALMAP IN MAIN METHOD: " + provisionalMap);
         System.out.println("ADDUCTS IN MAIN METHOD: " + adducts);
@@ -534,7 +536,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         for (int i = 0; i < masses.size(); i++) {
 
             Double inputMass = masses.get(i);
-            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesModeInt, ionMode);
             //System.out.println("\n Compound: " + inputMass + " added simple charged");
             for (String s : adducts) {
                 listToBeOrdered = new LinkedList<TheoreticalCompounds>();
@@ -648,7 +650,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<Double> masses,
             String toleranceMode,
             Double tolerance,
-            String ionMode,
+            int ionMode,
             String massesMode,
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
@@ -662,6 +664,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
+        int massesModeInt = utilities.DataFromInterfacesUtilities.inputMassModeToInteger(massesMode);
         /*System.out.println("\nadducts\n" + adducts);
          */
         List results;
@@ -678,7 +681,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         List<TheoreticalCompounds> listToBeOrdered;
         for (int i = 0; i < masses.size(); i++) {
             Double inputMass = masses.get(i);
-            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesModeInt, ionMode);
             //System.out.println("\n Compound: " + inputMass + " added simple charged");
             for (String s : adducts) {
                 listToBeOrdered = new LinkedList<>();
@@ -757,7 +760,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             String toleranceMode,
             Double tolerance,
             String chemAlphabet,
-            String ionMode,
+            int ionMode,
             String massesMode,
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
@@ -766,7 +769,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         long advancedJPA = 0;
         long start = System.currentTimeMillis();
         List<TheoreticalCompounds> theoreticalCompoundList;
-
+        adducts = DataFromInterfacesUtilities.getValueAllAductsBasedOnIonMode(ionMode, adducts);
         // If the search is only in MINE, it goes directly to findRangeGeneratedAdvanced
         if (databases.size() == 1 && databases.contains("MINE (Only In Silico Compounds)")) {
             theoreticalCompoundList = findRangeGeneratedAdvanced(
@@ -831,13 +834,13 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             String toleranceMode,
             Double tolerance,
             String chemAlphabet,
-            String ionMode,
+            int ionMode,
             String massesMode,
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases,
             String metabolitesType) {
-        List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<TheoreticalCompounds>();
+        List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<>();
         Map<String, String> provisionalMap;
         //System.out.println("\nION MODE " + ionMode + " masses Mode: " + massesMode + "\n");
         boolean searchInMINE = databases.contains("All") || databases.contains("MINE (Only In Silico Compounds)");
@@ -860,6 +863,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
+        int massesModeInt = utilities.DataFromInterfacesUtilities.inputMassModeToInteger(massesMode);
         /*
         System.out.println("PROVISIONALMAP IN MAIN METHOD: " + provisionalMap);
         System.out.println("ADDUCTS IN MAIN METHOD: " + adducts);
@@ -980,7 +984,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 //        List<TheoreticalCompounds> listToBeOrderedForGen;
         for (int i = 0; i < masses.size(); i++) {
             Double inputMass = masses.get(i);
-            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesModeInt, ionMode);
             Double inputRetentionTime = retentionTimes.get(i);
             Boolean isSignificative = isSignificativeCompound.get(i);
             Map<Double, Integer> inputCompositeSpectrum = compositeSpectra.get(i);
@@ -1229,7 +1233,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             String toleranceMode,
             Double tolerance,
             String chemAlphabet,
-            String ionMode,
+            int ionMode,
             String massesMode,
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
@@ -1243,6 +1247,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         //System.out.println("Chemical Alphabet " + chemAlphabet);
         provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
+
+        int massesModeInt = utilities.DataFromInterfacesUtilities.inputMassModeToInteger(massesMode);
         /*System.out.println("\nadducts\n" + adducts);
          */
         List results;
@@ -1263,7 +1269,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 //        List<TheoreticalCompounds> listToBeOrderedForGen;
         for (int i = 0; i < masses.size(); i++) {
             Double inputMass = masses.get(i);
-            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesModeInt, ionMode);
             Double inputRetentionTime = retentionTimes.get(i);
             Boolean isSignificative = isSignificativeCompound.get(i);
             Map<Double, Integer> inputCompositeSpectrum = compositeSpectra.get(i);
@@ -1551,7 +1557,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             Double toleranceForFAs,
             String toleranceModeForPI,
             Double toleranceForPI,
-            String ionMode,
+            int ionMode,
             List<String> databases,
             List<String> possibleOxidations) {
         List<OxidizedTheoreticalCompound> oxidizedPCsList = new LinkedList<OxidizedTheoreticalCompound>();
@@ -1702,7 +1708,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             Double toleranceForFA,
             String toleranceModeForPI,
             Double toleranceForPI,
-            String ionMode,
+            int ionMode,
             List<String> databases,
             List<String> possibleOxidations) {
         List<OxidizedTheoreticalCompound> oxidizedPCsList = new LinkedList<>();
