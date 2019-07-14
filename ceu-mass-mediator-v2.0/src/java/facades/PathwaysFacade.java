@@ -7,7 +7,6 @@
  * This software is the proprietary information of Alberto Gil de la Fuente.
  *
  */
-
 package facades;
 
 import DBManager.DBManager;
@@ -24,35 +23,30 @@ import java.util.TreeSet;
 
 /**
  * {Insert class description here}
- * 
+ *
  * @version $Revision: 1.1.1.1 $
  * @since Build {insert version here} 23-abr-2018
- * 
+ *
  * @author Alberto Gil de la Fuente
  */
 public class PathwaysFacade {
 
-    private final DBManager dbm;
+    private static final DBManager DBM = new DBManager();
     private final Connection conn;
-    
+
     /**
      * Creates a new instance of pathwaysFacade
      */
-    public PathwaysFacade ()
-    {
-        this.dbm = new DBManager();
-        this.conn = connect();
+    public PathwaysFacade() {
+        
+        this.conn = PathwaysFacade.DBM.connect();
     }
     
-    public final Connection connect(){
-        return this.dbm.connect();
+
+    public void disconnect() {
+        PathwaysFacade.DBM.disconnect();
     }
-    
-    public void disconnect(){
-        this.dbm.disconnect();
-    }
-    
-    
+
 //count pathways that have an specific compound
     private Integer countPARTIALpathways(CompoundForPathway compound) {
         Integer n_pathways = -1;
@@ -64,7 +58,6 @@ public class PathwaysFacade {
             //String sql = "SELECT COUNT(*) FROM compounds_pathways WHERE compound_id=" + compound.getIdentifier();
             //stmt = conn.createStatement();
             //rs = stmt.executeQuery(sql);
-
             String sql = "SELECT COUNT(*) FROM compounds_pathways WHERE compound_id = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, Integer.parseInt(compound.getIdentifier()));
@@ -105,7 +98,6 @@ public class PathwaysFacade {
             //String sql = "SELECT pathway_id FROM pathways WHERE pathway_map= '" + pathway.getCode() + "'";
             //stmt = conn.createStatement();
             //rs = stmt.executeQuery(sql);
-            
             String sql = "SELECT pathway_id FROM pathways WHERE pathway_map= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, pathway.getCode());
@@ -115,7 +107,7 @@ public class PathwaysFacade {
                 rs.close();
                 //sql = "SELECT COUNT(*) FROM compounds_pathways WHERE pathway_id=" + id;
                 //rs = stmt.executeQuery(sql);
-                
+
                 sql = "SELECT COUNT(*) FROM compounds_pathways WHERE pathway_id=?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setInt(1, id);
@@ -161,7 +153,7 @@ public class PathwaysFacade {
             //stmt = conn.createStatement();
             //String sql = "SELECT COUNT(*) FROM compounds WHERE compound_id=" + id;
             //rs = stmt.executeQuery(sql);
-            
+
             String sql = "SELECT COUNT(*) FROM compounds WHERE compound_id = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, Integer.parseInt(id));
@@ -239,7 +231,6 @@ public class PathwaysFacade {
             if (exclusivity > maxExclusivity) {
                 maxExclusivity = exclusivity;
             }
-
         }
         pathway.setMaxExclusivity(maxExclusivity);
     }

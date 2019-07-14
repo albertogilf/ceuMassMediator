@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
@@ -14,10 +14,10 @@ import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import oxidation.CompoundOxidized;
 import utilities.Cadena;
-import static utilities.Constantes.TOLERANCE_MODE_INICITAL_VALUE;
 import utilities.ConstantesForOxidation;
 import utilities.OxidationLists;
 import utilities.PatternFinder;
+import static utilities.Constants.TOLERANCE_MODE_INITIAL_VALUE;
 
 /**
  * Controller (Bean) of the application for the oxidation feature
@@ -61,9 +61,9 @@ public class OxidationControllerJDBC implements Serializable {
 
     public OxidationControllerJDBC() {
         this.inputToleranceForFA = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
-        this.inputModeToleranceForFA = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputModeToleranceForFA = TOLERANCE_MODE_INITIAL_VALUE;
         this.inputToleranceForPI = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
-        this.inputModeToleranceForPI = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputModeToleranceForPI = TOLERANCE_MODE_INITIAL_VALUE;
         //String version = FacesContext.class.getPackage().getImplementationVersion();
         //System.out.println("\n\n  VERSION DE JSF: " + version + "\n\n");
         this.oxidizedCompoundsList = null;
@@ -115,9 +115,9 @@ public class OxidationControllerJDBC implements Serializable {
         this.setQueryInputFattyAcidMass1(ConstantesForOxidation.LC_OX_FATTYACIDDEMOMASS);
         this.setQueryInputFattyAcidMass2(ConstantesForOxidation.LC_NONOX_FATTYACIDDEMOMASS);
         this.inputToleranceForFA = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
-        this.inputModeToleranceForFA = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputModeToleranceForFA = TOLERANCE_MODE_INITIAL_VALUE;
         this.inputToleranceForPI = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
-        this.inputModeToleranceForPI = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputModeToleranceForPI = TOLERANCE_MODE_INITIAL_VALUE;
     }
     
     /**
@@ -127,9 +127,9 @@ public class OxidationControllerJDBC implements Serializable {
         this.setQueryInputParentIonMass(ConstantesForOxidation.SC_PARENTIONDEMOMASS);
         this.setQueryInputFattyAcidMass1(ConstantesForOxidation.SC_NONOX_FATTYACIDDEMOMASS);
         this.inputToleranceForFA = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
-        this.inputModeToleranceForFA = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputModeToleranceForFA = TOLERANCE_MODE_INITIAL_VALUE;
         this.inputToleranceForPI = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
-        this.inputModeToleranceForPI = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputModeToleranceForPI = TOLERANCE_MODE_INITIAL_VALUE;
     }
 
     /**
@@ -141,9 +141,9 @@ public class OxidationControllerJDBC implements Serializable {
         this.queryInputFattyAcidMass1 = "";
         this.queryInputFattyAcidMass2 = "";
         this.inputToleranceForFA = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
-        this.inputModeToleranceForFA = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputModeToleranceForFA = TOLERANCE_MODE_INITIAL_VALUE;
         this.inputToleranceForPI = ConstantesForOxidation.TOLERANCE_INICITAL_VALUE;
-        this.inputModeToleranceForPI = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputModeToleranceForPI = TOLERANCE_MODE_INITIAL_VALUE;
         /*
         this.oxidations.clear();
         this.oxidations.add("allOxidations");
@@ -518,7 +518,7 @@ public class OxidationControllerJDBC implements Serializable {
             System.out.println(" OXIDATIONS TO SEARCH: " + this.oxidations);
          */
 
-        String PATHNAMEFORTESTINGFA = "/home/alberto/PHD/mediator/frontEnd/ceu-mediator-v2-2014-7-9/test/filesForTesting/FA.csv";
+        String PATHNAMEFORTESTINGFA = "/home/alberto/alberto/repo/mediator/frontEnd/ceu-mediator-v2-2014-7-9/test/filesForTesting/FA.csv";
         List<Double> FAForCheck = PatternFinder.readDoublesFromFile(PATHNAMEFORTESTINGFA);
         
         this.oxidizedCompoundsList = this.oxidationFacade.findLCOxidizedFA(this.queryParentIonMass,
@@ -553,21 +553,7 @@ public class OxidationControllerJDBC implements Serializable {
      */
     public void validateInputTolerance(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        float inputTol = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            inputTol = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be a number between 0 and 1000"));
-        }
-        if (inputTol <= 0) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
-        } else if (inputTol > 1000) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
-        }
+        InterfaceValidators.validateInputTolerance(arg0, arg1, arg2);
     }
 
     /**
@@ -580,21 +566,7 @@ public class OxidationControllerJDBC implements Serializable {
      */
     public void validateParentIonMass(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        float parentIonMass = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            parentIonMass = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("Parent ion mass should be a number between 0 and 10000"));
-        }
-        if (parentIonMass <= 0) {
-            throw new ValidatorException(new FacesMessage("Parent ion mass should be between 0 and 10000"));
-        } else if (parentIonMass > 10000) {
-            throw new ValidatorException(new FacesMessage("Parent ion mass should be between 0 and 10000"));
-        }
+        InterfaceValidators.validateParentIonMass(arg0, arg1, arg2);
     }
 
     /**
@@ -607,22 +579,12 @@ public class OxidationControllerJDBC implements Serializable {
      */
     public void validateFattyAcidMass(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        float fattyAcidMass = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            fattyAcidMass = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("Fatty acid mass should be a number between 0 and 10000"));
-        }
-        if (fattyAcidMass <= 0) {
-            throw new ValidatorException(new FacesMessage("Fatty acid mass should be between 0 and 10000"));
-        } else if (fattyAcidMass > 10000) {
-            throw new ValidatorException(new FacesMessage("Fatty acid mass should be between 0 and 10000"));
-        }
+        InterfaceValidators.validateFattyAcidMass(arg0, arg1, arg2);
     }
     
-    
+    @PreDestroy
+    public void destroy() {
+        //System.out.println("DISCONNECTING OXIDATION SEARCH CONTROLLER");
+        this.oxidationFacade.disconnect();
+    }
 }

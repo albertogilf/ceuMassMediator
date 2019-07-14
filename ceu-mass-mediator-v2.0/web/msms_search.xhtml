@@ -12,7 +12,8 @@
         </ui:define>
 
         <ui:param name="onloadbody" value="#{MSMSController.clearForm()}"/>
-
+        <ui:param name="idbody" value="searchbody"/>
+        
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Batch Simple Search</div>
@@ -23,7 +24,7 @@
                 <h:form id="mainsearch" enctype="multipart/form-data" prependId="false">
                     <p:focus for="inputpeaks"/>
                     <h:commandButton id="dummy" actionListener="#{MSMSController.submit()}" 
-                                     action="/theoreticalCompounds/msms_list" style="display:none;"
+                                     action="/msms_list?faces-redirect=true" style="display:none;"
                                      />
                     <p:clock rendered="false"/>
                     <div id="highlights" class="container whiteborder">
@@ -80,7 +81,7 @@
                                     <label style="float: top">Precursor Ion Tolerance: </label>
                                     <p:inputText id="inputpitolerance" size="2" maxlength="4"  
                                                  value="#{MSMSController.precursorIonTolerance}" 
-                                                 validator="#{MSMSController.validateTolerance}"
+                                                 validator="#{MSMSController.validateInputMZTolerance}"
                                                  required="true"
                                                  pt:placeholder="enter tolerance"
                                                  style="width:100%;height: 300%"
@@ -109,7 +110,7 @@
                                     <label style="float: top">M/Z Tolerance: </label>
                                     <p:inputText id="inputmztolerance" size="2" maxlength="4"  
                                                  value="#{MSMSController.mzTolerance}" 
-                                                 validator="#{MSMSController.validateTolerance}"
+                                                 validator="#{MSMSController.validateInputMZTolerance}"
                                                  required="true"
                                                  pt:placeholder="enter tolerance"
                                                  style="width:100%;height: 300%"
@@ -208,7 +209,7 @@
                                     id="submit" 
                                     value="submit compounds" 
                                     actionListener="#{MSMSController.submit()}" 
-                                    action="/theoreticalCompounds/msms_list"
+                                    action="/msms_list?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>

@@ -3268,3 +3268,15 @@
         visibility: visible;
         opacity: 1;
     }
+    
+    h2{
+		font-size: x-large;
+	}
+        
+    .fragmentfound{
+		color: green;
+	}
+        
+    .fragmentnotfound{
+		color: red;
+	}

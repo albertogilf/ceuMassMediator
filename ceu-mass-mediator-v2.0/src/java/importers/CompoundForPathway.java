@@ -14,7 +14,7 @@ import jxl.write.WritableHyperlink;
 import jxl.write.WritableSheet;
 import jxl.write.WriteException;
 
-import static utilities.Constantes.*;
+import static utilities.Constants.*;
 
 /**
  * 
@@ -45,29 +45,29 @@ public class CompoundForPathway implements Serializable {
      * Constructor
      *
      * @param info
-     * @param TablaColumnas
+     * @param columnsTable
      */
-    public CompoundForPathway(List<String> info, Map<String, Integer> TablaColumnas) {
+    public CompoundForPathway(List<String> info, Map<String, Integer> columnsTable) {
         pathways = new ArrayList<>();
         
         try {
-            expmass = info.get(TablaColumnas.get(EXPERIMENTAL_MASS_HEADER));
+            expmass = info.get(columnsTable.get(EXPERIMENTAL_MASS_HEADER));
         } catch (Exception e) {
             expmass = "0";
         }
         try {
-            casId = info.get(TablaColumnas.get(CAS_HEADER));
+            casId = info.get(columnsTable.get(CAS_HEADER));
         } catch (Exception e) {
             casId = "";
         }
         try {
-            compound_id = info.get(TablaColumnas.get(COMPOUND_ID_HEADER));
+            compound_id = info.get(columnsTable.get(COMPOUND_ID_HEADER));
             // System.out.println("Identifier: " + identifier);
         } catch (Exception e) {
             compound_id = "";
         }
         try {
-            molecularWeight = info.get(TablaColumnas.get(MOL_WEIGHT_HEADER));
+            molecularWeight = info.get(columnsTable.get(MOL_WEIGHT_HEADER));
             // System.out.println("MOL WEIGHT: " + molecularWeight);
         } catch (Exception e) {
             molecularWeight = "0";
@@ -75,7 +75,7 @@ public class CompoundForPathway implements Serializable {
 
         // TODO Calculate Error here taking in account the adducts
         try {
-            ppmError = info.get(TablaColumnas.get(PPM_INCREMENT_HEADER));
+            ppmError = info.get(columnsTable.get(PPM_INCREMENT_HEADER));
             // System.out.println("PPM ERROR: " + ppmError);
         } catch (Exception e) {
             ppmError = "NA";
@@ -83,53 +83,53 @@ public class CompoundForPathway implements Serializable {
 
         try {
 
-            name = info.get(TablaColumnas.get(NAME_HEADER));
+            name = info.get(columnsTable.get(NAME_HEADER));
         } catch (Exception e) {
             name = "";
         }
         try {
-            formula = info.get(TablaColumnas.get(FORMULA_HEADER));
+            formula = info.get(columnsTable.get(FORMULA_HEADER));
         } catch (Exception e) {
             formula = "";
         }
         try {
-            adduct = info.get(TablaColumnas.get(ADDUCT_HEADER));
+            adduct = info.get(columnsTable.get(ADDUCT_HEADER));
         } catch (Exception e) {
             adduct = "0";
         }
         try {
-            retentionTime = info.get(TablaColumnas.get(RT_HEADER));
+            retentionTime = info.get(columnsTable.get(RT_HEADER));
         } catch (Exception e) {
             retentionTime = "0";
         }
         try {
-            keggCompound = info.get(TablaColumnas.get(KEGG_HEADER));
+            keggCompound = info.get(columnsTable.get(KEGG_HEADER));
         } catch (Exception e) {
             keggCompound = "";
         }
         try {
-            HMDBCompound = info.get(TablaColumnas.get(HMDB_HEADER));
+            HMDBCompound = info.get(columnsTable.get(HMDB_HEADER));
         } catch (Exception e) {
             HMDBCompound = "";
         }
         try {
-            LMCompound = info.get(TablaColumnas.get(LIPIDMAPS_HEADER));
+            LMCompound = info.get(columnsTable.get(LIPIDMAPS_HEADER));
         } catch (Exception e) {
             LMCompound = "";
         }
         try {
-            metlinCompound = info.get(TablaColumnas.get(METLIN_HEADER));
+            metlinCompound = info.get(columnsTable.get(METLIN_HEADER));
         } catch (Exception e) {
             metlinCompound = "";
         }
         try {
-            PCCompound = info.get(TablaColumnas.get(PUBHCEMICAL_HEADER));
+            PCCompound = info.get(columnsTable.get(PUBHCEMICAL_HEADER));
         } catch (Exception e) {
             PCCompound = "";
         }
         
         try {
-            inchikey = info.get(TablaColumnas.get(INCHIKEY_HEADER));
+            inchikey = info.get(columnsTable.get(INCHIKEY_HEADER));
         } catch (Exception e) {
             inchikey = "";
         }

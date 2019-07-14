@@ -14,6 +14,14 @@ import javax.faces.model.SelectItem;
  */
 public class AdductsLists {
 
+    public static final List<SelectItem> LISTNEUTRALMODESFORCEMS;
+
+    static {
+        List<SelectItem> listNeutralModesTMP = new LinkedList<>();
+        listNeutralModesTMP.add(new SelectItem(0, "Neutral"));
+        LISTNEUTRALMODESFORCEMS = Collections.unmodifiableList(listNeutralModesTMP);
+    }
+    
     public static final List<SelectItem> LISTNEUTRALMODES;
 
     static {
@@ -33,37 +41,6 @@ public class AdductsLists {
         LISTIONIZEDMODES = Collections.unmodifiableList(listIonizedModesTMP);
     }
 
-    /*
-    public static final Map<String, String> MAPRECALCULATEDPOSITIVEADDUCTS;
-
-    static {
-        Map<String, String> mapRecalculatedPositiveAdductsTMP = new LinkedHashMap<String, String>();
-        mapRecalculatedPositiveAdductsTMP.put("M+H", "0");
-        mapRecalculatedPositiveAdductsTMP.put("M+2H", "0");
-        mapRecalculatedPositiveAdductsTMP.put("M+Na", "-21.9819");
-        mapRecalculatedPositiveAdductsTMP.put("M+K", "-37.9558");
-        mapRecalculatedPositiveAdductsTMP.put("M+NH4", "-17.0265");
-        mapRecalculatedPositiveAdductsTMP.put("M+H-H2O", "18.0105");
-        mapRecalculatedPositiveAdductsTMP.put("M+H+HCOONa", "-67.9873");
-        
-        mapRecalculatedPositiveAdductsTMP.put("2M+H", "0");
-        mapRecalculatedPositiveAdductsTMP.put("2M+Na", "-21.9819");
-        mapRecalculatedPositiveAdductsTMP.put("2M+H-H2O", "18.0105");
-        MAPRECALCULATEDPOSITIVEADDUCTS = Collections.unmodifiableMap(mapRecalculatedPositiveAdductsTMP);
-    }
-    public static final Map<String, String> MAPRECALCULATEDNEGATIVEADDUCTS;
-
-    static {
-        Map<String, String> mapRecalculatedNegativeAdductsTMP = new LinkedHashMap<String, String>();
-        mapRecalculatedNegativeAdductsTMP.put("M-H", "0");
-        mapRecalculatedNegativeAdductsTMP.put("M+Cl", "-35.9767");
-        mapRecalculatedNegativeAdductsTMP.put("M+HCOO", "-46.0055");
-        mapRecalculatedNegativeAdductsTMP.put("M-H-H2O", "18.0105");
-        mapRecalculatedNegativeAdductsTMP.put("M-H+HCOONa", "-67.9875");
-        mapRecalculatedNegativeAdductsTMP.put("2M-H", "0");
-        MAPRECALCULATEDNEGATIVEADDUCTS = Collections.unmodifiableMap(mapRecalculatedNegativeAdductsTMP);
-    }
-     */
     public static final Map<String, String> MAPMZPOSITIVEADDUCTS;
 
     static {
@@ -107,7 +84,9 @@ public class AdductsLists {
         mapMZPositiveAdductsTMP.put("M+NH4-H2O", "-0.0227");
         mapMZPositiveAdductsTMP.put("M+Li", "-7.0160");
         mapMZPositiveAdductsTMP.put("2M+2H+3H2O", "-28.02312");
-
+        mapMZPositiveAdductsTMP.put("M+H+CH3COOH", "-60.021129");
+        mapMZPositiveAdductsTMP.put("M+H+CH3COONa", "-82.00307");
+        //mapMZPositiveAdductsTMP.put("M+2", "-2.0173");
         MAPMZPOSITIVEADDUCTS = Collections.unmodifiableMap(mapMZPositiveAdductsTMP);
     }
     public static final Map<String, String> MAPMZNEGATIVEADDUCTS;
@@ -221,21 +200,6 @@ public class AdductsLists {
         DIMER_3 = Collections.unmodifiableList(DIMER_3TMP);
     }
 
-    /* NOT USED ANYMORE. NOW WE USE A MAP CALLED 
-    MAPDATABASES in Class DataFromInterfacesUtilities
-    public static final List<String> LISTDB;
-
-    static {
-        List<String> listDBTMP = new LinkedList<>();
-        listDBTMP.add("Kegg");
-        listDBTMP.add("HMDB");
-        listDBTMP.add("LipidMaps");
-        listDBTMP.add("Metlin");
-        listDBTMP.add("in-house");
-        // For generated compounds
-        listDBTMP.add("MINE (Only In Silico Compounds)");
-        LISTDB = Collections.unmodifiableList(listDBTMP);
-    }*/
     public static final Map<String, List<String>> MAPPOSITIVEADDUCTFRAGMENT;
 
     static {
@@ -267,6 +231,8 @@ public class AdductsLists {
         possibleParents.add("2M+ACN+H");
         possibleParents.add("M+H-2H2O");
         possibleParents.add("2M+2H+3H2O");
+        possibleParents.add("M+H+CH3COOH");
+        possibleParents.add("M+H+CH3COONa");
         mapMZPositiveAdductsTMP.put("M+H", possibleParents);
 
         possibleParents = new LinkedList<>();

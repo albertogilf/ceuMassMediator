@@ -23,7 +23,7 @@ public class Lipids_Classification {
     private final Integer numberDoubleBounds;
     private final Integer numberCarbons;
     private final List<Chain> chains;
-    private final List<Compound> compounds;
+    private final List<CMMCompound> compounds;
 
     /**
      *
@@ -35,7 +35,7 @@ public class Lipids_Classification {
     public Lipids_Classification(String lipidType, Integer numberChains, 
             Integer numberCarbons, Integer numberDoubleBounds) {
         this(lipidType, numberChains, numberCarbons,
-                numberDoubleBounds, new LinkedList<Chain>(), new LinkedList<Compound>());
+                numberDoubleBounds, new LinkedList<Chain>(), new LinkedList<CMMCompound>());
     }
 
     /**
@@ -49,7 +49,7 @@ public class Lipids_Classification {
     public Lipids_Classification(String lipidType, Integer numberChains, Integer numberCarbons,
             Integer numberDoubleBounds, List<Chain> chains) {
         this(lipidType, numberChains, numberCarbons,
-                numberDoubleBounds, chains, new LinkedList<Compound>());
+                numberDoubleBounds, chains, new LinkedList<CMMCompound>());
     }
 
     /**
@@ -62,7 +62,7 @@ public class Lipids_Classification {
      * @param compounds
      */
     public Lipids_Classification(String lipidType, Integer numberChains, Integer numberCarbons,
-            Integer numberDoubleBounds, List<Chain> chains, List<Compound> compounds) {
+            Integer numberDoubleBounds, List<Chain> chains, List<CMMCompound> compounds) {
         
         this.lipidType = lipidType == null ? "" : lipidType;
         this.numberChains = numberChains == null ? -1 : numberChains;
@@ -92,7 +92,7 @@ public class Lipids_Classification {
         return chains;
     }
 
-    public List<Compound> getCompounds() {
+    public List<CMMCompound> getCompounds() {
         return compounds;
     }
 

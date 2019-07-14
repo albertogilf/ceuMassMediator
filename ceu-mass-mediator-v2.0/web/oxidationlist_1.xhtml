@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>CEU mass mediator</title>
+        </ui:define>
+        
+        <ui:param name="onloadbody" value=""/>
+        <ui:param name="idbody" value="bodylistcompounds"/>
+        
+        <ui:define name="intro-wrapper">
+            <!--g
+            <div class="title">Results</div>
+            -->
+            <div class="form ">
+                <h:form id="listfattyacids" prependId="false">
+                    <h:panelGroup id="messagePanel" layout="block">
+                        <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                    </h:panelGroup>
+
+                    <div class="tablewhiteborder">
+                        <center>
+                            <h:outputText escape="false" value="No input fatty acids" 
+                                          rendered="#{not oxidationControllerJDBC.isThereInputFattyAcids()}"/>
+                        </center>
+                        <h:panelGroup rendered="#{oxidationControllerJDBC.isThereTheoreticalOxidizedPCs()}">
+                            <p:dataList value="#{oxidationControllerJDBC.oxidizedCompoundsList}" 
+                                        var="oxidizedcompound" 
+                                        rendered="#{oxidationControllerJDBC.isThereTheoreticalOxidizedPCs()}" 
+                                        id="datalistresults"
+                                        type="unordered" itemType="none" paginator="true" 
+                                        rows="1" 
+                                        styleClass="paginated">
+                                <f:facet name="header">
+                                    Results
+                                </f:facet>
+                                <h:outputText value="#{oxidizedcompound.getTitleMessage()}"/>
+                                <p:dataTable rendered="#{oxidizedcompound.isThereFATheoreticalCompounds()}"
+                                             value="#{oxidizedcompound}" 
+                                             id="datatableoxidizedcompounds"
+                                             styleClass="compoundresults"
+                                             >
+                                    <!-- Every column has the minimum pixels enough to show information.
+                                         The addition of every column is the widh of body -> 1600px
+                                    -->
+
+                                    <p:column headerText="Name" sortBy="#{oxidizedcompound.name}" style="width:200px">
+                                        <h:outputText value="#{oxidizedcompound.name}" />
+                                    </p:column>
+
+                                    <p:column headerText="Formula" sortBy="#{oxidizedcompound.formula}" style="width:120px">
+                                        <h:outputText value="#{oxidizedcompound.formula}" />
+                                    </p:column>
+
+                                    <p:column headerText="Molecular Weight" sortBy="#{oxidizedcompound.theoreticalPIMolecularWeight}" style="width:100px">
+                                        <h:outputText value="#{oxidizedcompound.stringMolecularWeight}" />
+                                    </p:column>
+
+                                    <p:column headerText="error PPM" sortBy="#{oxidizedcompound.ppmIncrement}" style="width:75px">
+                                        <h:outputText value="#{oxidizedcompound.ppmIncrement}" />
+                                    </p:column>
+
+                                    <p:column headerText="m/z of precursor in Pos Mode (M+H adduct) - Neutral loss 
+                                              = Fragment should be observed (Positive Mode)" style="width:260px">
+                                        <p:dataList value="#{oxidizedcompound.neutralLossesPositiveMode}" 
+                                                    var="neutrallosspos"
+                                                    styleClass="withoutBorders pathways"
+                                                    style="background: white; "
+                                                    id="datalistneutrallossespos" 
+                                                    emptyMessage="No evidences of fragments found"
+                                                    type="ordered">
+                                            <h:outputText value=" #{oxidizedcompound.mzPositivePI} #{neutrallosspos} 
+                                                          = #{oxidizedcompound.roundToFourDecimals(oxidizedcompound.mzPositivePI + neutrallosspos)} " />
+                                        </p:dataList>
+                                    </p:column>
+
+                                    <p:column headerText="m/z of precursor in Neg Mode (M+HCOO adduct)  - Neutral loss 
+                                              = Fragment should be observed (Negative Mode)" style="width:260px">
+                                        <p:dataList value="#{oxidizedcompound.neutralLossesNegativeMode}" 
+                                                    var="neutrallossneg"
+                                                    styleClass="withoutBorders pathways"
+                                                    style="background: white; "
+                                                    id="datalistneutrallossesneg" 
+                                                    emptyMessage="No evidences of fragments found"
+                                                    type="ordered">
+                                            <h:outputText value=" #{oxidizedcompound.parentIonEM} #{neutrallossneg} 
+                                                          = #{oxidizedcompound.roundToFourDecimals(oxidizedcompound.parentIonEM + neutrallossneg)} " />
+                                        </p:dataList>
+                                    </p:column>
+
+                                    <p:column headerText="Putative annotations for oxidized precursor" 
+                                              id="columnoxidizednnotations" styleClass="prime" style="width:300px"> 
+                                        <h:outputText rendered="#{not oxidizedcompound.areThereOxidizedAnnotationsForPI()}" 
+                                                      class="empty_list"
+                                                      value="No hits in the databases for oxidized precursor" />
+                                        <p:dataList value="#{oxidizedcompound.oxidizedAnnotations}" 
+                                                    var="pioxidizedannotation"
+                                                    styleClass="withoutBorders pathways"
+                                                    id="datalistpiannotations" 
+                                                    rendered="#{oxidizedcompound.areThereOxidizedAnnotationsForPI()}"
+                                                    type="ordered">
+                                            <h:outputLink value="#{pioxidizedannotation.getCompoundLMWebPage()}" target="_blank" class="prime pathways">
+                                                #{pioxidizedannotation.compound_name}
+                                            </h:outputLink>
+                                        </p:dataList>
+                                    </p:column>
+
+                                    <p:column headerText="Putative annotations for non-oxidized precursor" 
+                                              rendered="#{oxidizedcompound.isLCOxidation()}"
+                                              id="columnnonoxidizednnotations" styleClass="prime" style="width:300px"> 
+                                        <h:outputText rendered="#{not oxidizedcompound.areThereNonOxidizedAnnotationsForPI()}" 
+                                                      class="empty_list"
+                                                      value="No hits in the databases for non-oxidized precursor" />
+
+                                        <p:commandButton value="Show non-oxidized annotations for precursor" 
+                                                         id="shownonoxidizedannotations" update="datalistpinonoxidizedannotations" 
+                                                         actionListener="#{oxidizedcompound.exchangeBoolShowNonOxidizedAnnotations()}" 
+                                                         rendered="#{oxidizedcompound.areThereNonOxidizedAnnotationsForPI()}">
+                                            <f:ajax execute="shownonoxidizedannotations" 
+                                                    render="shownonoxidizedannotations datalistpinonoxidizedannotations"/>
+                                        </p:commandButton>
+
+                                        <p:dataList value="#{oxidizedcompound.nonOxidizedAnnotations}" 
+                                                    var="pinonoxidizedannotation"
+                                                    styleClass="withoutBorders pathways"
+                                                    id="datalistpinonoxidizedannotations"
+                                                    emptyMessage=""
+                                                    rendered="#{oxidizedcompound.areThereNonOxidizedAnnotationsForPI()}"
+                                                    type="ordered">
+                                            <h:outputLink value="#{pinonoxidizedannotation.getCompoundLMWebPage()}" target="_blank" class="prime pathways">
+                                                #{pinonoxidizedannotation.compound_name}
+                                            </h:outputLink>
+                                        </p:dataList>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:dataList>
+                        </h:panelGroup>
+
+                    </div>
+                </h:form>
+            </div>
+        </ui:define>
+    </ui:composition>
+
+
+</html>

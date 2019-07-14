@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.Scanner;
 import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
 import facades.TheoreticalCompoundsFacade;
-import utilities.Constantes;
 import persistence.oxidizedTheoreticalCompound.OxidizedTheoreticalCompound;
+import utilities.Constants;
 
 /**
  *

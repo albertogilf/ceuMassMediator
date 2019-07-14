@@ -10,6 +10,7 @@
 package DBManager;
 
 import java.util.List;
+import utilities.DataFromInterfacesUtilities;
 import static utilities.DataFromInterfacesUtilities.MAPDATABASES;
 import utilities.Utilities;
 
@@ -79,6 +80,19 @@ public final class QueryConstructor {
      * @return
      */
     public static String addFilterIntegerFormulaTypeJPA(String aliasName, String query, String chemAlphabet) {
+        int chemAlphabetInt = DataFromInterfacesUtilities.getChemAlphabetAsInt(chemAlphabet);
+        return addFilterIntegerFormulaTypeJPA(aliasName, query, chemAlphabetInt);
+    }
+
+    /**
+     * Fill the query to add filter from the formula type
+     *
+     * @param aliasName
+     * @param query
+     * @param chemAlphabet
+     * @return
+     */
+    public static String addFilterIntegerFormulaTypeJPA(String aliasName, String query, int chemAlphabet) {
         String newQuery;
         if (!query.toLowerCase().contains(" where ")) {
             // Add databases depending on the user selection
@@ -87,20 +101,20 @@ public final class QueryConstructor {
             newQuery = query;
         }
         switch (chemAlphabet) {
-            case "CHNOPS":
+            case 0:
                 newQuery = newQuery + aliasName + ".formulaTypeInt = 0 and ";
                 break;
-            case "CHNOPSCL":
+            case 1:
+                newQuery = newQuery + aliasName + ".formulaTypeInt < 2 and ";
+                break;
+            case 2:
                 newQuery = newQuery + "(" + aliasName + ".formulaTypeInt = 0 or "
                         + aliasName + ".formulaTypeInt = 2) and ";
                 break;
-            case "CHNOPSD":
-                newQuery = newQuery + aliasName + ".formulaTypeInt < 2 and ";
-                break;
-            case "CHNOPSCLD":
+            case 3:
                 newQuery = newQuery + aliasName + ".formulaTypeInt < 4 and ";
                 break;
-            case "ALL":
+            case 4:
                 newQuery = newQuery + aliasName + ".formulaTypeInt < 5 and ";
                 break;
             default:
@@ -329,7 +343,7 @@ public final class QueryConstructor {
      * @return
      */
     public static String createSQLForCompoundIdFromSubClass_Carbons_DoubleBonds() {
-        String sql = "SELECT distinct c.compound_id FROM compounds c "
+        String sql = "SELECT distinct c.compound_id, c.mass FROM compounds c "
                 + "INNER JOIN compounds_lm_classification clmc on c.compound_id=clmc.compound_id "
                 + "INNER JOIN compound_chain c_cha on c.compound_id=c_cha.compound_id "
                 + "INNER JOIN chains chains on chains.chain_id=c_cha.chain_id "
@@ -650,7 +664,7 @@ public final class QueryConstructor {
                 + aliasName + ".mass <= ? )";
         return newQuery;
     }
-    
+
     /**
      * Fill the query to add the filter from the masses
      *
@@ -661,6 +675,144 @@ public final class QueryConstructor {
     public static String addOrderByMassesJDBC(String aliasName, String query) {
         String newQuery;
         newQuery = query + " order by ABS(" + aliasName + ".mass - ? )";
+        return newQuery;
+    }
+
+    /**
+     * Fill the query to add filter for transformation Type of CE MS Product
+     * Ions
+     *
+     * @param aliasName
+     * @param query
+     * @param transformationTypes Types of transformation between single (')
+     * or double quotes (")
+     * @return
+     */
+    public static String addFilterTransformationTypeJPA(String aliasName,
+            String query, String transformationTypes) {
+        String newQuery;
+        if (!query.toLowerCase().contains(" where ")) {
+            // Add databases depending on the user selection
+            newQuery = query + " WHERE ";
+        } else {
+            newQuery = query;
+        }
+
+        newQuery = newQuery + aliasName + ".transformationType in (" + transformationTypes + ") and ";
+
+        return newQuery;
+    }
+
+    /**
+     * Fill the query to add the filter of the Relative migration times in CE MS
+     *
+     * @param aliasName
+     * @param query
+     * @param RMTToSearch
+     * @param RMTToleranceMode
+     * @param RMTTolerance
+     * @return
+     */
+    public static String addFilterRMTSCEJPA(String aliasName, String query, Double RMTToSearch,
+            String RMTToleranceMode, Double RMTTolerance) {
+        String newQuery;
+        if (!query.toLowerCase().contains(" where ")) {
+            // Add databases depending on the user selection
+            newQuery = query + " WHERE ";
+        } else {
+            newQuery = query;
+        }
+        Double delta = Utilities.calculateDeltaRMT(RMTToSearch, RMTToleranceMode, RMTTolerance);
+
+        Double low = RMTToSearch - delta;
+        Double high = RMTToSearch + delta;
+
+        newQuery = newQuery + "(" + aliasName + ".RMT >= " + low + " and "
+                + aliasName + ".RMT <= " + high + ") and ";
+
+        return newQuery;
+    }
+
+    /**
+     * Fill the query to add the filter from the masses
+     *
+     * @param aliasName
+     * @param query
+     * @param massToSearch
+     * @param toleranceMode
+     * @param tolerance
+     * @return
+     */
+    public static String addFilterMassesCEProductIonJPA(String aliasName, String query,
+            Double massToSearch,
+            String toleranceMode, Double tolerance) {
+        String newQuery;
+        if (!query.toLowerCase().contains(" where ")) {
+            // Add databases depending on the user selection
+            newQuery = query + " WHERE ";
+        } else {
+            newQuery = query;
+        }
+        Double delta = Utilities.calculateDeltaPPM(massToSearch, toleranceMode, tolerance);
+
+        Double low = massToSearch - delta;
+        Double high = massToSearch + delta;
+
+        newQuery = newQuery + "(" + aliasName + ".mz >= " + low + " and "
+                + aliasName + ".mz <= " + high + ")";
+        newQuery = newQuery + " order by ABS(" + aliasName + ".mz - " + massToSearch + ")";
+        return newQuery;
+    }
+    
+    /**
+     * Fill the query to add the filter for the cemsId
+     *
+     * @param aliasName
+     * @param query
+     * @param ceMsId
+     * @return
+     */
+    public static String addFilterCEMSIdProductIonJPA(String aliasName, String query,
+            Integer ceMsId) {
+        String newQuery;
+        if (!query.toLowerCase().contains(" where ")) {
+            // Add databases depending on the user selection
+            newQuery = query + " WHERE ";
+        } else {
+            newQuery = query;
+        }
+
+        newQuery = newQuery + aliasName + ".cemsId = " + ceMsId + " and";
+
+        return newQuery;
+    }
+    
+    /**
+     * Fill the query to add the order by clause for RMT
+     *
+     * @param aliasName
+     * @param query
+     * @param RMTToSearch
+     * @param RMTToleranceMode
+     * @param RMTTolerance
+     * @return
+     */
+    public static String addOrderByRMTJPA(String aliasName, String query, Double RMTToSearch,
+            String RMTToleranceMode, Double RMTTolerance) {
+        String newQuery;
+        if (!query.toLowerCase().contains("order by")) {
+            // Add databases depending on the user selection
+            newQuery = query + " order by ";
+        } else {
+            newQuery = query + ", ";
+        }
+        
+        Double delta = Utilities.calculateDeltaRMT(RMTToSearch, RMTToleranceMode, RMTTolerance);
+
+        Double low = RMTToSearch - delta;
+        Double high = RMTToSearch + delta;
+
+        newQuery = newQuery + "ABS(" + aliasName + ".RMT - " + RMTToSearch + ")";
         return newQuery;
     }
 

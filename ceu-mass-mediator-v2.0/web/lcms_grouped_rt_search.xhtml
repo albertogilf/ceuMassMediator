@@ -12,7 +12,8 @@
         </ui:define>
 
         <ui:param name="onloadbody" value="#{LCMSControllerGroupByRT.clearForm()}"/>
-
+        <ui:param name="idbody" value="searchbody"/>
+        
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Batch Advanced Search</div>
@@ -22,7 +23,7 @@
                 <h:form id="mainsearch" enctype="multipart/form-data" prependId="false">
                     <p:focus for="inputmasses"/>
                     <h:commandButton id="dummy" actionListener="#{LCMSControllerGroupByRT.submitLCMSAdvancedSearch()}" 
-                                     action="/theoreticalCompounds/lcms_list_group_rt" style="display:none;"
+                                     action="/lcms_list_group_rt?faces-redirect=true" style="display:none;"
                                      />
                     <p:clock rendered="false"/>
                     <div id="highlights" class="container whiteborder">
@@ -347,7 +348,7 @@
                                     id="submit" 
                                     value="submit compounds" 
                                     actionListener="#{LCMSControllerGroupByRT.submitLCMSAdvancedSearch()}" 
-                                    action="/theoreticalCompounds/lcms_list_group_rt"
+                                    action="/lcms_list_group_rt?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>
@@ -416,17 +417,17 @@
                                 var CSs ="";
                                 
                                 for (var i = 0; i &lt; rows[0].length; i++) {
-                if (rows[0][i] == "masses") {
+                if (rows[0][i].includes("masses") {
                 var massesColumn = i;
                 }
-                if (rows[0][i] == "RT") {
+                if (rows[0][i].includes("RT")) {
                 var RTColumn = i;
                 }
-                if (rows[0][i] == "CS") {
+                if (rows[0][i].includes("CS")) {
                 var CSColumn = i;
                 }
                 }
-                                if(massesColumn &gt;= 0)
+                if(massesColumn &gt;= 0)
                 {
                                     for (var i = 1; i  &lt; rows.length; i++) {
                 masses += rows[i][massesColumn] + "\n";
@@ -517,17 +518,17 @@
                                 var CSs ="";
                                 
                                 for (var i = 0; i &lt; rows[0].length; i++) {
-                if (rows[0][i] == "masses") {
+                if (rows[0][i].includes("masses")) {
                 var massesColumn = i;
                 }
-                if (rows[0][i] == "RT") {
+                if (rows[0][i].includes("RT")) {
                 var RTColumn = i;
                 }
-                if (rows[0][i] == "CS") {
+                if (rows[0][i].includes("CS")) {
                 var CSColumn = i;
                 }
                 }
-                                if(massesColumn &gt;= 0)
+                if(massesColumn &gt;= 0)
                 {
                                     for (var i = 1; i  &lt; rows.length; i++) {
                 masses += rows[i][massesColumn] + "\n";

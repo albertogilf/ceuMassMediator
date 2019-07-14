@@ -5,7 +5,6 @@
  */
 package timeTest;
 
-import facades.MSFacade;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +18,7 @@ import java.util.logging.Logger;
 
 public class ExcelReader {
 
-    public static final String filename = "C:\\Users\\María 606888798\\Documents\\CEU\\testmaru.csv";
+    public static final String FILENAME = "C:\\Users\\María 606888798\\Documents\\CEU\\testmaru.csv";
 
     public static List<Double> getMassesFromCSV() throws IOException {
 
@@ -28,7 +27,7 @@ public class ExcelReader {
 
          try {
 
-            File file = new File(filename);
+            File file = new File(FILENAME);
 
             FileReader fr;
             BufferedReader bf;
@@ -43,9 +42,9 @@ public class ExcelReader {
             fr.close();
             bf.close();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExcelReader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExcelReader.class.getName()).log(Level.SEVERE, null, ex);
         }
         return masses;
     }

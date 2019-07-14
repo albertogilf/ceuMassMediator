@@ -12,7 +12,8 @@
         </ui:define>
         
         <ui:param name="onloadbody" value="#{theoreticalCompoundsController.clearForm()}"/>
-
+        <ui:param name="idbody" value="searchbody"/>
+        
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Batch Advanced Search</div>
@@ -22,7 +23,7 @@
                 <h:form id="mainsearch" enctype="multipart/form-data" prependId="false">
                     <p:focus for="inputmasses"/>
                     <h:commandButton id="dummy" actionListener="#{theoreticalCompoundsController.submitCompoundsAdvanced()}" 
-                                     action="/theoreticalCompounds/Advancedlist" style="display:none;"
+                                     action="/Advancedlist?faces-redirect=true" style="display:none;"
                                      />
                     <p:clock rendered="false"/>
                     <div id="highlights" class="container whiteborder">
@@ -331,7 +332,7 @@
                                     id="submit" 
                                     value="submit compounds" 
                                     actionListener="#{theoreticalCompoundsController.submitCompoundsAdvanced()}" 
-                                    action="/theoreticalCompounds/Advancedlist"
+                                    action="/Advancedlist?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>
@@ -396,6 +397,7 @@
                                 switch (extension) {
                                     case 'txt':
                                     case 'csv':
+                                        var rows = e.target.result.split("\n");
                                         var csvFile = e.target.result;
                                         var delimiter = detectSeparator(csvFile);
                                         var options={"separator" : delimiter};
@@ -417,13 +419,13 @@
                                 var CSs ="";
                                 
                                 for (var i = 0; i &lt; rows[0].length; i++) {
-                                    if (rows[0][i] == "masses") {
+                                    if (rows[0][i].includes("masses")) {
                                         var massesColumn = i;
                                     }
-                                    if (rows[0][i] == "RT") {
+                                    if (rows[0][i].includes("RT")) {
                                         var RTColumn = i;
                                     }
-                                    if (rows[0][i] == "CS") {
+                                    if (rows[0][i].includes("CS")) {
                                         var CSColumn = i;
                                     }
                                 }
@@ -518,13 +520,13 @@
                                 var CSs ="";
                                 
                                 for (var i = 0; i &lt; rows[0].length; i++) {
-                                    if (rows[0][i] == "masses") {
+                                    if (rows[0][i].includes("masses")) {
                                         var massesColumn = i;
                                     }
-                                    if (rows[0][i] == "RT") {
+                                    if (rows[0][i].includes("RT")) {
                                         var RTColumn = i;
                                     }
-                                    if (rows[0][i] == "CS") {
+                                    if (rows[0][i].includes("CS")) {
                                         var CSColumn = i;
                                     }
                                 }

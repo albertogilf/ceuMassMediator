@@ -9,24 +9,22 @@
  */
 package presentation;
 
+import controllers.InterfaceValidators;
 import exporters.CompoundExcelExporter;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import persistence.theoreticalCompound.TheoreticalCompounds;
-import utilities.AdductsLists;
-import static utilities.Constantes.DEMOFORMULA;
-import static utilities.Constantes.DEMONAME;
+import static utilities.Constants.DEMOFORMULA;
+import static utilities.Constants.DEMONAME;
 import utilities.DataFromInterfacesUtilities;
 import static utilities.DataFromInterfacesUtilities.MAPDATABASES;
 
@@ -65,13 +63,13 @@ public class BrowseSearchController implements Serializable {
     public BrowseSearchController() {
         this.items = null;
 
-        this.DBcandidates = new LinkedList<SelectItem>();
+        this.DBcandidates = new LinkedList<>();
         this.DBcandidates.add(new SelectItem("AllWM", "All except MINE"));
         this.DBcandidates.add(new SelectItem("All", "All (Including In Silico Compounds)"));
         for (Map.Entry e : MAPDATABASES.entrySet()) {
             this.DBcandidates.add(new SelectItem(e.getKey(), (String) e.getKey()));
         }
-        this.databases = new LinkedList<String>();
+        this.databases = new LinkedList<>();
         this.databases.add("AllWM");
 
         this.metabolitesTypecandidates = new LinkedList<SelectItem>();
@@ -174,8 +172,10 @@ public class BrowseSearchController implements Serializable {
      */
     public void exportToExcel() {
         if (this.items != null && !this.items.isEmpty()) {
+            int flag = 0;
             // Compounds come from a browse search so they does not contain information related to LCMS. 
-            CompoundExcelExporter compoundExcelExporter = new CompoundExcelExporter();
+
+            CompoundExcelExporter compoundExcelExporter = new CompoundExcelExporter(flag);
             compoundExcelExporter.generateWholeExcelCompound(items, 2);
         }
     }
@@ -225,24 +225,7 @@ public class BrowseSearchController implements Serializable {
      */
     public void validateNameAndFormula(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-
-        String formula = (String) arg2;
-        UIInput uiInputFormula = (UIInput) arg1.getAttributes()
-                .get("name");
-        String name = uiInputFormula.getSubmittedValue()
-                .toString();
-        try {
-            if (name.length() > 3) {
-
-            } else if (formula.length() > 3) {
-
-            } else {
-                throw new ValidatorException(new FacesMessage("Name or formula length should be larger than 4 characters"));
-            }
-
-        } catch (NullPointerException npe) {
-            throw new ValidatorException(new FacesMessage("Null pointer exception validating name"));
-        }
+        InterfaceValidators.validateNameAndFormula(arg0, arg1, arg2);
     }
 
 }

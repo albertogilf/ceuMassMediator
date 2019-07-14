@@ -58,7 +58,7 @@ public class CompoundsService {
         List<Double> queryMasses = new ArrayList<Double>();
         List<Double> queryRetentionTimes = new ArrayList<Double>();
         List<Boolean> significativeCompounds = new ArrayList<Boolean>();
-        List<Map<Double, Integer>> queryCompositeSpectrum = new ArrayList<Map<Double, Integer>>();
+        List<Map<Double, Double>> queryCompositeSpectrum = new ArrayList<Map<Double, Double>>();
         queryMasses.add(expMas);
         significativeCompounds.add(true);
         queryRetentionTimes.add(0d);
@@ -71,7 +71,7 @@ public class CompoundsService {
         List<String> databases = new LinkedList<String>();
         String metabolitesType = "All except peptides";
         TheoreticalCompounds compound = new NewCompoundFactory().construct(
-                            null, 200d, 10d, 200d, "M+2H", false, "", true);
+                            null, 200d, 10d, 200d, "M+2H", false, "", true, 1);
         databases.add("All");
         compounds = ejbFacade.findRangeAdvanced(
                 queryMasses, 

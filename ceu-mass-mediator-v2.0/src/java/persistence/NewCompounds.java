@@ -2,12 +2,13 @@ package persistence;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Objects;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import static utilities.Constantes.*;
+import static utilities.Constants.*;
 
 /**
  * JPA definition for Compounds
@@ -111,7 +112,7 @@ public class NewCompounds implements Serializable {
     //@Column(name = "type")
     @Column(name = "formula_type")
     private String formulaType;
-    */
+     */
     @Column(name = "formula_type_int")
     private int formulaTypeInt;
 
@@ -143,13 +144,17 @@ public class NewCompounds implements Serializable {
     }
 
     public String getCasId() {
+        if (casId == null) {
+            return "";
+        }
         return casId;
     }
 
     public void setCasId(String casId) {
         this.casId = casId;
     }
-/*
+
+    /*
     public String getFormulaType() {
         return formulaType;
     }
@@ -157,7 +162,7 @@ public class NewCompounds implements Serializable {
     public void setFormulaType(String formulaType) {
         this.formulaType = formulaType;
     }
-*/
+     */
     public int getFormulaTypeInt() {
         return formulaTypeInt;
     }
@@ -165,8 +170,6 @@ public class NewCompounds implements Serializable {
     public void setFormulaTypeInt(int formulaTypeInt) {
         this.formulaTypeInt = formulaTypeInt;
     }
-    
-    
 
     public int getCompoundType() {
         return compoundType;
@@ -193,6 +196,9 @@ public class NewCompounds implements Serializable {
     }
 
     public String getFormula() {
+        if (formula == null) {
+            return "";
+        }
         return formula;
     }
 
@@ -264,6 +270,9 @@ public class NewCompounds implements Serializable {
     }
 
     public String obtainKeggWebPage() {
+        if (getKeggId().equals("")) {
+            return "";
+        }
         return WEB_COMPUESTO_KEGG + getKeggId();
         //return "";
     }
@@ -279,7 +288,6 @@ public class NewCompounds implements Serializable {
     public String getMetlinId() {
         if (this.ncAgilent == null) {
             return "";
-
         } else {
             return this.ncAgilent.getAgilentId();
         }
@@ -290,6 +298,9 @@ public class NewCompounds implements Serializable {
     }
 
     public String obtainMetlinWebPage() {
+        if (getMetlinId().equals("")) {
+            return "";
+        }
         return WEB_COMPUESTO_METLIN + getMetlinId();
         //return "";
     }
@@ -316,6 +327,9 @@ public class NewCompounds implements Serializable {
     }
 
     public String obtainLMWebPage() {
+        if (getLmId().equals("")) {
+            return "";
+        }
         return WEB_COMPUESTO_LM + getLmId();
         //return "";
     }
@@ -356,7 +370,6 @@ public class NewCompounds implements Serializable {
     public String getHmdbId() {
         if (this.ncHMDB == null) {
             return "";
-
         } else {
             return this.ncHMDB.getHmdbId();
         }
@@ -367,6 +380,9 @@ public class NewCompounds implements Serializable {
     }
 
     public String obtainHMDBWebPage() {
+        if (getHmdbId().equals("")) {
+            return "";
+        }
         return WEB_COMPUESTO_HMDB + getHmdbId();
         //return "";
     }
@@ -393,6 +409,9 @@ public class NewCompounds implements Serializable {
     }
 
     public String obtainPCWebPage() {
+        if (getPcId().equals("")) {
+            return "";
+        }
         return WEB_COMPUESTO_PUBCHEMICHAL + getPcId();
         //return "";
     }
@@ -406,13 +425,10 @@ public class NewCompounds implements Serializable {
     }
 
     public String getInChiKey() {
-
         if (this.ncIdentifier == null) {
             return "";
-
         } else {
             return this.ncIdentifier.getInchiKey();
-
         }
     }
 
@@ -428,8 +444,8 @@ public class NewCompounds implements Serializable {
         }
     }
 
-    public void setSmiles(String inChiKey) {
-        //this.ncIdentifier.setSmiles(inChiKey);
+    public void setSmiles(String smiles) {
+        //this.ncIdentifier.setSmiles(smiles);
     }
 
 // Attributes from Lipids Clasification
@@ -496,7 +512,7 @@ public class NewCompounds implements Serializable {
     public void setLipidClassification(NewLipidsClassification lipidClassification) {
         this.lipidClassification = lipidClassification;
     }
-    
+
     public int getCarbons() {
         if (this.lipidClassification == null) {
             return -1;
@@ -543,6 +559,40 @@ public class NewCompounds implements Serializable {
 
     public void setLipidType(String lipidType) {
         this.lipidClassification.setLipidType(lipidType);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof NewCompounds)) {
+            return false;
+        }
+        return compoundId != 0 && compoundId == ((NewCompounds) o).getCompoundId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.compoundId);
+    }
+
+    @Override
+    public String toString() {
+        return "NewCompounds{" + "newPathwaysCollection=" + newPathwaysCollection
+                + ", chainsCollection=" + chainsCollection + ", ncKegg=" + ncKegg
+                + ", ncAgilent=" + ncAgilent + ", ncLM=" + ncLM + ", ncHMDB=" + ncHMDB
+                + ", ncInHouse=" + ncInHouse + ", ncPC=" + ncPC + ", ncIdentifier="
+                + ncIdentifier + ", LMclassification=" + LMclassification
+                + ", lipidClassification=" + lipidClassification + ", compoundId="
+                + compoundId + ", casId=" + casId + ", compoundName=" + compoundName
+                + ", mass=" + mass + ", formula=" + formula + ", formulaTypeInt="
+                + formulaTypeInt + ", compoundType=" + compoundType + ", chargeType="
+                + chargeType + ", chargeNumber=" + chargeNumber + ", compoundStatus="
+                + compoundStatus + '}';
     }
 
 }

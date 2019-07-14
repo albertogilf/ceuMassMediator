@@ -40,7 +40,7 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
  */
-import utilities.Constantes;
+import utilities.Constants;
 
 /**
  * 
@@ -55,7 +55,7 @@ import utilities.Constantes;
  * @version: 3.1, 17/02/2016
  */
 @WebServlet(name = "DownloadExcelServlet", urlPatterns = {"/download"})
-public class DownloadExcelServlet extends HttpServlet implements Constantes {
+public class DownloadExcelServlet extends HttpServlet implements Constants {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -75,7 +75,7 @@ public class DownloadExcelServlet extends HttpServlet implements Constantes {
             int flag = pageC.flag;
             WritableWorkbook workbook = Workbook.createWorkbook(new File(fileName));
             workbook.createSheet("Sheet1", 0);
-            WritableSheet nuevoSheet = workbook.getSheet(0);
+            WritableSheet newSheet = workbook.getSheet(0);
 
             WritableCellFormat we = new WritableCellFormat();
             WritableFont fwe = new WritableFont(WritableFont.ARIAL);
@@ -83,7 +83,7 @@ public class DownloadExcelServlet extends HttpServlet implements Constantes {
             fwe.setPointSize(10);
             we.setFont(fwe);
             int row = 1;
-            Label EtiquetaInicial = new Label(0, 0, PATHWAYEXCELFILETITLE, we);
+            Label initialLabel = new Label(0, 0, FILENAMEPATHWAYSEXCEL, we);
             Label Column1 = new Label(PathwayColumns.PATHWAYS.getnColumn(), row, PATHWAYS_HEADER, we);
             Label Column2 = new Label(PathwayColumns.EXPERIMENTAL_MASS.getnColumn(), row, EXPERIMENTAL_MASS_HEADER, we);;
             Label Column3;
@@ -131,48 +131,48 @@ public class DownloadExcelServlet extends HttpServlet implements Constantes {
                 Column15 = new Label(PathwayColumns.INCHIKEY.getnColumn() - 1, row, INCHIKEY_HEADER, we);
             }
             // cabeceras
-            nuevoSheet.addCell(EtiquetaInicial);
-            nuevoSheet.addCell(Column1);
-            nuevoSheet.addCell(Column2);
-            nuevoSheet.addCell(Column3);
-            nuevoSheet.addCell(Column4);
-            nuevoSheet.addCell(Column5);
-            nuevoSheet.addCell(Column6);
-            nuevoSheet.addCell(Column7);
-            nuevoSheet.addCell(Column8);
-            nuevoSheet.addCell(Column9);
-            nuevoSheet.addCell(Column10);
-            nuevoSheet.addCell(Column11);
-            nuevoSheet.addCell(Column12);
-            nuevoSheet.addCell(Column13);
-            nuevoSheet.addCell(Column14);
-            nuevoSheet.addCell(Column15);
+            newSheet.addCell(initialLabel);
+            newSheet.addCell(Column1);
+            newSheet.addCell(Column2);
+            newSheet.addCell(Column3);
+            newSheet.addCell(Column4);
+            newSheet.addCell(Column5);
+            newSheet.addCell(Column6);
+            newSheet.addCell(Column7);
+            newSheet.addCell(Column8);
+            newSheet.addCell(Column9);
+            newSheet.addCell(Column10);
+            newSheet.addCell(Column11);
+            newSheet.addCell(Column12);
+            newSheet.addCell(Column13);
+            newSheet.addCell(Column14);
+            newSheet.addCell(Column15);
             if (flag == 1) {
-                nuevoSheet.addCell(Column16);
+                newSheet.addCell(Column16);
             }
 
             CellView autoSizeCellView = new CellView();
             autoSizeCellView.setAutosize(true);
 
             // tamaños
-            nuevoSheet.setColumnView(0, autoSizeCellView);
-            nuevoSheet.setColumnView(1, autoSizeCellView);
-            nuevoSheet.setColumnView(2, autoSizeCellView);
-            nuevoSheet.setColumnView(3, autoSizeCellView);
-            nuevoSheet.setColumnView(4, autoSizeCellView);
-            nuevoSheet.setColumnView(5, autoSizeCellView);
-            nuevoSheet.setColumnView(6, autoSizeCellView);
-            nuevoSheet.setColumnView(7, autoSizeCellView);
-            nuevoSheet.setColumnView(8, autoSizeCellView);
-            nuevoSheet.setColumnView(9, autoSizeCellView);
-            nuevoSheet.setColumnView(10, autoSizeCellView);
-            nuevoSheet.setColumnView(11, autoSizeCellView);
-            nuevoSheet.setColumnView(12, autoSizeCellView);
-            nuevoSheet.setColumnView(13, autoSizeCellView);
-            nuevoSheet.setColumnView(14, autoSizeCellView);
-            nuevoSheet.setColumnView(15, autoSizeCellView);
+            newSheet.setColumnView(0, autoSizeCellView);
+            newSheet.setColumnView(1, autoSizeCellView);
+            newSheet.setColumnView(2, autoSizeCellView);
+            newSheet.setColumnView(3, autoSizeCellView);
+            newSheet.setColumnView(4, autoSizeCellView);
+            newSheet.setColumnView(5, autoSizeCellView);
+            newSheet.setColumnView(6, autoSizeCellView);
+            newSheet.setColumnView(7, autoSizeCellView);
+            newSheet.setColumnView(8, autoSizeCellView);
+            newSheet.setColumnView(9, autoSizeCellView);
+            newSheet.setColumnView(10, autoSizeCellView);
+            newSheet.setColumnView(11, autoSizeCellView);
+            newSheet.setColumnView(12, autoSizeCellView);
+            newSheet.setColumnView(13, autoSizeCellView);
+            newSheet.setColumnView(14, autoSizeCellView);
+            newSheet.setColumnView(15, autoSizeCellView);
             if (flag == 1) {
-                nuevoSheet.setColumnView(16, autoSizeCellView);
+                newSheet.setColumnView(16, autoSizeCellView);
             }
 
 //Get the workbook instance for XLS file 
@@ -197,13 +197,13 @@ public class DownloadExcelServlet extends HttpServlet implements Constantes {
                 importers.Pathway pathway = pathwayCompounds.get(i);
                 WritableHyperlink hl = new WritableHyperlink(0, row, new URL(pathway.hyperl.getAddress()));
                 hl.setDescription(pathway.name);
-                nuevoSheet.addHyperlink(hl);
+                newSheet.addHyperlink(hl);
 
                 // compounds
                 List<importers.CompoundForPathway> compounds = pathway.getCompounds();
                 for (importers.CompoundForPathway compound : compounds) {
 
-                    compound.toExcel(nuevoSheet, row, flag);
+                    compound.toExcel(newSheet, row, flag);
                     row++;
                 }
             }
@@ -223,7 +223,7 @@ public class DownloadExcelServlet extends HttpServlet implements Constantes {
 
         response.setContentType("application/vnd.ms-excel");
         response.addHeader("content-disposition",
-                "attachment; filename=" + "ceumass_pathways.xls");
+                "attachment; filename=" + FILENAMEPATHWAYSEXCEL);
 
         int octet;
         while ((octet = in.read()) != -1) {
@@ -233,55 +233,10 @@ public class DownloadExcelServlet extends HttpServlet implements Constantes {
         in.close();
         out.close();
 
-        //borramos el fichero para no guardar inecesarios
+        // delete the file in the server once the user has downloaded it
         new File(fileName).delete();
     }
 
-    /*
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        ExcelExporter exporter = new CompoundExcelExporter();
-        String fileName = UPLOADPATH + File.separator + "ExcelDownload" + (new Random()).nextInt() + ".xls";
-        try {
-
-            // Create the workbook
-            HSSFWorkbook workbookPathway;
-            workbookPathway = new HSSFWorkbook();
-
-//Get the workbook instance for XLS file 
-            PathwayPageConstructor pageC = (PathwayPageConstructor) request.getSession().getAttribute("pagepathway");
-
-            List<Pathway> pathwayCompounds = pageC.listPathways;
-
-            workbookPathway = exporter.generateWholeExcelPathway(fileName, pathwayCompounds);
-//            System.out.println(workbookPathway);
-            System.out.println(" Pathway Excel exported");
-
-            ServletOutputStream out = response.getOutputStream();
-
-            response.setContentType("application/vnd.ms-excel");
-            response.addHeader("content-disposition",
-                    "attachment; filename=" + "ceumass_pathways.xls");
-            
-            int octet;
-            while ((octet = in.read()) != -1) {
-                out.write(octet);
-            }
-             
-            workbookPathway.write(out);
-            out.close();
-
-            //borramos el fichero para no guardar inecesarios
-            new File(fileName).delete();
-
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
-
-        // download
-    }
-     */
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

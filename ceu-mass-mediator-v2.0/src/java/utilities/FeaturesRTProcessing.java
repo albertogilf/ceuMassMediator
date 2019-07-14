@@ -9,13 +9,13 @@
  */
 package utilities;
 
-import LCMS.CompoundLCMS;
-import LCMS.CompoundsLCMSGroupByAdduct;
-import LCMS.EMComparator;
-import LCMS.EMInverseComparator;
-import LCMS.Feature;
-import LCMS.FeaturesGroupByRT;
-import LCMS.RTComparator;
+import LCMS_FEATURE.CompoundLCMS;
+import LCMS_FEATURE.CompoundsLCMSGroupByAdduct;
+import LCMS_FEATURE.EMComparator;
+import LCMS_FEATURE.EMInverseComparator;
+import LCMS_FEATURE.Feature;
+import LCMS_FEATURE.FeaturesGroupByRT;
+import LCMS_FEATURE.RTComparator;
 import List.NoDuplicatesList;
 import facades.MSFacade;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import msms.MSMSCompound;
 import msms.Peak;
-import static utilities.Constantes.TOLERANCE_SAME_MASS_WITHIN_FEATUREGROUPEDBYRT;
+import static utilities.Constants.TOLERANCE_SAME_MASS_WITHIN_FEATUREGROUPEDBYRT;
 
 /**
  * {Insert class description here}
@@ -238,7 +238,8 @@ public final class FeaturesRTProcessing {
             //System.out.println("Features GROUPED by RT: " + featuresGroup_byRT.getRT());
             List<Feature> features = featuresGroup_byRT.getFeatures();
             for (Feature feature : features) {
-                String adductAutodetected = AdductProcessing.detectAdductBasedOnCompositeSpectrum(ionMode, feature.getEM(), adducts, feature.getCS());
+                String adductAutodetected = AdductProcessing.detectAdductBasedOnCompositeSpectrum(
+                        ionMode, feature.getEM(), adducts, feature.getCS());
                 if (!adductAutodetected.equals("")) {
                     feature.setAdductAutoDetected(adductAutodetected);
                     feature.setIsAdductAutoDetected(true);
@@ -345,7 +346,8 @@ public final class FeaturesRTProcessing {
      * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param databases
      * @param metabolitesType
-     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3; ALL, 4; ALLD, 5
+     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3;
+     * ALL, 4; ALLD, 5
      * @param msfacade
      */
     public static void setAnnotationsGroupByAdduct(Feature feature,
@@ -387,7 +389,8 @@ public final class FeaturesRTProcessing {
      * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param databases
      * @param metabolitesType
-     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3; ALL, 4; ALLD, 5
+     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3;
+     * ALL, 4; ALLD, 5
      * @param msfacade
      */
     public static void setAnnotationsGroupByAdduct(List<FeaturesGroupByRT> featuresGroups_byRT,
@@ -408,7 +411,7 @@ public final class FeaturesRTProcessing {
                     //same hypothetical neutral mass
                     double EM = feature.getEM();
                     double RT = feature.getRT();
-                    Map<Double, Integer> CS = feature.getCS();
+                    Map<Double, Double> CS = feature.getCS();
                     String adduct = feature.getAdductAutoDetected();
                     List<CompoundLCMS> compounds = compoundsGroupByAdduct.getCompounds();
                     aux = new CompoundsLCMSGroupByAdduct(EM, RT, CS, adduct, EMMode, ionizationMode, compounds);
@@ -448,7 +451,8 @@ public final class FeaturesRTProcessing {
      * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param databases
      * @param metabolitesType
-     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3; ALL, 4; ALLD, 5
+     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3;
+     * ALL, 4; ALLD, 5
      * @param msFacade
      *
      * @return CompoundsLCMSGroupByAdduct from a specified adduct
@@ -458,7 +462,7 @@ public final class FeaturesRTProcessing {
             int ionizationMode, List<Integer> databases, int metabolitesType, int chemAlphabet, MSFacade msFacade) {
         double EM = feature.getEM();
         Double RT = feature.getRT();
-        Map<Double, Integer> CS = feature.getCS();
+        Map<Double, Double> CS = feature.getCS();
         CompoundsLCMSGroupByAdduct compoundsLCMSGroupByAdduct = new CompoundsLCMSGroupByAdduct(EM, RT, CS,
                 adduct, EMMode, ionizationMode, new LinkedList<>());
         List<CompoundLCMS> compoundsFromDB;
@@ -486,7 +490,7 @@ public final class FeaturesRTProcessing {
             Feature feature, String adduct, int EMMode, int ionizationMode) {
         double EM = feature.getEM();
         Double RT = feature.getRT();
-        Map<Double, Integer> CS = feature.getCS();
+        Map<Double, Double> CS = feature.getCS();
         CompoundsLCMSGroupByAdduct compoundsLCMSGroupByAdduct = new CompoundsLCMSGroupByAdduct(EM, RT, CS,
                 adduct, EMMode, ionizationMode, new LinkedList<>());
         return compoundsLCMSGroupByAdduct;
@@ -539,10 +543,10 @@ public final class FeaturesRTProcessing {
                         double hypotheticalFragmentMass = AdductProcessing.getMassToSearch(mzSmallestFeature, adduct, ionizationMode);
                         //Now hypotetical fragment mass is neutral: so que must become it mz
                         if (ionizationMode == 1) {
-                            hypotheticalFragmentMass = hypotheticalFragmentMass + Constantes.PROTON_WEIGHT;
+                            hypotheticalFragmentMass = hypotheticalFragmentMass + Constants.PROTON_WEIGHT;
                         }
                         if (ionizationMode == 2) {
-                            hypotheticalFragmentMass = hypotheticalFragmentMass - Constantes.PROTON_WEIGHT;
+                            hypotheticalFragmentMass = hypotheticalFragmentMass - Constants.PROTON_WEIGHT;
                         }
                         //System.out.println("Neutral mass "+adductSmallestFeatureNM+" Adduct mass :"+hypotheticalFragmentMass);
                         List<String> parentAdducts;
@@ -681,12 +685,13 @@ public final class FeaturesRTProcessing {
      * @param tolerance Tolerance value
      * @param metabolitesType 0 all except peptides, 1 for lipids, 2 for all
      * including peptides.
-     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3; ALL, 4; ALLD, 5
+     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3;
+     * ALL, 4; ALLD, 5
      * @param msFacade Object with a database connection for annotations.
      * @return the features
      */
     public static List<Feature> loadFeatures(List<Double> experimentalMasses, List<Double> retentionTimes,
-            List<Map<Double, Integer>> compositeSpectra, boolean searchAnnotationsInDatabase, int massesMode,
+            List<Map<Double, Double>> compositeSpectra, boolean searchAnnotationsInDatabase, int massesMode,
             int ionizationMode, List<String> adducts, Double tolerance, Integer toleranceMode,
             List<Integer> databases, Integer metabolitesType, int chemAlphabet, MSFacade msFacade) {
         int numInputMasses = experimentalMasses.size();
@@ -719,12 +724,13 @@ public final class FeaturesRTProcessing {
      * @param tolerance Tolerance value
      * @param metabolitesType 0 all except peptides, 1 for lipids, 2 for all
      * including peptides.
-     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3; ALL, 4; ALLD, 5
+     * @param chemAlphabet CHNOPS, 0; CHNOPSD, 1; CHNOPSCL, 2; CHNOPSCLD, 3;
+     * ALL, 4; ALLD, 5
      * @param msFacade Object with a database connection for annotations.
      * @return the features
      */
     public static List<Feature> loadFeatures(List<Double> experimentalMasses, List<Double> retentionTimes,
-            List<Map<Double, Integer>> compositeSpectra, List<Boolean> isSignificativeFeatures,
+            List<Map<Double, Double>> compositeSpectra, List<Boolean> isSignificativeFeatures,
             boolean searchAnnotationsInDatabase, int massesMode, int ionizationMode, List<String> adducts, Double tolerance,
             Integer toleranceMode, List<Integer> databases, Integer metabolitesType, int chemAlphabet, MSFacade msFacade) {
         List<Feature> featuresFromInputData = new NoDuplicatesList();
@@ -734,7 +740,7 @@ public final class FeaturesRTProcessing {
 
         double EM;
         double RT;
-        Map<Double, Integer> CS;
+        Map<Double, Double> CS;
         boolean isSignificativeFeature;
         for (int i = 0; i < numInputMasses; i++) {
             EM = experimentalMasses.get(i);

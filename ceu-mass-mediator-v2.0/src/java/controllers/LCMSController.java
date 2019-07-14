@@ -1,13 +1,14 @@
 package controllers;
 
-import LCMS.CompoundLCMS;
-import LCMS.Experiment;
-import LCMS.Feature;
+import LCMS_FEATURE.CompoundLCMS;
+import LCMS_FEATURE.Experiment;
+import LCMS_FEATURE.Feature;
 import List.NoDuplicatesList;
 import exporters.NewDataModelCompoundExcelExporter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import utilities.Cadena;
@@ -23,7 +24,6 @@ import utilities.FeaturesRTProcessing;
 @SessionScoped
 @Named("LCMSController")
 public class LCMSController extends LCMSControllerAdapter {
-// TODO ALBERTO AN INTERFAZ WHEN A CE/MS SEARCH IS CREATED
 
     private List<Feature> allFeatures;
     private List<Feature> significativeFeatures;
@@ -46,7 +46,8 @@ public class LCMSController extends LCMSControllerAdapter {
 
         List<CompoundLCMS> compoundsLCMS = this.experiment.getCompoundsLCMS();
 
-        NewDataModelCompoundExcelExporter compoundExcelExporter = new NewDataModelCompoundExcelExporter();
+        NewDataModelCompoundExcelExporter compoundExcelExporter
+                = new NewDataModelCompoundExcelExporter(flag);
         compoundExcelExporter.generateWholeExcelCompound(compoundsLCMS, flag);
 
     }
@@ -71,7 +72,7 @@ public class LCMSController extends LCMSControllerAdapter {
         numInputMasses = massesMZFromNeutral.size();
         List<Double> retentionTimes = Cadena.getListOfDoubles(getQueryInputRetentionTimes(), numInputMasses);
         this.setQueryRetentionTimes(retentionTimes);
-        List<Map<Double, Integer>> compositeSpectra = getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
+        List<Map<Double, Double>> compositeSpectra = Cadena.getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
         this.setQueryCompositeSpectrum(compositeSpectra);
 
         List<Feature> significantFeatures;
@@ -96,8 +97,8 @@ public class LCMSController extends LCMSControllerAdapter {
             int numAllInputMasses = allMassesMZFromNeutral.size();
             List<Double> allretentionTimes = Cadena.getListOfDoubles(getAllInputRetentionTimes(), numAllInputMasses);
             this.setQueryRetentionTimes(allretentionTimes);
-            List<Map<Double, Integer>> allcompositeSpectra;
-            allcompositeSpectra = getListOfCompositeSpectra(getAllInputCompositeSpectra(), numAllInputMasses);
+            List<Map<Double, Double>> allcompositeSpectra;
+            allcompositeSpectra = Cadena.getListOfCompositeSpectra(getAllInputCompositeSpectra(), numAllInputMasses);
             this.setQueryCompositeSpectrum(allcompositeSpectra);
 
             List<Feature> allFeatures;
@@ -133,7 +134,7 @@ public class LCMSController extends LCMSControllerAdapter {
         numInputMasses = massesAux.size();
         List<Double> retentionTimes = Cadena.getListOfDoubles(getQueryInputRetentionTimes(), numInputMasses);
         this.setQueryRetentionTimes(retentionTimes);
-        List<Map<Double, Integer>> compositeSpectra = getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
+        List<Map<Double, Double>> compositeSpectra = Cadena.getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
         this.setQueryCompositeSpectrum(compositeSpectra);
 
         List<Feature> features;
@@ -278,4 +279,10 @@ public class LCMSController extends LCMSControllerAdapter {
         }
     }
      */
+    
+    @PreDestroy
+    public void destroy() {
+        //System.out.println("DISCONNECTING LCMS SEARCH CONTROLLER");
+        super.getMsFacade().disconnect();
+    }
 }

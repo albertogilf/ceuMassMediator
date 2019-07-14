@@ -39,17 +39,17 @@ public class DBManager {
 
             DataSource ds;
             ds = (DataSource) ctx.lookup("java:comp/env/jdbc/linkToNewDataModel");
-            conn = ds.getConnection();
+            this.conn = ds.getConnection();
 
         } catch (NamingException | SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return conn;
+        return this.conn;
     }
 
     public void disconnect() {
         try {
-            conn.close();
+            this.conn.close();
         } catch (SQLException e) {
             System.out.println("exception: " + e);
         }

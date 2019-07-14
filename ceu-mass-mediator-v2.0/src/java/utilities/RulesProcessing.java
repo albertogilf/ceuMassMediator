@@ -9,10 +9,10 @@
  */
 package utilities;
 
-import LCMS.CompoundLCMS;
-import LCMS.CompoundsLCMSGroupByAdduct;
-import LCMS.Feature;
-import LCMS.FeaturesGroupByRT;
+import LCMS_FEATURE.CompoundLCMS;
+import LCMS_FEATURE.CompoundsLCMSGroupByAdduct;
+import LCMS_FEATURE.Feature;
+import LCMS_FEATURE.FeaturesGroupByRT;
 import java.util.List;
 import ruleengine.ConfigFilter;
 

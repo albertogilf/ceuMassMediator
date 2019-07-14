@@ -1,9 +1,12 @@
 package presentation;
 
+import com.google.gson.Gson;
+import controllers.InterfaceValidators;
 import facades.TheoreticalCompoundsFacade;
 import exporters.CompoundExcelExporter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,24 +14,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
+import model.kbsystem.KBSystemResult;
 import persistence.theoreticalCompound.TheoreticalCompounds;
 import persistence.theoreticalGroup.TheoreticalCompoundsGroup;
 import utilities.Cadena;
 import utilities.AdductsLists;
-import static utilities.Constantes.*;
+import static utilities.Constants.*;
 import ruleengine.ConfigFilter;
 import ruleengine.RuleProcessor;
-import utilities.Constantes;
+import static services.rest.external.KBSystemQuery.*;
 import static utilities.AdductsLists.DEFAULT_ADDUCTS_POSITIVE;
 import utilities.DataFromInterfacesUtilities;
 import static utilities.DataFromInterfacesUtilities.MAPDATABASES;
+import static utilities.kbsystem.Formatter.assignResultsToTheoreticalCompounds;
+import static utilities.kbsystem.Formatter.FromDomCompoundToKBSystemRequestStringJSON;
+import utilities.Constants;
 
 /**
  * Controller (Bean) of the application
@@ -75,7 +81,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     private List<Double> queryMasses;
     private List<Double> queryRetentionTimes;
-    private List<Map<Double, Integer>> queryCompositeSpectrum;
+    private List<Map<Double, Double>> queryCompositeSpectrum;
     private List<Boolean> isSignificativeCompound;
 
     private List<TheoreticalCompoundsGroup> itemsGrouped;
@@ -89,8 +95,8 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     private facades.TheoreticalCompoundsFacade ejbFacade;
 
     public TheoreticalCompoundsController() {
-        this.inputTolerance = TOLERANCE_INICITAL_VALUE;
-        this.inputModeTolerance = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputTolerance = TOLERANCE_INITIAL_VALUE;
+        this.inputModeTolerance = TOLERANCE_MODE_INITIAL_VALUE;
         //String version = FacesContext.class.getPackage().getImplementationVersion();
         //System.out.println("\n\n  VERSION DE JSF: " + version + "\n\n");
         this.items = null;
@@ -154,7 +160,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     public void setDemoMass() {
         this.setQueryInputMasses(ONEDEMOMASS);
@@ -167,7 +173,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     public void setAdvancedDemoMass() {
         this.setQueryInputMasses(ONEDEMOMASS);
@@ -184,7 +190,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     public void setDemoMasses() {
         this.setQueryInputMasses(NEWDEMOMASSES);
@@ -197,7 +203,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     public void setAdvancedDemoMasses() {
         this.setQueryInputMasses(NEWDEMOMASSES);
@@ -205,13 +211,19 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.setQueryInputCompositeSpectra(NEWDEMOSPECTRUM);
         this.chemAlphabet = "CHNOPS";
         this.includeDeuterium = false;
-        this.ionMode = 1;
-        this.adductsCandidates = positiveCandidates;
-        this.adducts.clear();
-        this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
-        //System.out.println(demoMasses);
-        // TODO Set All Masses,RTs and Composites
+        this.setMassesMode("mz");
+    }
 
+    /**
+     * This method is used to load the demo data for the KB System Constants
+     */
+    public void setAdvancedDemoMassesForKBSystem() {
+        this.setQueryInputMasses(NEWDEMOMZSFORKBSYSTEM);
+        this.setQueryInputRetentionTimes(NEWDEMORETENTIONTIMEFORKBSYSTEM);
+        this.setQueryInputCompositeSpectra(NEWDEMOSPECTRUMFORKBSYSTEM);
+        this.chemAlphabet = "CHNOPS";
+        this.includeDeuterium = false;
+        this.setMassesMode("mz");
     }
 
     /**
@@ -224,8 +236,8 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.allInputMasses = "";
         this.allInputRetentionTimes = "";
         this.allInputCompositeSpectra = "";
-        this.inputTolerance = TOLERANCE_INICITAL_VALUE;
-        this.inputModeTolerance = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputTolerance = TOLERANCE_INITIAL_VALUE;
+        this.inputModeTolerance = TOLERANCE_MODE_INITIAL_VALUE;
 
         this.chemAlphabet = "CHNOPS";
         this.includeDeuterium = false;
@@ -262,7 +274,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                     itemsWithoutSignificative.add(tc);
                 }
             }
-            CompoundExcelExporter compoundExcelExporter = new CompoundExcelExporter();
+            CompoundExcelExporter compoundExcelExporter = new CompoundExcelExporter(flag);
             compoundExcelExporter.generateWholeExcelCompound(itemsWithoutSignificative, flag);
         }
     }
@@ -277,12 +289,12 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         List<Double> massesAux; // auxiliar List for input Masses
         int numInputMasses;
         List<Double> retAux; // Auxiliar List for Retention Times
-        List<Map<Double, Integer>> spectrumAux;  // Auxiliar List for Composite Spectra processed
+        List<Map<Double, Double>> spectrumAux;  // Auxiliar List for Composite Spectra processed
         List<Boolean> isSignifativeCompoundAux;
         // CHANGE THE INPUT ELEMENTS FOR THE ALL INPUT ELEMENTS
         List<Double> allMassesAux;
         List<Double> allRetAux;
-        List<Map<Double, Integer>> AllSpectrumAux;
+        List<Map<Double, Double>> AllSpectrumAux;
         if (this.allInputMasses.equals("")) {
             this.allCompounds = false;
             //Method returns an ArrayList because it is acceded by index
@@ -350,6 +362,71 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
         processGroupedCompoundsSimple();
         this.itemsGroupedWithoutSignificative = this.itemsGrouped;
+    }
+
+    /**
+     * Submit compounds in advanced mode.
+     */
+    public void submitCompoundsAdvancedKBSystem() {
+        this.items = null;
+        this.itemsGrouped.clear();
+        this.itemsGroupedWithoutSignificative.clear();
+        List<Double> massesAux; // auxiliar List for input Masses
+        int numInputMasses;
+        List<Double> retAux; // Auxiliar List for Retention Times
+        List<Map<Double, Double>> spectrumAux;  // Auxiliar List for Composite Spectra processed
+        List<Boolean> isSignifativeCompoundAux;
+        // CHANGE THE INPUT ELEMENTS FOR THE ALL INPUT ELEMENTS
+        List<Double> allMassesAux;
+        List<Double> allRetAux;
+        List<Map<Double, Double>> AllSpectrumAux;
+        if (this.allInputMasses.equals("")) {
+            this.allCompounds = false;
+            //Method returns an ArrayList because it is acceded by index
+            massesAux = Cadena.extractDoubles(this.queryInputMasses);
+            numInputMasses = massesAux.size();
+            retAux = Cadena.getListOfDoubles(this.queryInputRetentionTimes, numInputMasses);
+            isSignifativeCompoundAux = new ArrayList<>(Collections.nCopies(numInputMasses, true));
+            spectrumAux = getListOfCompositeSpectra(this.queryInputCompositeSpectra, numInputMasses);
+            // System.out.println("INPUT: " + queryInputMasses + " \n ARRAY: " + massesAux);
+            // System.out.println("INPUT RETENTION TIME: " + this.queryInputRetentionTimes);
+            // System.out.println("INPUT COMPOSITE SPECTRUM: " + this.queryInputCompositeSpectra);
+            //System.out.println("SIMPLE SEARCH");
+            //System.out.println("Sign Compounds: "+ isSignifativeCompoundAux.toString() + " size: " + isSignifativeCompoundAux.size());
+            this.setQueryMasses(massesAux);
+            this.setQueryRetentionTimes(retAux);
+            this.setQueryCompositeSpectrum(spectrumAux);
+            this.setIsSignificativeCompound(isSignifativeCompoundAux);
+        } else {
+            this.allCompounds = true;
+            Set<String> KeysSignificativeCompounds; // Set for save the keys with <Mass>_<RT> of significative compounds
+            KeysSignificativeCompounds = Cadena.generateSetOfSignificativeCompounds(this.queryInputMasses, this.queryInputRetentionTimes);
+
+            //Method returns an ArrayList because it is acceded by index
+            allMassesAux = Cadena.extractDoubles(this.allInputMasses);
+            numInputMasses = allMassesAux.size();
+            allRetAux = Cadena.getListOfDoubles(this.allInputRetentionTimes, numInputMasses);
+            isSignifativeCompoundAux = Cadena.fillIsSignificativeCompound(this.allInputMasses,
+                    this.allInputRetentionTimes,
+                    numInputMasses,
+                    KeysSignificativeCompounds);
+            //System.out.println("allInputMasses: " + allInputMasses.toString());
+            //System.out.println("allRT: " + allInputRetentionTimes.toString());
+            //System.out.println("ADVANCED SEARCH");
+            //System.out.println("KEYS: " + KeysSignificativeCompounds.toString());
+            //System.out.println("Significatives Compounds: " + isSignifativeCompoundAux.toString()+ " size: " + isSignifativeCompoundAux.size());
+
+            AllSpectrumAux = getListOfCompositeSpectra(this.allInputCompositeSpectra, numInputMasses);
+
+            this.setQueryMasses(allMassesAux);
+            this.setQueryRetentionTimes(allRetAux);
+            this.setQueryCompositeSpectrum(AllSpectrumAux);
+            this.setIsSignificativeCompound(isSignifativeCompoundAux);
+        }
+
+        processCompoundsAdvancedKBSystem();
+        getOnlySignificativeCompounds();
+
     }
 
     /**
@@ -479,11 +556,11 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         this.queryRetentionTimes = queryRetentionTimes;
     }
 
-    public List<Map<Double, Integer>> getQueryCompositeSpectrum() {
+    public List<Map<Double, Double>> getQueryCompositeSpectrum() {
         return queryCompositeSpectrum;
     }
 
-    public void setQueryCompositeSpectrum(List<Map<Double, Integer>> queryCompositeSpectrum) {
+    public void setQueryCompositeSpectrum(List<Map<Double, Double>> queryCompositeSpectrum) {
         this.queryCompositeSpectrum = queryCompositeSpectrum;
     }
 
@@ -599,7 +676,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                 this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
                 break;
             /*
-            case Constantes.NAME_FOR_RECALCULATED:
+            case Constants.NAME_FOR_RECALCULATED:
                 this.ionizationModeCandidates = AdductsLists.LISTIONIZEDMODES;
                 this.ionMode = "positive";
                 this.adductsCandidates = positiveCandidates;
@@ -834,19 +911,19 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
         return firstSpectrumAux;
     }
 
-    private List<Map<Double, Integer>> getListOfCompositeSpectra(String input, int numInputMasses) {
-        List<Map<Double, Integer>> spectrumAux;
+    private List<Map<Double, Double>> getListOfCompositeSpectra(String input, int numInputMasses) {
+        List<Map<Double, Double>> spectrumAux;
         if (!input.equals("")) {
             spectrumAux = Cadena.extractDataSpectrum(input);
             // If there is no time for all queryMasses, fill with 0
             for (int i = spectrumAux.size(); i < numInputMasses; i++) {
-                spectrumAux.add(new TreeMap<Double, Integer>());
+                spectrumAux.add(new TreeMap<Double, Double>());
             }
         } else {
-            spectrumAux = new ArrayList<Map<Double, Integer>>();
+            spectrumAux = new ArrayList<Map<Double, Double>>();
             // If there is no time for all queryMasses, fill with 0
             for (int i = 0; i < numInputMasses; i++) {
-                spectrumAux.add(new TreeMap<Double, Integer>());
+                spectrumAux.add(new TreeMap<Double, Double>());
             }
 
         }
@@ -854,7 +931,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
     }
 
     public String showMessageForNeutralMasses() {
-        if (this.massesMode.equals(Constantes.NAME_FOR_RECALCULATED) && (this.ionMode == 1 || this.ionMode == 2)) {
+        if (this.massesMode.equals(Constants.NAME_FOR_RECALCULATED) && (this.ionMode == 1 || this.ionMode == 2)) {
             return "calculation of new m/z from neutral mass based on selected adducts";
         } else {
             return "";
@@ -863,6 +940,8 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
 
     private void processGroupedCompoundsAdvanced() {
 
+        // Time measurement
+        // long startTime = System.currentTimeMillis();
         String chemAlphabetWithDeuterium = DataFromInterfacesUtilities.getChemAlphabet(this.chemAlphabet, this.includeDeuterium);
         int chemAlphabetForSearch = DataFromInterfacesUtilities.getIntChemAlphabet(chemAlphabetWithDeuterium);
         if (this.itemsGrouped == null) {
@@ -884,10 +963,20 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                     this.databases,
                     this.metabolitesType
             );
-
+            // Time measurement
+            //long compoundsFromDBTime = System.currentTimeMillis() - startTime;
             processAllRules();
+            /*
+            // Time measurement
+            long DroolsTime = System.currentTimeMillis() - startTime;
+            System.out.println("TIMES OF EXECUTION: "
+                    + "\ncompoundsFromDBTime: " + compoundsFromDBTime
+                    + "\nDroolsTime: "
+                    + (DroolsTime - compoundsFromDBTime)
+                    + " Accumulated" + DroolsTime);
+             */
 
-            /*System.out.println("\n \n GROUP OF compounds:" + itemsGrouped.toString());
+ /* System.out.println("\n \n GROUP OF compounds:" + itemsGrouped.toString());
             for (TheoreticalCompoundsGroup group : itemsGrouped) {
                 System.out.println("GROUP OF: " + group.getExperimentalMass() + " Adduct: " + group.getAdduct());
                 System.out.println("Number of elemens: ");
@@ -895,6 +984,70 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
                     System.out.println("Compound: " + tc.getIdentifier());
                 }
             }
+             */
+        }
+    }
+
+    private void processCompoundsAdvancedKBSystem() {
+
+        String chemAlphabetWithDeuterium = DataFromInterfacesUtilities.getChemAlphabet(this.chemAlphabet, this.includeDeuterium);
+        // Time measurement
+        long startTime = System.currentTimeMillis();
+        int chemAlphabetForSearch = DataFromInterfacesUtilities.getIntChemAlphabet(chemAlphabetWithDeuterium);
+        if (this.itemsGrouped == null) {
+            this.itemsGrouped = new LinkedList<TheoreticalCompoundsGroup>();
+        }
+        if (this.items == null || this.itemsGrouped.isEmpty()) {
+            this.items = this.ejbFacade.findCompoundsAdvanced(
+                    this.queryMasses,
+                    this.queryRetentionTimes,
+                    this.queryCompositeSpectrum,
+                    this.isSignificativeCompound,
+                    this.inputModeTolerance,
+                    Double.parseDouble(this.inputTolerance),
+                    chemAlphabetWithDeuterium,
+                    this.ionMode,
+                    this.massesMode,
+                    this.adducts,
+                    this.itemsGrouped,
+                    this.databases,
+                    this.metabolitesType
+            );
+
+            // Time measurement
+            //long compoundsFromDBTime = System.currentTimeMillis() - startTime;
+            // List<KBSystemCompound> listKBCompounds = FromDomCompoundToKBSystemCompounds(this.items);
+            // System.out.println("LIST DE KB SYSTEM COMPOUNDS: " + listKBCompounds);
+            String queryJSON = FromDomCompoundToKBSystemRequestStringJSON(this.ionMode, this.items);
+            // Time measurement
+            // long fromDomCompoundToKBSystemCompoundsJSONTime = System.currentTimeMillis() - startTime;
+            //System.out.println("queryJSON: " + queryJSON);
+            String resultJSON = KBRequestFromString(queryJSON);
+            // Time measurement
+            //long requestTime = System.currentTimeMillis() - startTime;
+            //System.out.println("RESULTS JSON: " + resultJSON);
+            Gson gson = new Gson();
+            KBSystemResult[] kbsystemResults = gson.fromJson(resultJSON, KBSystemResult[].class);
+
+            Arrays.sort(kbsystemResults);
+//            Arrays.stream(kbsystemResults).forEach( res -> {
+//                System.out.println(res);
+//            });
+            assignResultsToTheoreticalCompounds(this.items, kbsystemResults);
+            /*
+            // Time measurement
+            long fromJSONToDomCompoundTime = System.currentTimeMillis() - startTime;
+            System.out.println("TIMES OF EXECUTION: "
+                    + "\ncompoundsFromDBTime: " + compoundsFromDBTime
+                    + "\nfromDomCompoundToKBSystemCompoundsJSONTime: "
+                    + (fromDomCompoundToKBSystemCompoundsJSONTime - compoundsFromDBTime)
+                    + " Accumulated" + fromDomCompoundToKBSystemCompoundsJSONTime
+                    + "\nrequestTime: "
+                    + (requestTime - fromDomCompoundToKBSystemCompoundsJSONTime)
+                    + " Accumulated" + requestTime
+                    + "\nfromJSONToDomCompoundTime: "
+                    + (fromJSONToDomCompoundTime - requestTime)
+                    + " Accumulated" + fromJSONToDomCompoundTime);
              */
         }
     }
@@ -1023,21 +1176,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      */
     public void validateInputTolerance(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        float inputTol = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            inputTol = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be a number between 0 and 1000"));
-        }
-        if (inputTol <= 0) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
-        } else if (inputTol > 1000) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
-        }
+        InterfaceValidators.validateInputTolerance(arg0, arg1, arg2);
     }
 
     /**
@@ -1050,21 +1189,7 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      */
     public void validateInputSingleMass(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        float inputTol = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            inputTol = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("Input mass should be a number between 0 and 10000"));
-        }
-        if (inputTol <= 0) {
-            throw new ValidatorException(new FacesMessage("Input mass should be between 0 and 10000"));
-        } else if (inputTol > 10000) {
-            throw new ValidatorException(new FacesMessage("Input mass should be between 0 and 10000"));
-        }
+        InterfaceValidators.validateInputSingleMass(arg0, arg1, arg2);
     }
 
     /**
@@ -1077,52 +1202,6 @@ public class TheoreticalCompoundsController implements Serializable, Controller 
      */
     public void validateSingleRT(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        String RTString = (String) arg2;
-        RTString = RTString.replace(",", ".");
-        float RT;
-        try {
-            if (RTString.equals("")) {
-
-            } else {
-                RT = Float.parseFloat(RTString);
-                if (RT <= 0) {
-                    throw new ValidatorException(new FacesMessage("RT should be between 0 and 1000"));
-                } else if (RT > 1000) {
-                    throw new ValidatorException(new FacesMessage("RT should be between 0 and 1000"));
-                }
-            }
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("RT should be a number between 0 and 1000"));
-        }
+        InterfaceValidators.validateSingleRT(arg0, arg1, arg2);
     }
-
-    /**
-     * Deprecated. Not used Validates the input masses to be a float between 0
-     * and 10000
-     *
-     * @param arg0 FacesContext of the form
-     * @param arg1 Component of the form
-     * @param arg2 Input of the user in the component arg1
-     *
-     */
-    /* Commented because it is not useful his use
-    public void validateInputMasses(FacesContext arg0, UIComponent arg1, Object arg2)
-         throws ValidatorException {
-        String queryInputMasses=(String)arg2;
-        List<Float> listInput = new LinkedList<Float>();
-        try 
-        {
-            listInput = Cadena.extraerMasas(queryInputMasses);
-        }
-        catch(NumberFormatException nfe)
-        {
-            throw new ValidatorException(new FacesMessage("The Masses should be numbers"));
-        }
-        if(queryInputMasses.contains("[a-zA-Z]+"))
-        {
-            throw new ValidatorException(new FacesMessage("The Masses should be numbers AA"));
-        }
-   }
-     */
 }

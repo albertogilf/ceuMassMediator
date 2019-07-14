@@ -125,7 +125,7 @@ public class MSMSCompound extends Msms {
     }
 
     public String getRoundedDouble(Double doubleToRound) {
-        return String.format("%.4f", doubleToRound);
+        return String.format("%.4f", doubleToRound).replace(",", ".");
         // return new DecimalFormat(".#####").format(doubleToRound);
     }
 

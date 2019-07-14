@@ -3,7 +3,6 @@ package controllers;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
@@ -11,19 +10,17 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import msms.MSMSCompound;
-import static utilities.Constantes.*;
+import static utilities.Constants.*;
 import msms.Msms;
 import msms.ScoreComparator;
-
 import msms.Peak;
 import facades.MSMSFacade;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.annotation.PreDestroy;
 
 /**
  * Controller (Bean) of the application
+ * 
  *
  * @author Maria Postigo, Alberto Gil de la Fuente. San Pablo-CEU
  * @version: 4.0, 09/04/2018
@@ -31,7 +28,7 @@ import java.util.regex.Pattern;
 @ManagedBean(name = "MSMSController")
 @SessionScoped
 public class MSMSController implements Serializable {
-
+// TODO ViewScoped until I check how to destroy sessions.
     private static final long serialVersionUID = 1L;
     private String precursorIonMass;
     private String inputPeaks;
@@ -51,27 +48,26 @@ public class MSMSController implements Serializable {
     private List<String> spectraType;
 
     // Object to 
-    private MSMSFacade msmsFacade;
+    private final MSMSFacade msmsFacade;
 
     // List of compounds for the result
     private List<MSMSCompound> itemsMSCompound;
 
     public MSMSController() {
-        this.mzToleranceMode = TOLERANCE_MODE_INICITAL_VALUE;
-        this.precursorIonToleranceMode = TOLERANCE_MODE_INICITAL_VALUE;
+        this.mzToleranceMode = TOLERANCE_MODE_INITIAL_VALUE;
+        this.precursorIonToleranceMode = TOLERANCE_MODE_INITIAL_VALUE;
         this.ionizationMode = 1;
         this.ionizationVoltage = 10;
         this.ionizationVoltageLevel = "low";
-        this.spectraType = new LinkedList<String>();
+        this.spectraType = new LinkedList<>();
         this.spectraType.add("experimental");
-        this.spectraTypeCandidates = new LinkedList<SelectItem>();
+        this.spectraTypeCandidates = new LinkedList<>();
         this.spectraTypeCandidates.add(new SelectItem("experimental", "Experimental"));
         this.spectraTypeCandidates.add(new SelectItem("predicted", "Predicted"));
         this.msmsFacade = new MSMSFacade();
+        //System.out.println("CONNECTING MSMS");
     }
 
-    
-    
     public int getSpectraTypeAsInt() {
 
         if (this.spectraType.contains("experimental") && this.spectraType.contains("predicted")) {
@@ -157,7 +153,6 @@ public class MSMSController implements Serializable {
         this.ionizationMode = ionizationMode;
     }
 
-
     public int getIonizationVoltage() {
         return ionizationVoltage;
     }
@@ -181,9 +176,9 @@ public class MSMSController implements Serializable {
                 setIonizationVoltage(0);
                 break;
             default:
-                
+
         }
-        
+
     }
 
     public String getIonizationVoltageLevel() {
@@ -235,7 +230,6 @@ public class MSMSController implements Serializable {
     public void setMzToleranceMode(String mzToleranceMode) {
         this.mzToleranceMode = mzToleranceMode;
     }
-    
 
     /**
      * This method clears the form of the MS/MS web interface
@@ -259,18 +253,15 @@ public class MSMSController implements Serializable {
     public void submit() {
         List<Peak> peaks = msmsFacade.getPeaks(this.queryPeaks);
 
-        System.out.println("Entering submit");
+        // System.out.println("Entering submit");
         //load the peaks
-
         this.itemsPeaks = peaks;
-        
+
         //load the input msms
         double precursorIonMZ = Double.parseDouble(this.precursorIonMass);
         this.msms = new Msms(precursorIonMZ, this.ionizationMode,
                 this.ionizationVoltage,
                 this.ionizationVoltageLevel, peaks, this.getSpectraTypeAsInt());
-        
-        
 
         //2. Set the candidates
         // First, search the candidates.
@@ -281,14 +272,13 @@ public class MSMSController implements Serializable {
         // Then score the candidates
         List<MSMSCompound> candidatesScored
                 = this.msmsFacade.scoreMatchedPeaks(this.msms, listCandidates, Double.parseDouble(this.mzTolerance), this.mzToleranceMode);
-        
-        
+
         //4. Get only the top N matches, we will use top 10
         this.itemsMSCompound = msmsFacade.getTopNMatches(candidatesScored, candidatesScored.size());
         this.msms.setCompounds(this.itemsMSCompound);
         Collections.sort(this.itemsMSCompound, new ScoreComparator());
         System.out.println("Top number: " + this.itemsMSCompound.size());
-       
+
     }
 
     public void setDemo() {
@@ -301,74 +291,27 @@ public class MSMSController implements Serializable {
         this.setIonizationMode(1);
         this.setIonizationVoltage(10);
         this.setIonizationVoltageLevel("low");
-        
     }
 
     public void validatePrecursorIonMass(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        
-        float inputPrecursorMZ = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            inputPrecursorMZ = Float.parseFloat((String) input);
-            
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("The precursor ion mass should be a number between 0 and 2000"));
-        }
-        if (inputPrecursorMZ <= 0) {
-            throw new ValidatorException(new FacesMessage("The precursor ion mass should be between 0 and 2000"));
-        } else if (inputPrecursorMZ > 2000) {
-            throw new ValidatorException(new FacesMessage("The precursor ion mass should be between 0 and 2000"));
-        }
+        InterfaceValidators.validatePrecursorIonMass(arg0, arg1, arg2);
     }
-    
-    public void validatePeaks (FacesContext arg0, UIComponent arg1, Object arg2)
+
+    public void validatePeaks(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
 
-            String input = (String) arg2;
-            String[] p = input.split("\n");
-
-        for (String p1 : p) {
-            String[] mzi = p1.split(" ");
-            //System.out.println(mzi[0]);
-            //System.out.println(mzi[1]);
-            if(!isNumeric(mzi[0])){throw new ValidatorException(new FacesMessage("The peaks must be a list of numbers, one per line: m/z [space] intensity"));}
-            if(!isNumeric(mzi[1])){throw new ValidatorException(new FacesMessage("The peaks must be a list of numbers, one per line: m/z [space] intensity"));}
-            
-        }
-            
-        
+        InterfaceValidators.validatePeaks(arg0, arg1, arg2);
     }
-    
-    private static boolean isNumeric(String cadena){
-	try {
-		Double.parseDouble(cadena);
-		return true;
-	} catch (NumberFormatException nfe){
-		return false;
-	}
-}
 
-    
-   
-    public void validateTolerance(FacesContext arg0, UIComponent arg1, Object arg2)
+    public void validateInputMZTolerance(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        float inputTol = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            inputTol = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be a number between 0 and 1000"));
-        }
-        if (inputTol <= 0) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
-        } else if (inputTol > 1000) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
-        }
+        InterfaceValidators.validateInputTolerance(arg0, arg1, arg2);
     }
 
+    @PreDestroy
+    public void destroy() {
+        //System.out.println("DISCONNECTING MSMS");
+        this.msmsFacade.disconnect();
+    }
 }

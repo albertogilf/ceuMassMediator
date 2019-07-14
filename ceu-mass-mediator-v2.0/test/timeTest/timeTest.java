@@ -5,9 +5,9 @@
  */
 package timeTest;
 
-import LCMS.ExperimentGroupByRT;
-import LCMS.Feature;
-import LCMS.FeaturesGroupByRT;
+import LCMS_FEATURE.ExperimentGroupByRT;
+import LCMS_FEATURE.Feature;
+import LCMS_FEATURE.FeaturesGroupByRT;
 import List.NoDuplicatesList;
 import controllers.LCMSController;
 import facades.MSFacade;
@@ -19,9 +19,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import utilities.Cadena;
-import utilities.Constantes;
 import utilities.DataFromInterfacesUtilities;
 import utilities.FeaturesRTProcessing;
+import utilities.Constants;
 
 /**
  *
@@ -62,9 +62,9 @@ public class timeTest {
     public void createFeaturesListAndExperiment () {
         long start = System.currentTimeMillis(); 
         LCMSController controller= new LCMSController();
-        String queryMasses = Constantes.NEWDEMOMASSES;
-        String queryRetentionTimes = Constantes.NEWDEMORETENTIONTIME;
-        String queryCompositeSpectrum = Constantes.NEWDEMOSPECTRUM;
+        String queryMasses = Constants.NEWDEMOMASSES;
+        String queryRetentionTimes = Constants.NEWDEMORETENTIONTIME;
+        String queryCompositeSpectrum = Constants.NEWDEMOSPECTRUM;
 
         List<Double> masses = Cadena.extractDoubles(queryMasses);
         int numInputMasses = masses.size();
@@ -101,7 +101,7 @@ public class timeTest {
         
                 
         ExperimentGroupByRT experiment= new ExperimentGroupByRT(significantFeatures, significantFeatures, false,
-                10, 0, 0, 0, 0, databases, 0, 1, adducts, Constantes.RT_WINDOW );
+                10, 0, 0, 0, 0, databases, 0, 1, adducts, Constants.RT_WINDOW );
         
         List <FeaturesGroupByRT> allFeaturesGroupByRT= experiment.getAllFeaturesGroupByRT();
         end= System.currentTimeMillis(); 
@@ -190,7 +190,7 @@ public class timeTest {
 //           //---> Experiment.processcompoundsAdvanced
 //           start=end;
 //           ExperimentGroupByRT experiment= new ExperimentGroupByRT(features, features, false,
-//                   10, 0, 0, 0, 0, databasesInt, 0, 1, adducts, Constantes.RT_WINDOW );
+//                   10, 0, 0, 0, 0, databasesInt, 0, 1, adducts, Constants.RT_WINDOW );
 //           end=System.currentTimeMillis();
 //           System.out.println("Time creating experiment: "+(end-start));
 //
@@ -278,7 +278,7 @@ public class timeTest {
 //        
 //        start=end;
 //        ExperimentGroupByRT experiment= new ExperimentGroupByRT(features, features, false,
-//                10, 0, 0, 0, 0, databasesInt, 0, 1, adducts, Constantes.RT_WINDOW );
+//                10, 0, 0, 0, 0, databasesInt, 0, 1, adducts, Constants.RT_WINDOW );
 //        end=System.currentTimeMillis();
 //        System.out.println("Time creating experiment: "+(end-start));
 //        
@@ -308,9 +308,9 @@ public class timeTest {
     {
         long start = System.currentTimeMillis(); 
         LCMSController controller= new LCMSController();
-        String queryMasses = Constantes.NEWDEMOMASSES;
-        String queryRetentionTimes = Constantes.NEWDEMORETENTIONTIME;
-        String queryCompositeSpectrum = Constantes.NEWDEMOSPECTRUM;
+        String queryMasses = Constants.NEWDEMOMASSES;
+        String queryRetentionTimes = Constants.NEWDEMORETENTIONTIME;
+        String queryCompositeSpectrum = Constants.NEWDEMOSPECTRUM;
 
         List<Double> masses = Cadena.extractDoubles(queryMasses);
         int numInputMasses = masses.size();
@@ -345,7 +345,7 @@ public class timeTest {
         adducts.add("2M+Na");
         
          ExperimentGroupByRT experiment= new ExperimentGroupByRT(significantFeatures, significantFeatures, false,
-                10, 0, 0, 0, 0, databases, 0, 1, adducts, Constantes.RT_WINDOW );
+                10, 0, 0, 0, 0, databases, 0, 1, adducts, Constants.RT_WINDOW );
         
         List <FeaturesGroupByRT> allFeaturesGroupByRT= experiment.getAllFeaturesGroupByRT();
         end= System.currentTimeMillis(); 

@@ -23,7 +23,7 @@
 
                     <p:focus for="fattyacidmass1"/>
                     <h:commandButton id="dummy" actionListener="#{oxidationController.submitLCOxidationCompounds()}" 
-                                     action="/theoreticalCompounds/oxidationlist" style="display:none;"
+                                     action="/oxidationlist?faces-redirect=true" style="display:none;"
                                      />
 
                     <div id="highlights" class="container whiteborder">
@@ -216,7 +216,7 @@
                                     id="submit" 
                                     value="submit compounds" 
                                     actionListener="#{oxidationController.submitLCOxidationCompounds()}" 
-                                    action="/theoreticalCompounds/oxidationlist"
+                                    action="/oxidationlist?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>

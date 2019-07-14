@@ -1,6 +1,5 @@
 package importers;
 
-import DBManager.DBManager;
 import facades.PathwaysFacade;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,13 +16,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
-import utilities.Constantes;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Hyperlink;
-import static utilities.Constantes.*;
+import static utilities.Constants.*;
+import utilities.Constants;
 
 /**
  *
@@ -31,9 +30,9 @@ import static utilities.Constantes.*;
  * @version: 4.0, 20/07/2016
  */
 public class PathwayPageConstructor implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     // public List<Compound> rowList;
     public HSSFSheet theSheet;
     public int linea;
@@ -91,7 +90,7 @@ public class PathwayPageConstructor implements Serializable {
         int j = 0;
         while (j < numHeaderColumns) {
             Cell cell;
-            cell = headerRow.getCell(i,Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            cell = headerRow.getCell(i, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
             if (cell != null) {
                 //System.out.println("\n: " + i + ": " + cell.getStringCellValue());
                 columnsTable.put(cell.getStringCellValue(), j);
@@ -102,7 +101,7 @@ public class PathwayPageConstructor implements Serializable {
         if (!columnsTable.containsKey("Pathways")) {
             // Pathways column is not present
             return 4;
-        } else if (columnsTable.get(Constantes.PATHWAYS_HEADER) != numHeaderColumns - 1) {
+        } else if (columnsTable.get(Constants.PATHWAYS_HEADER) != numHeaderColumns - 1) {
             // Bad structure even Pathways column is present
             // Pathways column is not the last one
             return 8;
@@ -149,7 +148,7 @@ public class PathwayPageConstructor implements Serializable {
                         switch (cellType) {
                             case 0:
                                 if (column == columnsTable.get(COMPOUND_ID_HEADER)
-                                        || (columnsTable.containsKey(PPM_INCREMENT_HEADER) 
+                                        || (columnsTable.containsKey(PPM_INCREMENT_HEADER)
                                         && column == columnsTable.get(PPM_INCREMENT_HEADER))) {
                                     valueColumn = "" + (int) cell.getNumericCellValue();
                                 } else {
@@ -170,6 +169,7 @@ public class PathwayPageConstructor implements Serializable {
                     valuesList.add(valueColumn);
                     // System.out.println("\n Column " + column + " of " + (numHeaderColumns - 2) + ": " + valueColumn);
                 }
+
                 importers.CompoundForPathway comp = new CompoundForPathway(valuesList, columnsTable);
                 //System.out.println("COMPOUND: " + comp.getIdentifier() + " INCHI: " + comp.getInchikey());
 
@@ -187,7 +187,7 @@ public class PathwayPageConstructor implements Serializable {
                     if (!pathwayCode.equals("") && !pathwayCodes.contains(pathwayCode)) {
                         // listaTrueHyperlinks.add(partialLink);
                         pathwayCodes.add(pathwayCode);
-                        Pathway pathway = new Pathway(pathwayCode, pathwayName,partialLink);
+                        Pathway pathway = new Pathway(pathwayCode, pathwayName, partialLink);
                         // System.out.println("PathwayCode: " + pathwayCode);
                         pathway.compounds.add(comp);
                         listPathways.add(pathway);
@@ -220,14 +220,16 @@ public class PathwayPageConstructor implements Serializable {
      *
      * @param filename name of the file
      * @return error code or status ok (0)
+     * @throws java.sql.SQLException
+     * @throws javax.naming.NamingException
      */
     public int start(String filename) throws SQLException, NamingException {
         // 
-        int errorCode = 12;
+        int errorCode;
         try {
             // Empezamos abriendo el fichero
 
-            FileInputStream file = new FileInputStream(new File(Constantes.UPLOADPATH + File.separator + filename));
+            FileInputStream file = new FileInputStream(new File(Constants.UPLOADPATH + File.separator + filename));
 
 //Get the workbook instance for XLS file 
             HSSFWorkbook workbook = new HSSFWorkbook(file);
@@ -240,14 +242,14 @@ public class PathwayPageConstructor implements Serializable {
             numRows = theSheet.getPhysicalNumberOfRows();
             errorCode = loadHeaders();
             if (errorCode != 0) {
-                // System.out.println("Bad structure: Column Header: " + columnsTable.get(Constantes.PATHWAYS_HEADER)
+                // System.out.println("Bad structure: Column Header: " + columnsTable.get(Constants.PATHWAYS_HEADER)
                 //        + " NUm Header Columns: " + numHeaderColumns);
                 // loadPathways();
                 // Collections.sort(listPathways);
                 // Collections.reverse(listPathways);
                 theSheet = null;
             } else {
-                // System.out.println("Well Structure -> Column Header: " + columnsTable.get(Constantes.PATHWAYS_HEADER)
+                // System.out.println("Well Structure -> Column Header: " + columnsTable.get(Constants.PATHWAYS_HEADER)
                 //        + " NUm Header Columns: " + numHeaderColumns);
                 loadPathways();
                 //String dsName = "java:comp/env/jdbc/testConnection";
@@ -258,7 +260,7 @@ public class PathwayPageConstructor implements Serializable {
                 List<Pathway> sortedPathways = pathwaysFacade.orderByMaximum(listPathways);
                 listPathways = sortedPathways;
                 //dbm.printPaths(listPathways);
-                
+
                 // End Pathway Analysis
 
                 /* PRINT COLLECTION OF PATHWAYS
@@ -272,6 +274,7 @@ public class PathwayPageConstructor implements Serializable {
                     
                 }
                  */
+                pathwaysFacade.disconnect();
             }
             return errorCode;
         } catch (FileNotFoundException ex) {
@@ -307,10 +310,6 @@ public class PathwayPageConstructor implements Serializable {
     }
 
     public boolean isThereFlag() {
-        if (flag == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return flag != 0;
     }
 }

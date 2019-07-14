@@ -1,12 +1,12 @@
 package persistence.theoreticalCompound;
 
-
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import static utilities.Constantes.MIN_RETENTION_TIME_SCORE;
+import model.kbsystem.KBSystemResult;
+import static utilities.Constants.MIN_RETENTION_TIME_SCORE;
 
 /**
  * Abstract class to work TheoreticalCompounds
@@ -50,6 +50,9 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
     private String colorRetentionTimeScore;
     private String colorFinalScore;
 
+    private List<KBSystemResult> kbSystemResults;
+    private final Integer hypothesisId;
+
     /**
      *
      * @param em
@@ -57,9 +60,10 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
      * @param adduct
      * @param booladductAutoDetected
      * @param adductAutoDetected
+     * @param hypothesisId
      */
     public TheoreticalCompoundsAdapter(Double em, Double rt, String adduct,
-            boolean booladductAutoDetected, String adductAutoDetected) {
+            boolean booladductAutoDetected, String adductAutoDetected, Integer hypothesisId) {
         this.experimentalMass = em;
         this.retentionTime = rt;
         this.adduct = adduct;
@@ -80,6 +84,8 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
         this.finalScore = -1F;
         this.mapRTRules = new LinkedHashMap<String, List<Boolean>>();
         this.myKey = em.toString() + "_" + rt.toString();
+        this.hypothesisId = hypothesisId;
+        this.kbSystemResults = new LinkedList<>();
     }
 
     /**
@@ -90,9 +96,11 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
      * @param booladductAutoDetected
      * @param adductAutoDetected
      * @param isSignificative
+     * @param hypothesisId
      */
     public TheoreticalCompoundsAdapter(Double em, Double rt, String adduct,
-            boolean booladductAutoDetected, String adductAutoDetected, boolean isSignificative) {
+            boolean booladductAutoDetected, String adductAutoDetected, boolean isSignificative,
+            Integer hypothesisId) {
         this.experimentalMass = em;
         this.retentionTime = rt;
         this.adduct = adduct;
@@ -113,6 +121,9 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
         this.finalScore = -1F;
         this.mapRTRules = new LinkedHashMap<String, List<Boolean>>();
         this.myKey = em.toString() + "_" + rt.toString();
+
+        this.hypothesisId = hypothesisId;
+        this.kbSystemResults = new LinkedList<>();
     }
 
     /**
@@ -662,4 +673,29 @@ public abstract class TheoreticalCompoundsAdapter implements TheoreticalCompound
         return String.format("%.4f", doubleToRound).replace(",", ".");
         // return new DecimalFormat(".#####").format(doubleToRound);
     }
+
+    @Override
+    public Integer getHypothesisId() {
+        return this.hypothesisId;
+    }
+
+    @Override
+    public List<KBSystemResult> getKbSystemResults() {
+        return kbSystemResults;
+    }
+
+    @Override
+    public void addKbSystemResult(KBSystemResult kbSystemResult) {
+        this.kbSystemResults.add(kbSystemResult);
+    }
+
+    @Override
+    public boolean areThereKbSystemResults() {
+        if (this.kbSystemResults == null || this.kbSystemResults.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }

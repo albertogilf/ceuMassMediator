@@ -1,6 +1,6 @@
 package controllers;
 
-import LCMS.Feature;
+import LCMS_FEATURE.Feature;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -9,19 +9,18 @@ import java.util.Map;
 import javax.faces.model.SelectItem;
 import facades.MSFacade;
 import java.util.TreeMap;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import utilities.Cadena;
 import utilities.AdductsLists;
-import static utilities.Constantes.*;
+import static utilities.Constants.*;
 import utilities.AdductProcessing;
 import static utilities.AdductsLists.DEFAULT_ADDUCTS_POSITIVE;
-import utilities.Constantes;
 import utilities.DataFromInterfacesUtilities;
 import static utilities.DataFromInterfacesUtilities.MAPDATABASES;
 import utilities.FeaturesRTProcessing;
+import utilities.Constants;
 
 /**
  * Controller (Bean) of the application for LC/MS Searches
@@ -30,7 +29,6 @@ import utilities.FeaturesRTProcessing;
  * @version: 5.0, 24/04/2018
  */
 public abstract class LCMSControllerAdapter implements Serializable {
-// TODO ALBERTO AN INTERFAZ WHEN A CE/MS SEARCH IS CREATED
 
     private static final long serialVersionUID = 1L;
 
@@ -66,7 +64,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
     //private int numAdducts;
     private List<Double> queryMasses;
     private List<Double> queryRetentionTimes;
-    private List<Map<Double, Integer>> queryCompositeSpectrum;
+    private List<Map<Double, Double>> queryCompositeSpectrum;
     private List<Boolean> isSignificativeCompound;
 
     private boolean isAllFeatures;
@@ -78,8 +76,8 @@ public abstract class LCMSControllerAdapter implements Serializable {
 
     public LCMSControllerAdapter() {
         this.msFacade = new MSFacade();
-        this.inputTolerance = TOLERANCE_INICITAL_VALUE;
-        this.inputModeTolerance = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputTolerance = TOLERANCE_INITIAL_VALUE;
+        this.inputModeTolerance = TOLERANCE_MODE_INITIAL_VALUE;
         //String version = FacesContext.class.getPackage().getImplementationVersion();
         //System.out.println("\n\n  VERSION DE JSF: " + version + "\n\n");
         this.DBcandidates = new LinkedList<>();
@@ -139,7 +137,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
 
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     public void setDemoMass() {
         this.setQueryInputMasses(ONEDEMOMASS);
@@ -151,7 +149,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
 
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     public void setAdvancedDemoMass() {
         this.setQueryInputMasses(ONEDEMOMASS);
@@ -167,7 +165,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
 
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     public void setDemoMasses() {
         this.setQueryInputMasses(NEWDEMOMASSES);
@@ -175,7 +173,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
 
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     public void setAdvancedDemoMasses() {
         this.setQueryInputMasses(NEWDEMOMASSES);
@@ -184,12 +182,11 @@ public abstract class LCMSControllerAdapter implements Serializable {
         this.chemAlphabet = "CHNOPS";
         this.includeDeuterium = false;
         this.ionMode = 1;
-        this.massesMode = 0;
+        this.massesMode = 1;
         this.adductsCandidates = positiveCandidates;
         this.adducts.clear();
         this.adducts.addAll(DEFAULT_ADDUCTS_POSITIVE);
         //System.out.println(demoMasses);
-        // TODO Set All Masses, RTs and Composites
     }
 
     /**
@@ -202,8 +199,8 @@ public abstract class LCMSControllerAdapter implements Serializable {
         this.allInputMasses = "";
         this.allInputRetentionTimes = "";
         this.allInputCompositeSpectra = "";
-        this.inputTolerance = TOLERANCE_INICITAL_VALUE;
-        this.inputModeTolerance = TOLERANCE_MODE_INICITAL_VALUE;
+        this.inputTolerance = TOLERANCE_INITIAL_VALUE;
+        this.inputModeTolerance = TOLERANCE_MODE_INITIAL_VALUE;
 
         this.chemAlphabet = "CHNOPS";
         this.includeDeuterium = false;
@@ -364,11 +361,11 @@ public abstract class LCMSControllerAdapter implements Serializable {
         this.queryRetentionTimes = queryRetentionTimes;
     }
 
-    public List<Map<Double, Integer>> getQueryCompositeSpectrum() {
+    public List<Map<Double, Double>> getQueryCompositeSpectrum() {
         return queryCompositeSpectrum;
     }
 
-    public void setQueryCompositeSpectrum(List<Map<Double, Integer>> queryCompositeSpectrum) {
+    public void setQueryCompositeSpectrum(List<Map<Double, Double>> queryCompositeSpectrum) {
         this.queryCompositeSpectrum = queryCompositeSpectrum;
     }
 
@@ -657,31 +654,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
         return firstSpectrumAux;
     }
 
-    /**
-     * Get a list of all the spectra from Data
-     *
-     * @param input
-     * @param numInputMasses
-     * @return TODO MARIA change to protected and non static after time testing
-     */
-    public static /*protected*/ List<Map<Double, Integer>> getListOfCompositeSpectra(String input, int numInputMasses) {
-        List<Map<Double, Integer>> spectrumAux;
-        if (!input.equals("")) {
-            spectrumAux = Cadena.extractDataSpectrum(input);
-            // If there is no time for all queryMasses, fill with 0
-            for (int i = spectrumAux.size(); i < numInputMasses; i++) {
-                spectrumAux.add(new TreeMap<Double, Integer>());
-            }
-        } else {
-            spectrumAux = new ArrayList<Map<Double, Integer>>();
-            // If there is no time for all queryMasses, fill with 0
-            for (int i = 0; i < numInputMasses; i++) {
-                spectrumAux.add(new TreeMap<Double, Integer>());
-            }
-
-        }
-        return spectrumAux;
-    }
+    
 
     public MSFacade getMsFacade() {
         return msFacade;
@@ -708,7 +681,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
      * @return the features
      */
     public List<Feature> loadFeaturesFromExperiment(List<Double> experimentalMasses, List<Double> retentionTimes,
-            List<Map<Double, Integer>> compositeSpectra, boolean searchAnnotationsInDatabase) {
+            List<Map<Double, Double>> compositeSpectra, boolean searchAnnotationsInDatabase) {
         List<Feature> featuresFromInputData;
         /*System.out.println("Entering load");
         System.out.println("masses size " + experimentalMasses.size());
@@ -727,12 +700,12 @@ public abstract class LCMSControllerAdapter implements Serializable {
         toleranceMode = DataFromInterfacesUtilities.toleranceTypeToInteger(this.inputModeTolerance);
         databasesInt = DataFromInterfacesUtilities.getDatabasesAsInt(this.databases);
         metabolitesTypeInt = DataFromInterfacesUtilities.metabolitesTypeToInteger(this.metabolitesType);
-        int chemAlphabet = DataFromInterfacesUtilities.getChemAlphabetAsInt(this.chemAlphabet);
+        int chemAlphabetAsInt = DataFromInterfacesUtilities.getChemAlphabetAsInt(this.chemAlphabet);
         
 
         featuresFromInputData = FeaturesRTProcessing.loadFeatures(experimentalMasses, retentionTimes,
                 compositeSpectra, searchAnnotationsInDatabase, this.massesMode, this.ionMode, adductsFiltered,
-                tolerance, toleranceMode, databasesInt, metabolitesTypeInt, chemAlphabet, this.msFacade);
+                tolerance, toleranceMode, databasesInt, metabolitesTypeInt, chemAlphabetAsInt, this.msFacade);
 
         return featuresFromInputData;
     }
@@ -751,27 +724,27 @@ public abstract class LCMSControllerAdapter implements Serializable {
     protected abstract void calculateScores();
 
     public String getKeggWebPage() {
-        return Constantes.WEB_KEGG;
+        return Constants.WEB_KEGG;
     }
 
     public String getHMDBWebPage() {
-        return Constantes.WEB_HMDB;
+        return Constants.WEB_HMDB;
     }
 
     public String getMetlinWebPage() {
-        return Constantes.WEB_METLIN;
+        return Constants.WEB_METLIN;
     }
 
     public String getLMWebPage() {
-        return Constantes.WEB_LIPID_MAPS;
+        return Constants.WEB_LIPID_MAPS;
     }
 
     public String getPCWebPage() {
-        return Constantes.WEB_PUBCHEMICHAL;
+        return Constants.WEB_PUBCHEMICHAL;
     }
 
     public String getMINEWebPage() {
-        return Constantes.WEB_MINE;
+        return Constants.WEB_MINE;
     }
 
     public List<SelectItem> getPositiveCandidates() {
@@ -796,21 +769,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
      */
     public void validateInputTolerance(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        float inputTol = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            inputTol = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be a number between 0 and 1000"));
-        }
-        if (inputTol <= 0) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
-        } else if (inputTol > 1000) {
-            throw new ValidatorException(new FacesMessage("The input tolerance should be between 0 and 1000"));
-        }
+        InterfaceValidators.validateInputTolerance(arg0, arg1, arg2);
     }
 
     /**
@@ -823,21 +782,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
      */
     public void validateInputSingleMass(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        float inputTol = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            inputTol = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("Input mass should be a number between 0 and 10000"));
-        }
-        if (inputTol <= 0) {
-            throw new ValidatorException(new FacesMessage("Input mass should be between 0 and 10000"));
-        } else if (inputTol > 10000) {
-            throw new ValidatorException(new FacesMessage("Input mass should be between 0 and 10000"));
-        }
+        InterfaceValidators.validateInputSingleMass(arg0, arg1, arg2);
     }
 
     /**
@@ -850,52 +795,7 @@ public abstract class LCMSControllerAdapter implements Serializable {
      */
     public void validateSingleRT(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        // int inputTol =-1;
-        String RTString = (String) arg2;
-        RTString = RTString.replace(",", ".");
-        float RT;
-        try {
-            if (RTString.equals("")) {
-
-            } else {
-                RT = Float.parseFloat(RTString);
-                if (RT <= 0) {
-                    throw new ValidatorException(new FacesMessage("RT should be between 0 and 1000"));
-                } else if (RT > 1000) {
-                    throw new ValidatorException(new FacesMessage("RT should be between 0 and 1000"));
-                }
-            }
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("RT should be a number between 0 and 1000"));
-        }
+        InterfaceValidators.validateSingleRT(arg0, arg1, arg2);
     }
-
-    /**
-     * Deprecated. Not used Validates the input masses to be a float between 0
-     * and 10000
-     *
-     * @param arg0 FacesContext of the form
-     * @param arg1 Component of the form
-     * @param arg2 Input of the user in the component arg1
-     *
-     */
-    /* Commented because it is not useful his use
-    public void validateInputMasses(FacesContext arg0, UIComponent arg1, Object arg2)
-         throws ValidatorException {
-        String queryInputMasses=(String)arg2;
-        List<Float> listInput = new LinkedList<Float>();
-        try 
-        {
-            listInput = Cadena.extraerMasas(queryInputMasses);
-        }
-        catch(NumberFormatException nfe)
-        {
-            throw new ValidatorException(new FacesMessage("The Masses should be numbers"));
-        }
-        if(queryInputMasses.contains("[a-zA-Z]+"))
-        {
-            throw new ValidatorException(new FacesMessage("The Masses should be numbers AA"));
-        }
-   }
-     */
+    
 }

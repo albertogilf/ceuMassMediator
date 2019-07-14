@@ -5,7 +5,7 @@
  */
 package persistence.theoreticalGroup;
 
-import utilities.Constantes;
+import utilities.Constants;
 
 /**
  *
@@ -44,27 +44,27 @@ public abstract class CompoundsGroupAdapter implements TheoreticalCompoundsGroup
     
     @Override
     public String getKeggWebPage() {
-        return Constantes.WEB_KEGG;
+        return Constants.WEB_KEGG;
     }
 
     @Override
     public String getHMDBWebPage() {
-        return Constantes.WEB_HMDB;
+        return Constants.WEB_HMDB;
     }
 
     @Override
     public String getMetlinWebPage() {
-        return Constantes.WEB_METLIN;
+        return Constants.WEB_METLIN;
     }
 
     @Override
     public String getLMWebPage() {
-        return Constantes.WEB_LIPID_MAPS;
+        return Constants.WEB_LIPID_MAPS;
     }
 
     @Override
     public String getPCWebPage() {
-        return Constantes.WEB_PUBCHEMICHAL;
+        return Constants.WEB_PUBCHEMICHAL;
     }
     
     

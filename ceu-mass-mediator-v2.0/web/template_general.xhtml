@@ -2,8 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:h="http://java.sun.com/jsf/html">
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -38,15 +36,15 @@
     </h:head>
     <ui:insert>
         <ui:param name="onloadbody" value="" />
+        <ui:param name="idbody" value="" />
     </ui:insert>
-    <h:body class="homepage2" onload="#{onloadbody}">
-
+    <h:body class="homepage2" onload="#{onloadbody}" id="#{idbody}">
 
         <div class="header-new container" style="padding:1px;">
             <img src="images/cembio_banner.jpg" alt="CEMBIO Banner" width="100%"/>
         </div>
 
-        <div id="div-nav" >
+        <div id="div-nav">
             <nav id="nav">
                 <ul>
                     <li class="#{view.viewId == '/index.xhtml'?'current':null}">
@@ -70,29 +68,31 @@
                                 </li>
                             </ui:remove>
 
-                            <li class="#{view.viewId == '/lcms_simple_search.xhtml'?'current':null}">
+                            <li class="#{view.viewId == '/simple_search.xhtml'?'current':null}">
                                 <a href="simple_search.xhtml">Simple Search</a> 
                             </li>
-                            <li class="#{view.viewId == '/lcms_advanced_search.xhtml'?'current':null}">
+                            <li class="#{view.viewId == '/advanced_search.xhtml'?'current':null}">
                                 <a href="advanced_search.xhtml">Advanced Search</a>
                             </li>
-                            <li class="#{view.viewId == '/lcms_batch_search.xhtml'?'current':null}">
+                            <li class="#{view.viewId == '/batch_search.xhtml'?'current':null}">
                                 <a href="batch_search.xhtml">Batch Search</a>
                             </li>
-                            <li class="#{view.viewId == '/lcms_batch_advanced_search.xhtml'?'current':null}">
+                            <li class="#{view.viewId == '/batch_advanced_search.xhtml'?'current':null}">
                                 <a href="batch_advanced_search.xhtml">Batch Advanced Search</a>
+                            </li>
+                            <li class="#{view.viewId == '/prolog_batch_advanced_search.xhtml'?'current':null}">
+                                <a href="prolog_batch_advanced_search.xhtml">LAS service</a>
                             </li>
                             <li class="#{view.viewId == '/browse_search_1.xhtml'?'current':null}">
                                 <a href="browse_search_1.xhtml">Browse Search</a>
                             </li>
+                            <li class="#{view.viewId == '/msms_search.xhtml'?'current':null}">
+                                <a href="msms_search.xhtml">MS/MS Search</a>
+                            </li>
+                            <!--</ui:remove>-->
                             <ui:remove>
-                                <li class="#{view.viewId == '/msms_search.xhtml'?'current':null}">
-                                    <a href="msms_search.xhtml">MS/MS Search</a>
-                                </li>
-                                <!--</ui:remove>-->
-                                <!--<ui:remove>-->
                                 <li class="#{view.viewId == '/lcms_grouped_rt_search.xhtml'?'current':null}">
-                                    <a href="lcms_grouped_rt_search.xhtml">Advanced Search grouped by RT</a>
+                                    <a href="lcms_grouped_rt_search.xhtml">Search grouped by RT</a>
                                 </li>
                             </ui:remove>
                         </ul>
@@ -120,14 +120,6 @@
                 </ul>
             </nav>
         </div>
-        <!--<div id="beta" class="wrapper style1">
-            <div class="container warning">
-                <img src="images/error_1.png" alt="Warning icon" height="32" style="vertical-align:middle;"></img>
-                <strong>CEU Mass Mediator is in Beta version</strong>. If you find 
-                any issue, we would love to hear about it. Please let us know at 
-                <script>getmailaddress('es', 'ceu', 'cembio');</script>.
-            </div>
-        </div>-->
 
         <div id="intro-wrapper" class="wrapper style1">
             <ui:insert name="intro-wrapper">Default Intro Wrapper</ui:insert>
@@ -136,18 +128,31 @@
         <div id="version" class="wrapper style1">
             <div class="container warning">
 
-                <strong>CEU Mass Mediator version 2.0</strong>.
+                <strong>CEU Mass Mediator version 3.0</strong>.
                 <br/>
                 <strong>Citing CMM: </strong>
-                <a href="https://www.sciencedirect.com/science/article/pii/S0731708517326559" target="_blank">
-                    Gil de la Fuente A., Godzien J. et al. 
-                    Knowledge-based metabolite annotation tool: CEU Mass Mediator.
-                    Journal of Pharmaceutical and Biomedical Analysis. 2018. May 30; 154, 138-149.
-                </a>
+                <ol>
+                    <li>
+                        <a href="https://www.sciencedirect.com/science/article/pii/S0731708517326559" target="_blank">
+                            CMM 2.0: 
+                            Gil de la Fuente A., Godzien J. et al. 
+                            Knowledge-based metabolite annotation tool: CEU Mass Mediator.
+                            Journal of Pharmaceutical and Biomedical Analysis, 2018, 154, 138-149.
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://pubs.acs.org/doi/abs/10.1021/acs.jproteome.8b00720" target="_blank">
+                            CMM 3.0: 
+                            Gil de la Fuente A., Godzien J. et al. 
+                            CEU Mass Mediator 3.0: A Metabolite Annotation Tool
+                            Journal of Proteome Research 2019 18 (2), 797-802 
+                        </a>
+                    </li>
+                </ol>
                 <br/>
                 If you find 
                 any issue, we would love to hear about it. Please let us know at 
-                <script>getmailaddress('es', 'ceu', 'cembio');</script>
+                <script>getmailaddress('es', 'ceu', 'cmm.cembio');</script>
                 <br/>
                 <strong>Last updated: 26/01/2018</strong>
             </div>
@@ -159,7 +164,8 @@
                 <header class="style1">
                     <h3><a href="http://biolab.uspceu.com/" target="_blank">Laboratorio de Bioingeniería.
                             Escuela Politécnica Superior. Universidad CEU-San Pablo.</a></h3>
-                    <h3><a href="http://www.metabolomica.uspceu.es/"  target="_blank">Center for Metabolomics and Bioanalysis - CEMBIO.
+                    <h3><a href="http://www.metabolomica.uspceu.es/"  target="_blank">
+                            Center for Metabolomics and Bioanalysis - CEMBIO.
                             Universidad CEU-San Pablo.</a></h3>
 
                     <p>
@@ -173,7 +179,6 @@
                         <a href="http://www.hmdb.ca" target="_blank">HMDB</a>
                         <br/>
                         <a href="http://minedatabase.mcs.anl.gov/#/home" target="_blank">MINE</a>
-
                     </p>
                 </header>
 
@@ -210,7 +215,7 @@
                                 <div class="6u 12u(mobile)">
                                     <section>
                                         <h3 class="icon fa-envelope">Email</h3>
-                                        <p><script>getmailaddress('es', 'ceu', 'cembio');</script></p>
+                                        <p><script>getmailaddress('es', 'ceu', 'cmm.cembio');</script></p>
                                     </section>
                                     <section>
                                         <h3 class="icon fa-phone">Phone</h3>
@@ -226,11 +231,10 @@
             </div>
             <div id="copyright">
                 <ul>
-                    <li>&copy; Ceu Mass Mediator</li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a></li>
+                    <li>&copy; Ceu Mass Mediator</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
                 </ul>
             </div>
         </div>
-
 
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/js/jquery-ui.min.js"></script>

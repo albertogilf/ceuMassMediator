@@ -1,15 +1,24 @@
 package facades;
 
+import CEMS.CEMSCompound;
+import CEMS.CEMSCompoundComparer;
+import CEMS.CEMSCompoundsGroupByAdduct;
+import CEMS.CEMSFeature;
+import CEMS.CEMSProductIon;
+import CEMS.CEMSProductIonComparer;
 import DBManager.QueryConstructor;
+import List.NoDuplicatesList;
 import java.util.*;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import persistence.CEProductIon;
 import persistence.Compounds;
 import persistence.FACompoundFactories.FACompoundFactory;
 import persistence.oxidizedTheoreticalCompound.FACompound;
 import persistence.NewCompounds;
+import persistence.NewCompoundsCE;
 import persistence.NewCompoundsGen;
 import persistence.compoundsFactories.NewCompoundFactory;
 import persistence.compoundsFactories.NewCompoundGenFactory;
@@ -29,12 +38,14 @@ import static utilities.OxidationLists.LIST_SHORT_CHAIN_OXIDATION_TYPES;
 import utilities.OxidationProcessing;
 import utilities.Utilities;
 import static utilities.Utilities.calculateFAEMFromPIandOtherFAEM;
+import static utilities.Utilities.calculatePPMIncrement;
+import static utilities.Utilities.calculateRMTError;
 
 /**
  *
  * @author Alberto Gil de la Fuente
- * @version: 4.0, 20/07/2016. Modified by Alberto Gil de la Fuente Last
- * Modified: 22/05/2018
+ * @version: 4.0, 20/07/2016. Modified by Alberto Gil de la Fuente. Last
+ * Modified: 28/05/2019
  */
 @Stateless(name = "TheoreticalCompoundsFacade")
 public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompounds> {
@@ -76,7 +87,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
      * @param massToSearch Mass To Search in the database
      * @param adduct adduct to search
      */
-    private void addToTheoreticalCompoundList(List<TheoreticalCompounds> tcl,
+    private Integer addToTheoreticalCompoundList(List<TheoreticalCompounds> tcl,
             List<Compounds> queryResult,
             Double experimentalMass,
             Double retentionTime,
@@ -86,19 +97,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             boolean isAdductAutoDetected,
             String adductAutoDetected,
             TheoreticalCompoundsGroup compoundGroup,
-            Boolean isSignificative) {
-        // FOR MARIA. 
-        // HERE THE Results of the query comes in the list of Compounds queryResult
-        // In the new DataModel, you can adapt this method to have a List of Compound 
-        // and create for each compound the corresponding LCMS compound, which will be added 
-        // to the CompoundsLCMSGroupByAdduct
-        // The organisation is little bit different, that is why we have to refactorise. 
-        // For example, we established directly in the CompoundsLCMSGroupByAdduct 
-        // if the adduct was autodetected or not!
-        // Ask me if you have doubts. 
-        // Now we have two list because we organise the compounds in a full list (List<TheoreticalCompounds> tcl)
-        // and in different groups grouped by adduct(TheoreticalCompoundsGroup compoundGroup)
-        // DOUBT ALBERTO, Sorry but I dont understand what you mean.
+            Boolean isSignificative,
+            Integer hypothesisId) {
         Iterator<Compounds> it = queryResult.iterator();
         while (it.hasNext()) {
             TheoreticalCompounds compound = tcf.construct(it.next(),
@@ -108,17 +108,18 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     adduct,
                     isAdductAutoDetected,
                     adductAutoDetected,
-                    isSignificative);
-            // Add the chemical Alphabet
+                    isSignificative,
+                    hypothesisId);
             tcl.add(compound);
             compoundGroup.addCompound(compound);
+            hypothesisId++;
         }
+        return hypothesisId;
     }
 
     /**
-     * TODO ALBERTO REFACTORIZATION FOR NEW CLASS FACOMPOUND (Compound
-     * INHERITANCE) returns the TheoreticalFACompound which it is in the List
-     * queryResult If there is more than one, it returns the first one and
+     * returns the TheoreticalFACompound which it is in the List queryResult If
+     * there is more than one, it returns the first one
      *
      * @param queryResult. The list of queryResults
      * @param FAcompoundFactory. The factory for constructing the FA
@@ -148,8 +149,6 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
     }
 
     /**
-     * REFACTORIZED DONE IN OxidationFACADE
-     *
      * Adds to the oxidized compound oxidizedcompound all the annotations in the
      * query results according the mass of the precursor. This method works for
      * long and short chain due to the transformation on the FA also occurs in
@@ -266,7 +265,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                             ConstantesForOxidation.HCOO_ADDUCT,
                             false,
                             "",
-                            true);
+                            true,
+                            -1);
                     // Add the chemical Alphabet
                     oxidizedAnnotationOverPC.addCompound(compound);
                 }
@@ -275,7 +275,6 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
     }
 
     /**
-     * TODO ALBERTO REFACTORIZATION FOR NEW CLASS CompoundOxidized
      *
      * Adds to the oxidized compound oxidizedcompound all the non Oxidizided
      * annotations in the query results according the mass of the precursor.
@@ -399,7 +398,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                             ConstantesForOxidation.HCOO_ADDUCT,
                             false,
                             "",
-                            true);
+                            true,
+                            -1);
                     // Add the chemical Alphabet
                     NonOxidizedAnnotationOverPC.addCompound(compound);
                 }
@@ -409,13 +409,13 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
     /**
      *
-     * returns a list of compounds from the databases according to the number of
-     * the mass and the tolerance .
+     * returns a list of compounds from the databases according to the monoisotopic 
+     * mass and the tolerance established.
      *
-     * @param masses , List of masses
+     * @param masses List of masses
      * @param toleranceMode tolerance in ppm or mDa
      * @param tolerance, the tolerance which user wants to find compounds for
-     * @param ionMode Ionization mode
+     * @param ionMode Ionization mode 
      * @param massesMode
      * @param adducts Possible adducts
      * @param listCompoundsGroup
@@ -468,8 +468,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
     }
 
     /**
-     * returns a list of compounds from the databases according to the number of
-     * the mass and the tolerance .
+     * returns a list of compounds from the databases according to the monoisotopic
+     * mass and the tolerance.
      *
      * @param masses , List of masses
      * @param toleranceMode tolerance set in ppm or mDa
@@ -492,6 +492,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases,
             String metabolitesType) {
+        Integer hypothesisId = 0;
         List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<TheoreticalCompounds>();
         Map<String, String> provisionalMap;
         //System.out.println("\nION MODE " + ionMode + " masses Mode: " + massesMode + "\n");
@@ -501,7 +502,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         //System.out.println("Databases " + databases);
 
         // Choose the adducts to perform the search
-        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(ionMode);
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
         int massesModeInt = utilities.DataFromInterfacesUtilities.inputMassModeToInteger(massesMode);
@@ -556,9 +557,11 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 Query q1;
 
                 // Test for JPA left join
-                //finalQuery = "SELECT nc FROM NewCompounds nc WHERE (nc.ncKegg is not null or nc.ncHMDB is not null) and (nc.mass >= 236.08001738701788 and nc.mass <= 236.0941826129821)";
+                //finalQuery = "SELECT nc FROM NewCompounds nc WHERE (nc.ncKegg is not null or nc.ncHMDB is not null) 
+                // and (nc.mass >= 236.08001738701788 and nc.mass <= 236.0941826129821)";
                 //finalQuery = "SELECT c FROM NewCompounds c LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId "
-                // + "left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId where (ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
+                // + "left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId where (ck.keggId is not null 
+                // or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
                 //System.out.println("Final query: " + finalQuery);
                 q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
                 results = q1.getResultList();
@@ -573,11 +576,12 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                  */
                 if (results.isEmpty()) {
                     TheoreticalCompounds compound = tcf.construct(
-                            null, inputMass, 0d, massToSearch, s, false, "", true);
+                            null, inputMass, 0d, massToSearch, s, false, "", true, hypothesisId);
                     listToBeOrdered.add(compound);
                     compoundGroup.addCompound(compound);
+                    hypothesisId++;
                 } else {
-                    addToTheoreticalCompoundList(listToBeOrdered,
+                    hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
                             results,
                             inputMass,
                             0d,
@@ -587,7 +591,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                             false,
                             "",
                             compoundGroup,
-                            true);
+                            true,
+                            hypothesisId);
                 }
                 if (searchInMINE) {
                     String aliasTableForGen = "ncg";
@@ -603,13 +608,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     results = q1forGen.getResultList();
                     if (results.isEmpty()) {
                         TheoreticalCompounds compound = tcfForGen.construct(
-                                null, inputMass, 0d, massToSearch, s, false, "", true);
+                                null, inputMass, 0d, massToSearch, s, false, "", true, hypothesisId);
+                        hypothesisId++;
                         listToBeOrdered.add(compound);
                         compoundGroup.addCompound(compound);
                     } else {
-                        addToTheoreticalCompoundList(listToBeOrdered,
+                        hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
                                 results, inputMass, 0d,
-                                tcfForGen, massToSearch, s, false, "", compoundGroup, true);
+                                tcfForGen, massToSearch, s, false, "", compoundGroup, true, hypothesisId);
                     }
                 }
                 Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
@@ -655,13 +661,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases) {
+        Integer hypothesisId = 1;
         List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<>();
         Map<String, String> provisionalMap;
 
         // System.out.println("\nION MODE " + ionMode + " masses Mode: " + massesMode + "\n");
         // System.out.println("Adducts " + adducts);
         //System.out.println("Databases " + databases);
-        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(ionMode);
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
         int massesModeInt = utilities.DataFromInterfacesUtilities.inputMassModeToInteger(massesMode);
@@ -704,13 +711,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 results = q1.getResultList();
                 if (results.isEmpty()) {
                     TheoreticalCompounds compound = tcfForGen.construct(
-                            null, inputMass, 0d, massToSearch, s, false, "", true);
+                            null, inputMass, 0d, massToSearch, s, false, "", true, hypothesisId);
+                    hypothesisId++;
                     listToBeOrdered.add(compound);
                     compoundGroup.addCompound(compound);
                 } else {
-                    addToTheoreticalCompoundList(listToBeOrdered,
+                    hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
                             results, inputMass, 0d,
-                            tcfForGen, massToSearch, s, false, "", compoundGroup, true);
+                            tcfForGen, massToSearch, s, false, "", compoundGroup, true, hypothesisId);
                 }
                 Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
                 theoreticalCompoundList.addAll(listToBeOrdered);
@@ -755,7 +763,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
     public List<TheoreticalCompounds> findCompoundsAdvanced(
             List<Double> masses,
             List<Double> retentionTimes,
-            List<Map<Double, Integer>> compositeSpectra,
+            List<Map<Double, Double>> compositeSpectra,
             List<Boolean> isSignificativeCompound,
             String toleranceMode,
             Double tolerance,
@@ -829,7 +837,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
     public List<TheoreticalCompounds> findRangeAdvanced(
             List<Double> masses,
             List<Double> retentionTimes,
-            List<Map<Double, Integer>> compositeSpectra,
+            List<Map<Double, Double>> compositeSpectra,
             List<Boolean> isSignificativeCompound,
             String toleranceMode,
             Double tolerance,
@@ -840,6 +848,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases,
             String metabolitesType) {
+        Integer hypothesisId = 1;
         List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<>();
         Map<String, String> provisionalMap;
         //System.out.println("\nION MODE " + ionMode + " masses Mode: " + massesMode + "\n");
@@ -860,7 +869,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         }
          */
         // Choose the adducts to perform the search
-        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(ionMode);
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
         int massesModeInt = utilities.DataFromInterfacesUtilities.inputMassModeToInteger(massesMode);
@@ -987,7 +996,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesModeInt, ionMode);
             Double inputRetentionTime = retentionTimes.get(i);
             Boolean isSignificative = isSignificativeCompound.get(i);
-            Map<Double, Integer> inputCompositeSpectrum = compositeSpectra.get(i);
+            Map<Double, Double> inputCompositeSpectrum = compositeSpectra.get(i);
             Double adductValue;
             String sValueAdduct;
             /*
@@ -998,7 +1007,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             queryFinalMetlin = "(";
              */
 
-            String detectedAdduct = AdductProcessing.detectAdductBasedOnCompositeSpectrum(ionMode, mzInputMass, adducts, inputCompositeSpectrum);
+            String detectedAdduct = AdductProcessing.detectAdductBasedOnCompositeSpectrum(
+                    ionMode, mzInputMass, adducts, inputCompositeSpectrum);
             if (!detectedAdduct.equals("")) {
                 listToBeOrdered = new LinkedList<TheoreticalCompounds>();
 //                listToBeOrderedForGen = new LinkedList<TheoreticalCompounds>();
@@ -1006,7 +1016,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
                 //System.out.println("Automatic adduct detected: " + inputMass);
                 // Create the new group of compounds for the view
-                CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(inputMass, inputRetentionTime, detectedAdduct, isSignificative);
+                CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(
+                        inputMass, inputRetentionTime, detectedAdduct, isSignificative);
 // System.out.println("\n Compound: " + inputMass + " Adduct automatically detected");
                 // As we detect automatically the adduct, go directly for the inputMass
 
@@ -1015,8 +1026,10 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
 //                System.out.println("\n Compound: " + inputMass + " detected automatically adduct: " + detectedAdduct
 //                        + " value: " + sValueAdduct);
-                massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, detectedAdduct, adductValue);
-                finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearch, toleranceMode, tolerance);
+                massToSearch = utilities.AdductProcessing.getMassToSearch(
+                        mzInputMass, detectedAdduct, adductValue);
+                finalQuery = QueryConstructor.addFilterMassesJPA(
+                        aliasTable, startQuery, massToSearch, toleranceMode, tolerance);
                 /*
 // Take statistics about compounds without unifying                
                 queryFinalKEGG = queryFinalKEGG + "(mass >= " + low + " and mass <= " + high + ") or ";
@@ -1032,13 +1045,16 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 //System.out.println("RESULTS: " + results);
                 if (results.isEmpty()) {
                     TheoreticalCompounds compound = tcf.construct(
-                            null, inputMass, inputRetentionTime, massToSearch, detectedAdduct, false, "", isSignificative);
+                            null, inputMass, inputRetentionTime, massToSearch,
+                            detectedAdduct, false, "", isSignificative, hypothesisId);
+                    hypothesisId++;
                     listToBeOrdered.add(compound);
                     compoundGroup.addCompound(compound);
                 } else {
-                    addToTheoreticalCompoundList(listToBeOrdered,
+                    hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
                             results, inputMass, inputRetentionTime,
-                            tcf, massToSearch, detectedAdduct, false, "", compoundGroup, isSignificative);
+                            tcf, massToSearch, detectedAdduct, false, "",
+                            compoundGroup, isSignificative, hypothesisId);
                 }
                 if (searchInMINE) {
 // It could be done in a method, but the number of parameters is too long, so we will keep code here
@@ -1050,7 +1066,8 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     startQueryForGen = QueryConstructor.addFilterIntegerFormulaTypeJPA(aliasTableForGen,
                             startQueryForGen, chemAlphabet);
 
-                    finalQueryForGen = QueryConstructor.addFilterMassesJPA(aliasTableForGen, startQueryForGen, massToSearch, toleranceMode, tolerance);
+                    finalQueryForGen = QueryConstructor.addFilterMassesJPA(
+                            aliasTableForGen, startQueryForGen, massToSearch, toleranceMode, tolerance);
 
                     // Insert compounds
                     Query q1forGen;
@@ -1059,14 +1076,15 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     results = q1forGen.getResultList();
                     if (results.isEmpty()) {
                         TheoreticalCompounds compound = tcfForGen.construct(
-                                null, inputMass, inputRetentionTime, massToSearch, detectedAdduct, false, "", isSignificative);
+                                null, inputMass, inputRetentionTime, massToSearch,
+                                detectedAdduct, false, "", isSignificative, hypothesisId);
+                        hypothesisId++;
                         listToBeOrdered.add(compound);
                         compoundGroup.addCompound(compound);
                     } else {
-
-                        addToTheoreticalCompoundList(listToBeOrdered,
-                                results, inputMass, inputRetentionTime,
-                                tcfForGen, massToSearch, detectedAdduct, false, "", compoundGroup, isSignificative);
+                        hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
+                                results, inputMass, inputRetentionTime, tcfForGen, massToSearch,
+                                detectedAdduct, false, "", compoundGroup, isSignificative, hypothesisId);
                     }
                 }
                 Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
@@ -1084,7 +1102,9 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     //System.out.println("ADDUCT: " + s);
                     if (!s.equals(detectedAdduct)) {
                         TheoreticalCompounds compound = tcf.construct(
-                                null, inputMass, inputRetentionTime, null, s, true, detectedAdduct, isSignificative);
+                                null, inputMass, inputRetentionTime, null, s, true,
+                                detectedAdduct, isSignificative, hypothesisId);
+                        hypothesisId++;
                         listToBeOrdered.add(compound);
                         compoundGroup.addCompound(compound);
 
@@ -1095,18 +1115,20 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 }
             } else {
                 //System.out.println("\n Compound: " + inputMass + " added simple charged");
-                for (String s : adducts) {
+                for (String adduct : adducts) {
                     listToBeOrdered = new LinkedList<TheoreticalCompounds>();
 //                    listToBeOrderedForGen = new LinkedList<TheoreticalCompounds>();
-                    CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(inputMass, inputRetentionTime, s, isSignificative);
-                    sValueAdduct = provisionalMap.get(s);
+                    CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(
+                            inputMass, inputRetentionTime, adduct, isSignificative);
+                    sValueAdduct = provisionalMap.get(adduct);
                     adductValue = Double.parseDouble(sValueAdduct);
                     //System.out.println("ADDUCT: " + s);
-                    massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, s, adductValue);
+                    massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, adduct, adductValue);
                     //System.out.println("ADDUCT: " + s);
 
                     // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
-                    finalQuery = QueryConstructor.addFilterMassesJPA(aliasTable, startQuery, massToSearch, toleranceMode, tolerance);
+                    finalQuery = QueryConstructor.addFilterMassesJPA(
+                            aliasTable, startQuery, massToSearch, toleranceMode, tolerance);
                     /*
 // Take statistics about compounds without unifying                
                     queryFinalKEGG = queryFinalKEGG + "(mass >= " + low + " and mass <= " + high + ") or ";
@@ -1116,22 +1138,27 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                      */
                     Query q1;
                     // Test for JPA left join
-                    //finalQuery = "SELECT nc FROM NewCompounds nc WHERE (nc.ncKegg is not null or nc.ncHMDB is not null) and (nc.mass >= 236.08001738701788 and nc.mass <= 236.0941826129821)";
-                    //finalQuery = "SELECT c FROM NewCompounds c LEFT JOIN NewCompoundsKegg ck on c.compoundId=ck.compoundId left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId where 
-                    //  + "(ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 and c.mass <= 236.0941826129821)";
+                    //finalQuery = "SELECT nc FROM NewCompounds nc WHERE (nc.ncKegg is not null or nc.ncHMDB is not null) 
+                    // and (nc.mass >= 236.08001738701788 and nc.mass <= 236.0941826129821)";
+                    //finalQuery = "SELECT c FROM NewCompounds c LEFT JOIN NewCompoundsKegg ck on 
+                    // c.compoundId=ck.compoundId left join NewCompoundsHMDB ch on c.compoundId=ch.compoundId where 
+                    //  + "(ck.keggId is not null or ch.hmdbId is not null) and (c.mass >= 236.08001738701788 
+                    // and c.mass <= 236.0941826129821)";
                     //System.out.println("Final query: " + finalQuery);
                     q1 = getEntityManager().createQuery(finalQuery, NewCompounds.class);
                     results = q1.getResultList();
 
                     if (results.isEmpty()) {
                         TheoreticalCompounds compound = tcf.construct(
-                                null, inputMass, inputRetentionTime, massToSearch, s, false, "", isSignificative);
+                                null, inputMass, inputRetentionTime,
+                                massToSearch, adduct, false, "", isSignificative, hypothesisId);
+                        hypothesisId++;
                         listToBeOrdered.add(compound);
                         compoundGroup.addCompound(compound);
                     } else {
-                        addToTheoreticalCompoundList(listToBeOrdered,
-                                results, inputMass, inputRetentionTime,
-                                tcf, massToSearch, s, false, "", compoundGroup, isSignificative);
+                        hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
+                                results, inputMass, inputRetentionTime, tcf, massToSearch,
+                                adduct, false, "", compoundGroup, isSignificative, hypothesisId);
                     }
                     if (searchInMINE) {
                         String aliasTableForGen = "ncg";
@@ -1151,13 +1178,15 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                         results = q1forGen.getResultList();
                         if (results.isEmpty()) {
                             TheoreticalCompounds compound = tcfForGen.construct(
-                                    null, inputMass, inputRetentionTime, massToSearch, s, false, "", isSignificative);
+                                    null, inputMass, inputRetentionTime, massToSearch,
+                                    adduct, false, "", isSignificative, hypothesisId);
+                            hypothesisId++;
                             listToBeOrdered.add(compound);
                             compoundGroup.addCompound(compound);
                         } else {
-                            addToTheoreticalCompoundList(listToBeOrdered,
-                                    results, inputMass, inputRetentionTime,
-                                    tcfForGen, massToSearch, s, false, "", compoundGroup, isSignificative);
+                            hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
+                                    results, inputMass, inputRetentionTime, tcfForGen, massToSearch,
+                                    adduct, false, "", compoundGroup, isSignificative, hypothesisId);
                         }
                     }
                     Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
@@ -1228,7 +1257,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
     public List<TheoreticalCompounds> findRangeGeneratedAdvanced(
             List<Double> masses,
             List<Double> retentionTimes,
-            List<Map<Double, Integer>> compositeSpectra,
+            List<Map<Double, Double>> compositeSpectra,
             List<Boolean> isSignificativeCompound,
             String toleranceMode,
             Double tolerance,
@@ -1238,6 +1267,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             List<String> adducts,
             List<TheoreticalCompoundsGroup> listCompoundsGroup,
             List<String> databases) {
+        Integer hypothesisId = 1;
         List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<TheoreticalCompounds>();
         Map<String, String> provisionalMap;
 
@@ -1245,7 +1275,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         // System.out.println("Adducts " + adducts);
         //System.out.println("Databases " + databases);
         //System.out.println("Chemical Alphabet " + chemAlphabet);
-        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(massesMode, ionMode);
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(ionMode);
         adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
 
         int massesModeInt = utilities.DataFromInterfacesUtilities.inputMassModeToInteger(massesMode);
@@ -1272,7 +1302,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesModeInt, ionMode);
             Double inputRetentionTime = retentionTimes.get(i);
             Boolean isSignificative = isSignificativeCompound.get(i);
-            Map<Double, Integer> inputCompositeSpectrum = compositeSpectra.get(i);
+            Map<Double, Double> inputCompositeSpectrum = compositeSpectra.get(i);
             String detectedAdduct = AdductProcessing.detectAdductBasedOnCompositeSpectrum(ionMode,
                     mzInputMass, adducts, inputCompositeSpectrum);
             if (!detectedAdduct.equals("")) {
@@ -1282,17 +1312,20 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
                 // System.out.println("Automaticall adduct detected: " + masses.get(i) + " Compos: " + inputCompositeSpectrum);
                 // Create the new group of compounds for the view
-                CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(inputMass, inputRetentionTime, detectedAdduct, isSignificative);
+                CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(
+                        inputMass, inputRetentionTime, detectedAdduct, isSignificative);
 
                 Double adductValue;
                 String sValueAdduct;
                 sValueAdduct = provisionalMap.get(detectedAdduct);
                 adductValue = Double.parseDouble(sValueAdduct);
                 //System.out.println("ADDUCT: " + s);
-                massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, detectedAdduct, adductValue);
+                massToSearch = utilities.AdductProcessing.getMassToSearch(
+                        mzInputMass, detectedAdduct, adductValue);
 //                System.out.println("\n Compound: " + inputMass + " detected automatically adduct: " + detectedAdduct
 //                        + " value: " + sValueAdduct);
-                finalQueryForGen = QueryConstructor.addFilterMassesJPA(aliasTableForGen, startQueryForGen, massToSearch, toleranceMode, tolerance);
+                finalQueryForGen = QueryConstructor.addFilterMassesJPA(
+                        aliasTableForGen, startQueryForGen, massToSearch, toleranceMode, tolerance);
                 Query q1;
 // Insert compounds
 //                System.out.println("Final query: " + finalQuery);
@@ -1300,28 +1333,32 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                 results = q1.getResultList();
                 if (results.isEmpty()) {
                     TheoreticalCompounds compound = tcfForGen.construct(
-                            null, inputMass, inputRetentionTime, massToSearch, detectedAdduct, false, "", isSignificative);
+                            null, inputMass, inputRetentionTime, massToSearch, detectedAdduct,
+                            false, "", isSignificative, hypothesisId);
+                    hypothesisId++;
                     listToBeOrdered.add(compound);
                     compoundGroup.addCompound(compound);
                 } else {
-
-                    addToTheoreticalCompoundList(listToBeOrdered,
-                            results, inputMass, inputRetentionTime,
-                            tcfForGen, massToSearch, detectedAdduct, false, "", compoundGroup, isSignificative);
+                    hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
+                            results, inputMass, inputRetentionTime, tcfForGen, massToSearch,
+                            detectedAdduct, false, "", compoundGroup, isSignificative, hypothesisId);
                 }
                 Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
                 theoreticalCompoundList.addAll(listToBeOrdered);
                 listCompoundsGroup.add(compoundGroup);
 
-                for (String s : adducts) {
+                for (String adduct : adducts) {
                     // Include all adducts if we detect a double charge for 
                     // frontend presentation
-                    compoundGroup = new CompoundsGroupByMass(inputMass, inputRetentionTime, s, isSignificative);
+                    compoundGroup = new CompoundsGroupByMass(inputMass,
+                            inputRetentionTime, adduct, isSignificative);
                     listToBeOrdered = new LinkedList<TheoreticalCompounds>();
                     //System.out.println("ADDUCT: " + s);
-                    if (!s.equals(detectedAdduct)) {
+                    if (!adduct.equals(detectedAdduct)) {
                         TheoreticalCompounds compound = tcfForGen.construct(
-                                null, inputMass, inputRetentionTime, null, s, true, detectedAdduct, isSignificative);
+                                null, inputMass, inputRetentionTime, null, adduct,
+                                true, detectedAdduct, isSignificative, hypothesisId);
+                        hypothesisId++;
                         listToBeOrdered.add(compound);
                         compoundGroup.addCompound(compound);
 
@@ -1333,16 +1370,17 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             } else {
                 //System.out.println("\n Compound: " + inputMass + " added simple charged"
                 //        + inputCompositeSpectrum);
-                for (String s : adducts) {
+                for (String adduct : adducts) {
                     listToBeOrdered = new LinkedList<TheoreticalCompounds>();
 //                    listToBeOrderedForGen = new ArrayList<TheoreticalCompounds>();
-                    CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(inputMass, inputRetentionTime, s, isSignificative);
+                    CompoundsGroupByMass compoundGroup = new CompoundsGroupByMass(
+                            inputMass, inputRetentionTime, adduct, isSignificative);
                     Double adductValue = 0.0d;
                     String sValueAdduct;
-                    sValueAdduct = provisionalMap.get(s);
+                    sValueAdduct = provisionalMap.get(adduct);
                     adductValue = Double.parseDouble(sValueAdduct);
                     //System.out.println("ADDUCT: " + s);
-                    massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, s, adductValue);
+                    massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, adduct, adductValue);
                     finalQueryForGen = QueryConstructor.addFilterMassesJPA(aliasTableForGen,
                             startQueryForGen, massToSearch, toleranceMode, tolerance);
 
@@ -1353,13 +1391,15 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     results = q1.getResultList();
                     if (results.isEmpty()) {
                         TheoreticalCompounds compound = tcfForGen.construct(
-                                null, inputMass, inputRetentionTime, massToSearch, s, false, "", isSignificative);
+                                null, inputMass, inputRetentionTime, massToSearch,
+                                adduct, false, "", isSignificative, hypothesisId);
+                        hypothesisId++;
                         listToBeOrdered.add(compound);
                         compoundGroup.addCompound(compound);
                     } else {
-                        addToTheoreticalCompoundList(listToBeOrdered,
-                                results, inputMass, inputRetentionTime,
-                                tcfForGen, massToSearch, s, false, "", compoundGroup, isSignificative);
+                        hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
+                                results, inputMass, inputRetentionTime, tcfForGen, massToSearch,
+                                adduct, false, "", compoundGroup, isSignificative, hypothesisId);
                     }
                     Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
                     theoreticalCompoundList.addAll(listToBeOrdered);
@@ -1400,6 +1440,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             boolean exactName,
             List<String> databases,
             String metabolitesType) {
+        Integer hypothesisId = 1;
         List<TheoreticalCompounds> theoreticalCompoundList = new LinkedList<>();
         boolean searchInMINE = databases.contains("All") || databases.contains("MINE (Only In Silico Compounds)");
         //System.out.println("Databases " + databases);
@@ -1461,13 +1502,13 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
 
         if (results.isEmpty()) {
             TheoreticalCompounds compound = tcf.construct(
-                    null, 0d, 0d, null, "", false, "", true);
+                    null, 0d, 0d, null, "", false, "", true, hypothesisId);
             listToBeOrdered.add(compound);
             compoundGroup.addCompound(compound);
         } else {
-            addToTheoreticalCompoundList(listToBeOrdered,
+            hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
                     results, 0d, 0d,
-                    tcf, null, "", false, "", compoundGroup, true);
+                    tcf, null, "", false, "", compoundGroup, true, hypothesisId);
         }
         Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
         theoreticalCompoundList.addAll(listToBeOrdered);
@@ -1503,13 +1544,14 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
             results = q1forGen.getResultList();
             if (results.isEmpty()) {
                 TheoreticalCompounds compound = tcfForGen.construct(
-                        null, 0d, 0d, null, "", false, "", true);
+                        null, 0d, 0d, null, "", false, "", true, hypothesisId);
+                hypothesisId++;
                 listToBeOrdered.add(compound);
                 compoundGroup.addCompound(compound);
             } else {
-                addToTheoreticalCompoundList(listToBeOrdered,
+                hypothesisId = addToTheoreticalCompoundList(listToBeOrdered,
                         results, 0d, 0d,
-                        tcfForGen, null, "", false, "", compoundGroup, true);
+                        tcfForGen, null, "", false, "", compoundGroup, true, hypothesisId);
             }
             Collections.sort(listToBeOrdered, new TheoreticalCompoundsComparer());
             theoreticalCompoundList.addAll(listToBeOrdered);
@@ -1533,6 +1575,7 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
         return theoreticalCompoundList;
     }
 
+    // Methods for Oxidized compounds
     /**
      * returns the oxidized compound looking into possible oxidations formed. It
      * searches for the FA masses (queryFattyAcidMasses). Possible oxidations
@@ -2010,6 +2053,371 @@ public class TheoreticalCompoundsFacade extends AbstractFacade<TheoreticalCompou
                     FACompoundFactory, querymzFattyAcidMass, massToSearchForOxFA, "");
         }
         return FAcompound;
+    }
+
+    // CE Methods
+    /**
+     * returns a list of compounds from CEMS from the databases according to the
+     * number of the mass and the tolerance, the relative migration time and the
+     * tolerance and the ionization mode
+     *
+     * @param mzs , List of experimental mzs
+     * @param RMTs RMT of the compounds
+     * @param toleranceForMZMode tolerance set in ppm or mDa
+     * @param toleranceForMZ, the tolerance which user wants to find compounds
+     * @param toleranceForRMTMode
+     * @param toleranceForRMT
+     * @param massesMode 0 neutral; 1 mzs
+     * @param ionMode Ionization mode 0 neutral; 1 positive; 2 negative
+     * @param adducts Possible adducts
+     * @param chemAlphabet indicates which atoms are included for the compound
+     * search CHNOPS: 0; CHNOPSD: 1; CHNOPSCL: 2; CHNOPSCLD: 3; ALL: 4; ALLD: 5
+     * @return a List of CEMSCompounds
+     */
+    public List<CEMS.CEMSFeature> findCEMSAnnotations(
+            List<Double> mzs,
+            List<Double> RMTs,
+            String toleranceForMZMode,
+            Double toleranceForMZ,
+            String toleranceForRMTMode,
+            Double toleranceForRMT,
+            int massesMode,
+            int ionMode,
+            List<String> adducts,
+            int chemAlphabet) {
+        List<CEMSFeature> CEMSFeatures = new NoDuplicatesList();
+        //System.out.println("Adducts " + adducts);
+        //System.out.println("QUERY MASSES -> " + masses);
+
+        // Choose the adducts to perform the search
+        Map<String, String> provisionalMap;
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(ionMode);
+        adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
+        /*
+        System.out.println("PROVISIONALMAP IN CE MS UNTARGETED SEARCH: " + provisionalMap);
+        System.out.println("ADDUCTS IN CE MS UNTARGETED SEARCH: " + adducts);
+         */
+        List ceAnnotations;
+        Double massToSearch;
+
+// Create the common part of the query (Chemical Alphabet, only the mass changes)
+        String aliasTablePrecursorIons = "ncce";
+        String aliasSubTablePrecursorIons = aliasTablePrecursorIons + ".nc";
+        String startQueryPrecursorIons = "SELECT " + aliasTablePrecursorIons
+                + " FROM NewCompoundsCE " + aliasTablePrecursorIons;
+        String middleQueryPrecursorIons;
+        String finalQueryPrecursorIons;
+
+        String aliasTableProductIons = "cepi";
+        String aliasSubTableProductIons = aliasTableProductIons + ".ncce";
+        String startQueryProductIons = "SELECT " + aliasTableProductIons
+                + " FROM CEProductIon " + aliasTableProductIons;
+        String middleQueryProductIons;
+        String finalQueryProductIons;
+        String transformationType = "'Fragment'";
+        startQueryProductIons = QueryConstructor.addFilterTransformationTypeJPA(
+                aliasTableProductIons, startQueryProductIons, transformationType);
+
+// Create the list for ordering the compounds
+        List<CEMSCompound> CEMSAnnotationsForOneAdduct;
+        List<CEMSProductIon> CEMSAnnotationsProductIons;
+        List<CEMSCompoundsGroupByAdduct> ListannotationsGroupByAdduct;
+        for (int i = 0; i < mzs.size(); i++) {
+            Double inputMass = mzs.get(i);
+            Double RMT = RMTs.get(i);
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
+            //System.out.println("\n Compound: " + inputMass + " added simple charged");
+            ListannotationsGroupByAdduct = new NoDuplicatesList();
+            middleQueryPrecursorIons = QueryConstructor.addFilterRMTSCEJPA(aliasTablePrecursorIons,
+                    startQueryPrecursorIons, RMT, toleranceForRMTMode, toleranceForRMT);
+            for (String adduct : adducts) {
+                CEMSAnnotationsForOneAdduct = new NoDuplicatesList<>();
+                Double adductValue;
+                String stringAdductValue;
+                stringAdductValue = provisionalMap.get(adduct);
+                adductValue = Double.parseDouble(stringAdductValue);
+                //System.out.println("ADDUCT: " + s);
+                massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, adduct, adductValue);
+
+                finalQueryPrecursorIons = QueryConstructor.addFilterMassesJPA(aliasSubTablePrecursorIons,
+                        middleQueryPrecursorIons, massToSearch, toleranceForMZMode, toleranceForMZ);
+                finalQueryPrecursorIons = QueryConstructor.addOrderByRMTJPA(aliasTablePrecursorIons,
+                        finalQueryPrecursorIons, RMT, toleranceForRMTMode, toleranceForRMT);
+                // Insert compounds
+                Query q1;
+
+                q1 = getEntityManager().createQuery(finalQueryPrecursorIons, NewCompoundsCE.class);
+                System.out.println("finalQueryPrecursorIons: " + finalQueryPrecursorIons);
+                ceAnnotations = q1.getResultList();
+
+                if (ceAnnotations.isEmpty()) {
+                } else {
+                    Iterator<NewCompoundsCE> it = ceAnnotations.iterator();
+                    Map<Double, Boolean> mapFragments = new LinkedHashMap<>();
+                    while (it.hasNext()) {
+                        NewCompoundsCE ncce = (NewCompoundsCE) it.next();
+                        CEMSCompound ceMScompound = new CEMSCompound(ncce,
+                                calculatePPMIncrement(massToSearch, ncce.getNc().getMass()),
+                                calculateRMTError(RMT, ncce.getRMT()), mapFragments);
+                        //0);
+                        CEMSAnnotationsForOneAdduct.add(ceMScompound);
+                    }
+                }
+                Collections.sort(CEMSAnnotationsForOneAdduct, new CEMSCompoundComparer());
+                CEMSCompoundsGroupByAdduct annotationsGroupByAdduct
+                        = new CEMSCompoundsGroupByAdduct(adduct, CEMSAnnotationsForOneAdduct);
+                ListannotationsGroupByAdduct.add(annotationsGroupByAdduct);
+            }
+
+            CEMSAnnotationsProductIons = new NoDuplicatesList<>();
+
+            // Query for product ions (they do not have adducts since they contain 
+            // already this information
+            // Start search of product ions
+            middleQueryProductIons = QueryConstructor.addFilterRMTSCEJPA(aliasSubTableProductIons,
+                    startQueryProductIons, RMT, toleranceForRMTMode, toleranceForRMT);
+            finalQueryProductIons = QueryConstructor.addFilterMassesCEProductIonJPA(
+                    aliasTableProductIons, middleQueryProductIons, mzInputMass,
+                    toleranceForMZMode, toleranceForMZ);
+            finalQueryProductIons = QueryConstructor.addOrderByRMTJPA(aliasSubTableProductIons,
+                    finalQueryProductIons, RMT, toleranceForRMTMode, toleranceForRMT);
+            // Insert compounds
+            Query q1;
+            q1 = getEntityManager().createQuery(finalQueryProductIons, CEProductIon.class);
+            ceAnnotations = q1.getResultList();
+
+            if (ceAnnotations.isEmpty()) {
+            } else {
+                Iterator<CEProductIon> it = ceAnnotations.iterator();
+                Map<Double, Boolean> mapFragments = new LinkedHashMap<>();
+                while (it.hasNext()) {
+                    CEProductIon cepi = (CEProductIon) it.next();
+                    CEMSProductIon ceMSProductIon = new CEMSProductIon(cepi,
+                            calculatePPMIncrement(mzInputMass, cepi.getMz()),
+                            calculateRMTError(RMT, cepi.getNcce().getRMT()), mapFragments);
+                    //0);
+                    CEMSAnnotationsProductIons.add(ceMSProductIon);
+                }
+            }
+            Collections.sort(CEMSAnnotationsProductIons, new CEMSProductIonComparer());
+            CEMSFeature cemsFeature = new CEMSFeature(inputMass, 0d, RMT, new HashMap(), ionMode,
+                    ListannotationsGroupByAdduct, CEMSAnnotationsProductIons);
+            CEMSFeatures.add(cemsFeature);
+        }
+        return CEMSFeatures;
+    }
+
+    /**
+     * returns a list of compounds from CEMS from the databases according to the
+     * number of the mass and the tolerance, the relative migration time and the
+     * tolerance, the ionization mode and the fragmentation
+     *
+     * @param mzs , List of experimental mzs
+     * @param RMTs RMT of the compounds
+     * @param fragments
+     * @param toleranceForMZMode tolerance set in ppm or mDa
+     * @param toleranceForMZ, the tolerance which user wants to find compounds
+     * @param toleranceForRMTMode
+     * @param toleranceForRMT
+     * @param massesMode 0 neutral; 1 mzs
+     * @param ionMode Ionization mode 0 neutral; 1 positive; 2 negative
+     * @param adducts Possible adducts
+     * @param chemAlphabet indicates which atoms are included for the compound
+     * search CHNOPS: 0; CHNOPSD: 1; CHNOPSCL: 2; CHNOPSCLD: 3; ALL: 4; ALLD: 5
+     * @return a List of CEMSCompounds
+     */
+    public List<CEMS.CEMSFeature> findTargetedCEMSAnnotations(
+            List<Double> mzs,
+            List<Double> RMTs,
+            List<Map<Double, Double>> fragments,
+            String toleranceForMZMode,
+            Double toleranceForMZ,
+            String toleranceForRMTMode,
+            Double toleranceForRMT,
+            int massesMode,
+            int ionMode,
+            List<String> adducts,
+            int chemAlphabet) {
+        List<CEMSFeature> CEMSFeatures = new NoDuplicatesList();
+        //System.out.println("Adducts " + adducts);
+        //System.out.println("QUERY MASSES -> " + masses);
+
+        // Choose the adducts to perform the search
+        Map<String, String> provisionalMap;
+        provisionalMap = AdductProcessing.chooseprovisionalMapAdducts(ionMode);
+        adducts = AdductProcessing.chooseAdducts(ionMode, provisionalMap, adducts);
+        /*
+        System.out.println("PROVISIONALMAP CE MS TARGETED SEARCH: " + provisionalMap);
+        System.out.println("ADDUCTS CE MS TARGETED SEARCH: " + adducts);
+         */
+        List ceAnnotations;
+        Double massToSearch;
+
+// Create the common part of the query (Chemical Alphabet, only the mass changes)
+        String aliasTablePrecursorIons = "ncce";
+        String aliasSubTablePrecursorIons = aliasTablePrecursorIons + ".nc";
+        String startQueryPrecursorIons = "SELECT " + aliasTablePrecursorIons
+                + " FROM NewCompoundsCE " + aliasTablePrecursorIons;
+        String middleQueryPrecursorIons;
+        String finalQueryPrecursorIons;
+
+        String aliasTableProductIons = "cepi";
+        String aliasSubTableProductIons = aliasTableProductIons + ".ncce";
+        String startQueryProductIons = "SELECT " + aliasTableProductIons
+                + " FROM CEProductIon " + aliasTableProductIons;
+        String middleQueryProductIons;
+        String finalQueryProductIons;
+        String transformationType = "'Fragment'";
+        startQueryProductIons = QueryConstructor.addFilterTransformationTypeJPA(
+                aliasTableProductIons, startQueryProductIons, transformationType);
+        List<CEMSCompound> CEMSAnnotationsForOneAdduct;
+        List<CEMSProductIon> CEMSAnnotationsProductIons;
+        List<CEMSCompoundsGroupByAdduct> ListannotationsGroupByAdduct;
+        for (int i = 0; i < mzs.size(); i++) {
+            Double inputMass = mzs.get(i);
+            Double RMT = RMTs.get(i);
+            Map<Double, Double> fragmentsForMZ = fragments.get(i);
+            Double mzInputMass = Utilities.calculateMZFromNeutralMass(inputMass, massesMode, ionMode);
+            //System.out.println("\n Compound: " + inputMass + " added simple charged");
+            ListannotationsGroupByAdduct = new NoDuplicatesList();
+            middleQueryPrecursorIons = QueryConstructor.addFilterRMTSCEJPA(aliasTablePrecursorIons,
+                    startQueryPrecursorIons, RMT, toleranceForRMTMode, toleranceForRMT);
+            for (String adduct : adducts) {
+                CEMSAnnotationsForOneAdduct = new NoDuplicatesList<>();
+                Double adductValue;
+                String stringAdductValue;
+                stringAdductValue = provisionalMap.get(adduct);
+                adductValue = Double.parseDouble(stringAdductValue);
+                //System.out.println("ADDUCT: " + s);
+                massToSearch = utilities.AdductProcessing.getMassToSearch(mzInputMass, adduct, adductValue);
+
+                finalQueryPrecursorIons = QueryConstructor.addFilterMassesJPA(aliasSubTablePrecursorIons,
+                        middleQueryPrecursorIons, massToSearch, toleranceForMZMode, toleranceForMZ);
+                finalQueryPrecursorIons = QueryConstructor.addOrderByRMTJPA(aliasTablePrecursorIons,
+                        finalQueryPrecursorIons, RMT, toleranceForRMTMode, toleranceForRMT);
+                // Insert compounds
+                Query q1;
+
+                // Test for JPA left join
+                //finalQuery = "SELECT ncce FROM NewCompoundsCE ncce WHERE (ncce.theoreticalMZ >= 76.03 and ncce.theoreticalMZ <= 76.08)";
+                // + "inner join NewCompounds nc on ncce.compoundId=nc.compoundId where and (nc.mass >= 76.03 and nc.mass <= 76.08)";
+                //System.out.println("Final query: " + finalQuery);
+                q1 = getEntityManager().createQuery(finalQueryPrecursorIons, NewCompoundsCE.class);
+                // System.out.println("finalQueryPrecursorIons in Targeted: " + finalQueryPrecursorIons);
+                ceAnnotations = q1.getResultList();
+
+                if (ceAnnotations.isEmpty()) {
+                } else {
+                    Iterator<NewCompoundsCE> it = ceAnnotations.iterator();
+                    while (it.hasNext()) {
+                        NewCompoundsCE ncce = (NewCompoundsCE) it.next();
+                        Map<Double, Boolean> mapFragments = findFragmentsCEMS(ncce.getCemsId(),
+                                fragmentsForMZ, toleranceForMZMode, toleranceForMZ, massesMode, ionMode, chemAlphabet);
+                        CEMSCompound ceMScompound = new CEMSCompound(ncce,
+                                calculatePPMIncrement(massToSearch, ncce.getNc().getMass()),
+                                calculateRMTError(RMT, ncce.getRMT()), mapFragments);
+                        CEMSAnnotationsForOneAdduct.add(ceMScompound);
+                    }
+                }
+                Collections.sort(CEMSAnnotationsForOneAdduct, new CEMSCompoundComparer());
+                CEMSCompoundsGroupByAdduct annotationsGroupByAdduct
+                        = new CEMSCompoundsGroupByAdduct(adduct, CEMSAnnotationsForOneAdduct);
+                ListannotationsGroupByAdduct.add(annotationsGroupByAdduct);
+            }
+
+            CEMSAnnotationsProductIons = new NoDuplicatesList<>();
+
+            // Query for product ions (they do not have adducts since they contain 
+            // already this information
+            // Start search of product ions
+            middleQueryPrecursorIons = QueryConstructor.addFilterRMTSCEJPA(aliasSubTableProductIons,
+                    startQueryProductIons, RMT, toleranceForRMTMode, toleranceForRMT);
+            finalQueryProductIons = QueryConstructor.addFilterMassesCEProductIonJPA(
+                    aliasTableProductIons, middleQueryPrecursorIons, mzInputMass, toleranceForMZMode, toleranceForMZ);
+            finalQueryProductIons = QueryConstructor.addOrderByRMTJPA(aliasSubTableProductIons,
+                    finalQueryProductIons, RMT, toleranceForRMTMode, toleranceForRMT);
+            // System.out.println("finalQueryProductIons in Targeted: " + finalQueryProductIons);
+            // Insert compounds
+            Query q1;
+
+            q1 = getEntityManager().createQuery(finalQueryProductIons, CEProductIon.class);
+            ceAnnotations = q1.getResultList();
+
+            if (ceAnnotations.isEmpty()) {
+            } else {
+                Iterator<CEProductIon> it = ceAnnotations.iterator();
+                while (it.hasNext()) {
+                    CEProductIon cepi = (CEProductIon) it.next();
+                    Map<Double, Boolean> mapFragments = findFragmentsCEMS(cepi.getNcce().getCemsId(),
+                            fragmentsForMZ, toleranceForMZMode, toleranceForMZ, massesMode, ionMode, chemAlphabet);
+                    CEMSProductIon ceMSProductIon = new CEMSProductIon(cepi,
+                            calculatePPMIncrement(mzInputMass, cepi.getMz()),
+                            calculateRMTError(RMT, cepi.getNcce().getRMT()), mapFragments);
+                    CEMSAnnotationsProductIons.add(ceMSProductIon);
+                }
+            }
+            Collections.sort(CEMSAnnotationsProductIons, new CEMSProductIonComparer());
+            CEMSFeature cemsFeature = new CEMSFeature(inputMass, 0d, RMT, fragmentsForMZ, ionMode,
+                    ListannotationsGroupByAdduct, CEMSAnnotationsProductIons);
+            CEMSFeatures.add(cemsFeature);
+        }
+        return CEMSFeatures;
+    }
+
+    /**
+     * returns a list of compounds from CEMS from the databases according to the
+     * number of the mass and the tolerance, the relative migration time and the
+     * tolerance, the ionization mode and the fragmentation
+     *
+     * @param ceMSId
+     * @param fragments
+     * @param toleranceForMZMode tolerance set in ppm or mDa
+     * @param toleranceForMZ, the tolerance which user wants to find compounds
+     * @param massesMode 0 neutral; 1 mzs
+     * @param ionMode Ionization mode 0 neutral; 1 positive; 2 negative
+     * @param chemAlphabet indicates which atoms are included for the compound
+     * search CHNOPS: 0; CHNOPSD: 1; CHNOPSCL: 2; CHNOPSCLD: 3; ALL: 4; ALLD: 5
+     * @return a List of CEMSCompounds
+     */
+    public Map<Double, Boolean> findFragmentsCEMS(
+            int ceMSId,
+            Map<Double, Double> fragments,
+            String toleranceForMZMode,
+            Double toleranceForMZ,
+            int massesMode,
+            int ionMode,
+            int chemAlphabet) {
+        Map<Double, Boolean> fragmentsFoundMap = new HashMap();
+
+        String aliasTableProductIons = "cepi";
+        String aliasSubTableProductIons = aliasTableProductIons + ".ncce";
+        String startQueryProductIons = "SELECT " + aliasTableProductIons
+                + " FROM CEProductIon " + aliasTableProductIons;
+        String finalQueryProductIons;
+
+        startQueryProductIons = QueryConstructor.addFilterCEMSIdProductIonJPA(
+                aliasSubTableProductIons, startQueryProductIons, ceMSId);
+        List ceAnnotations;
+        for (Double fragmentMZ : fragments.keySet()) {
+            finalQueryProductIons = QueryConstructor.addFilterMassesCEProductIonJPA(
+                    aliasTableProductIons, startQueryProductIons, fragmentMZ, toleranceForMZMode, toleranceForMZ);
+            // Insert compounds
+            Query q1;
+
+            // Test for JPA left join
+            //finalQuery = "SELECT ncce FROM NewCompoundsCE ncce WHERE (ncce.theoreticalMZ >= 76.03 and ncce.mass <= 76.08)";
+            // + "inner join NewCompounds nc on ncce.compoundId=nc.compoundId where and (nc.mass >= 76.03 and nc.mass <= 76.08)";
+            System.out.println("Final query: " + finalQueryProductIons);
+            q1 = getEntityManager().createQuery(finalQueryProductIons, CEProductIon.class);
+            ceAnnotations = q1.getResultList();
+
+            if (ceAnnotations.isEmpty()) {
+                fragmentsFoundMap.put(fragmentMZ, false);
+            } else {
+                fragmentsFoundMap.put(fragmentMZ, true);
+            }
+        }
+        return fragmentsFoundMap;
     }
 
 }

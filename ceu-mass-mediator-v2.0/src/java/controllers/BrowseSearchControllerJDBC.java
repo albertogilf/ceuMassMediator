@@ -9,14 +9,14 @@
  */
 package controllers;
 
-import compound.Compound;
+import compound.CMMCompound;
 import exporters.NewDataModelCompoundExcelExporter;
 import facades.MSFacade;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -25,11 +25,11 @@ import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
-import utilities.Constantes;
-import static utilities.Constantes.DEMOFORMULA;
-import static utilities.Constantes.DEMONAME;
+import static utilities.Constants.DEMOFORMULA;
+import static utilities.Constants.DEMONAME;
 import utilities.DataFromInterfacesUtilities;
 import static utilities.DataFromInterfacesUtilities.MAPDATABASES;
+import utilities.Constants;
 
 /**
  * Bean to perform a browse search in CMM TODO
@@ -57,7 +57,7 @@ public class BrowseSearchControllerJDBC implements Serializable {
     private String metabolitesType;
     private final List<SelectItem> metabolitesTypecandidates;
 
-    private List<Compound> items;
+    private List<CMMCompound> items;
     
     private final facades.MSFacade msFacade;
 
@@ -185,10 +185,12 @@ public class BrowseSearchControllerJDBC implements Serializable {
      */
     public void exportToExcel() {
         if (this.items != null && !this.items.isEmpty()) {
-            NewDataModelCompoundExcelExporter compoundExcelExporter = new NewDataModelCompoundExcelExporter();
-            // Compounds come from a browse search so they does not contain information related to LCMS. 
-            // so the second parameter is 2
-            compoundExcelExporter.generateWholeExcelCompound(items, 2);
+            int flag = 0;
+            // excel from CMM Compound Browse Search
+            NewDataModelCompoundExcelExporter compoundExcelExporter = 
+                    new NewDataModelCompoundExcelExporter(flag);
+            
+            compoundExcelExporter.generateWholeExcelCompound(items, flag);
         }
     }
 
@@ -225,7 +227,7 @@ public class BrowseSearchControllerJDBC implements Serializable {
         return items.size() > 0;
     }
 
-    public List<Compound> getItems() {
+    public List<CMMCompound> getItems() {
         return items;
     }
 
@@ -260,27 +262,27 @@ public class BrowseSearchControllerJDBC implements Serializable {
     }
 
     public String getKeggWebPage() {
-        return Constantes.WEB_KEGG;
+        return Constants.WEB_KEGG;
     }
 
     public String getHMDBWebPage() {
-        return Constantes.WEB_HMDB;
+        return Constants.WEB_HMDB;
     }
 
     public String getMetlinWebPage() {
-        return Constantes.WEB_METLIN;
+        return Constants.WEB_METLIN;
     }
 
     public String getLMWebPage() {
-        return Constantes.WEB_LIPID_MAPS;
+        return Constants.WEB_LIPID_MAPS;
     }
 
     public String getPCWebPage() {
-        return Constantes.WEB_PUBCHEMICHAL;
+        return Constants.WEB_PUBCHEMICHAL;
     }
 
     public String getMINEWebPage() {
-        return Constantes.WEB_MINE;
+        return Constants.WEB_MINE;
     }
     
     public String getMessageNotFound() {
@@ -300,5 +302,10 @@ public class BrowseSearchControllerJDBC implements Serializable {
         }
         return messageNotFound;
     }
-
+    
+    @PreDestroy
+    public void destroy() {
+        //System.out.println("DISCONNECTING MS BROWSE SEARCH CONTROLLER");
+        this.msFacade.disconnect();
+    }
 }

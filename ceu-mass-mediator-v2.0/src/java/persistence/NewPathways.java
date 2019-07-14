@@ -14,22 +14,23 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import static utilities.Constantes.WEB_PATHWAY_KEGG;
+import static utilities.Constants.WEB_PATHWAY_KEGG;
 
- /**
-   * JPA definition for pathways
-   * @author: Alberto Gil de la Fuente. San Pablo-CEU
-   * @version: 3.1, 17/02/2016
-   */
-
+/**
+ * JPA definition for pathways
+ *
+ * @author: Alberto Gil de la Fuente. San Pablo-CEU
+ * @version: 3.1, 17/02/2016
+ */
 @Entity(name = "NewPathways")
 @Table(name = "pathways")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "NewPathways.findAll", query = "SELECT np FROM NewPathways np"),
+    @NamedQuery(name = "NewPathways.findAll", query = "SELECT np FROM NewPathways np")
+    ,
     @NamedQuery(name = "NewPathways.findByPathwayId", query = "SELECT np FROM NewPathways np WHERE np.pathwayId = :pathwayId")})
 public class NewPathways implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -46,7 +47,7 @@ public class NewPathways implements Serializable {
     @Column(name = "pathway_name")
     private String pathwayName;
     // This relation ManyToMany it is not being used in this class..
-    
+
     @ManyToMany(mappedBy = "newPathwaysCollection")
     private Collection<NewCompounds> newCompoundsCollection;
 
@@ -57,7 +58,8 @@ public class NewPathways implements Serializable {
     }
 
     /**
-     * constructor 
+     * constructor
+     *
      * @param pathwayId
      */
     public NewPathways(int pathwayId) {
@@ -66,6 +68,7 @@ public class NewPathways implements Serializable {
 
     /**
      * Constructor
+     *
      * @param pathwayId
      * @param pathwayMap
      */
@@ -73,14 +76,15 @@ public class NewPathways implements Serializable {
         this.pathwayId = pathwayId;
         this.pathwayMap = pathwayMap;
     }
-    
+
     /**
      * Constructor
+     *
      * @param pathwayId
      * @param pathwayMap
      * @param pathwayName
      */
-    public NewPathways(int pathwayId, String pathwayMap,String pathwayName) {
+    public NewPathways(int pathwayId, String pathwayMap, String pathwayName) {
         this.pathwayId = pathwayId;
         this.pathwayMap = pathwayMap;
         this.pathwayName = pathwayName;
@@ -88,13 +92,17 @@ public class NewPathways implements Serializable {
 
     /**
      * Obtains the webpage for the URL in Excel File
+     *
      * @return
      */
-    public String obtainPathwayWebPage()
-    {
-        return WEB_PATHWAY_KEGG+getPathwayMap();
+    public String obtainPathwayWebPage() {
+        if (this.pathwayId > 0 && !this.pathwayMap.equals("")) {
+            return WEB_PATHWAY_KEGG + getPathwayMap();
+        } else {
+            return "";
+        }
     }
-    
+
     /**
      * @return the PathwayId of the compound
      */
@@ -104,13 +112,13 @@ public class NewPathways implements Serializable {
 
     /**
      * Sets the pathway Id
+     *
      * @param pathwayId
      */
     public void setPathwayId(int pathwayId) {
         this.pathwayId = pathwayId;
     }
-    
-    
+
     /**
      *
      * @return the pathway Name
@@ -121,6 +129,7 @@ public class NewPathways implements Serializable {
 
     /**
      * Sets the pathway name of a compound
+     *
      * @param pathwayMap
      */
     public void setPathwayMap(String pathwayMap) {
@@ -137,6 +146,7 @@ public class NewPathways implements Serializable {
 
     /**
      * Sets the pathway name of a compound
+     *
      * @param pathwayName
      */
     public void setPathwayName(String pathwayName) {
@@ -147,7 +157,6 @@ public class NewPathways implements Serializable {
      *
      * @return the collection of Compounds related to a Pathway
      */
-    
     @XmlTransient
     public Collection<NewCompounds> getNewCompoundsCollection() {
         return this.newCompoundsCollection;
@@ -155,11 +164,11 @@ public class NewPathways implements Serializable {
 
     /**
      * Set the relations between compounds and pathways
+     *
      * @param newCompoundsCollection
      */
-    
     public void setKeggCompoundsCollection(Collection<NewCompounds> newCompoundsCollection) {
         this.newCompoundsCollection = newCompoundsCollection;
     }
-    
+
 }

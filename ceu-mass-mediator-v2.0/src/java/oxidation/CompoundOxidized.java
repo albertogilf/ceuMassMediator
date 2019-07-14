@@ -9,7 +9,7 @@
  */
 package oxidation;
 
-import compound.Compound;
+import compound.CMMCompound;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -61,13 +61,13 @@ public class CompoundOxidized implements Serializable {
     private final List<Double> neutralLossesPositiveMode;
     private final List<Double> neutralLossesNegativeMode;
 
-    public List<Compound> oxidizedAnnotations;
-    private final List<Compound> nonOxidizedAnnotations;
+    public List<CMMCompound> oxidizedAnnotations;
+    private final List<CMMCompound> nonOxidizedAnnotations;
 
     private boolean boolShowNonOxidizedAnnotations;
 
     /**
-     * Constructor of Oxidized Compound. It contains experimental masses of both
+     * Constructor of Oxidized CMMCompound. It contains experimental masses of both
      * fatty acids but also of the precursor (parent ion).
      *
      * @param oxidizedFAEM m/z of the oxidized FA
@@ -264,7 +264,7 @@ public class CompoundOxidized implements Serializable {
 
     public String getStringMolecularWeight() {
         // Other way to deal with decimals 
-        return String.format("%.4f", this.theoreticalPIMolecularWeight);
+        return String.format("%.4f", this.theoreticalPIMolecularWeight).replace(",", ".");
         // return new DecimalFormat(".#####").format(this.theoreticalPIMolecularWeight);
     }
 
@@ -274,12 +274,15 @@ public class CompoundOxidized implements Serializable {
 
     public String getTitleMessage() {
         String titleMessage;
-        titleMessage = "Oxidized compound found for oxidized FA: " + String.format("%.4f", this.oxidizedFAEM) + ", ";
+        titleMessage = "Oxidized compound found for oxidized FA: " + 
+                String.format("%.4f", this.oxidizedFAEM).replace(",", ".") + ", ";
         if (this.nonOxidizedFAEM > 0d) {
-            titleMessage = titleMessage + "Non-oxidized FA: " + String.format("%.4f", this.nonOxidizedFAEM) + ", ";
+            titleMessage = titleMessage + "Non-oxidized FA: " 
+                    + String.format("%.4f", this.nonOxidizedFAEM).replace(",", ".") + ", ";
         }
         if (this.parentIonEM > 0d) {
-            titleMessage = titleMessage + "parent ion: " + String.format("%.4f", this.parentIonEM) + ", ";
+            titleMessage = titleMessage + "parent ion: " 
+                    + String.format("%.4f", this.parentIonEM).replace(",", ".") + ", ";
             titleMessage = titleMessage + "adduct: " + this.adductType + " and ";
             titleMessage = titleMessage + "oxidation: " + this.oxidationType;
         }
@@ -326,7 +329,7 @@ public class CompoundOxidized implements Serializable {
         return !this.neutralLossesNegativeMode.isEmpty();
     }
 
-    public List<Compound> getOxidizedAnnotations() {
+    public List<CMMCompound> getOxidizedAnnotations() {
         return this.oxidizedAnnotations;
     }
 
@@ -338,7 +341,7 @@ public class CompoundOxidized implements Serializable {
         
     }
 
-    public List<Compound> getNonOxidizedAnnotations() {
+    public List<CMMCompound> getNonOxidizedAnnotations() {
         if (!isBoolShowNonOxidizedAnnotations()) {
             return new LinkedList();
         } else {
@@ -366,7 +369,7 @@ public class CompoundOxidized implements Serializable {
      *
      * @param oxidizedAnnotation
      */
-    public void addOxidizedAnnotation(Compound oxidizedAnnotation) {
+    public void addOxidizedAnnotation(CMMCompound oxidizedAnnotation) {
         this.oxidizedAnnotations.add(oxidizedAnnotation);
     }
 
@@ -375,12 +378,12 @@ public class CompoundOxidized implements Serializable {
      *
      * @param nonOxidizedAnnotation
      */
-    public void addNonOxidizedCompoundsGroupByMass(Compound nonOxidizedAnnotation) {
+    public void addNonOxidizedCompoundsGroupByMass(CMMCompound nonOxidizedAnnotation) {
         this.nonOxidizedAnnotations.add(nonOxidizedAnnotation);
     }
 
     public String roundToFourDecimals(Double doubleToRound) {
-        return String.format("%.4f", doubleToRound);
+        return String.format("%.4f", doubleToRound).replace(",", ".");
         // return new DecimalFormat(".#####").format(doubleToRound);
     }
 }

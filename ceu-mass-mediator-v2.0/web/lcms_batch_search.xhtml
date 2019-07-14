@@ -12,7 +12,8 @@
         </ui:define>
 
         <ui:param name="onloadbody" value="#{LCMSController.clearForm()}"/>
-
+        <ui:param name="idbody" value="searchbody"/>
+        
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Batch Simple Search</div>
@@ -23,7 +24,7 @@
                 <h:form id="mainsearch" enctype="multipart/form-data" prependId="false">
                     <p:focus for="inputmasses"/>
                     <h:commandButton id="dummy" actionListener="#{LCMSController.submitLCMSSimpleSearch()}" 
-                                     action="/theoreticalCompounds/lcms_list" style="display:none;"
+                                     action="/lcms_list?faces-redirect=true" style="display:none;"
                                      />
                     <p:clock rendered="false"/>
                     <div id="highlights" class="container whiteborder">
@@ -195,7 +196,7 @@
                                     id="submit" 
                                     value="submit compounds" 
                                     actionListener="#{LCMSController.submitLCMSSimpleSearch()}" 
-                                    action="/theoreticalCompounds/lcms_list"
+                                    action="/lcms_list?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>

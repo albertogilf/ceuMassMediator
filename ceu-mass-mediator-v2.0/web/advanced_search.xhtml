@@ -12,7 +12,8 @@
         </ui:define>
 
         <ui:param name="onloadbody" value="#{theoreticalCompoundsController.clearForm()}"/>
-        
+        <ui:param name="idbody" value="searchbody"/>
+
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Advanced Search</div>
@@ -22,7 +23,7 @@
                 <h:form id="mainsearch" prependId="false">
                     <p:focus for="inputmasses"/>
                     <h:commandButton id="dummy" actionListener="#{theoreticalCompoundsController.submitCompoundsAdvanced()}" 
-                                     action="/theoreticalCompounds/Advancedlist" style="display:none;"
+                                     action="Advancedlist?faces-redirect=true" style="display:none;"
                                      />
                     <div id="highlights" class="container whiteborder">
 
@@ -81,7 +82,7 @@
 
                             <p:row>
                                 <label for="rtimes" class="tooltip">Retention Time:
-                                <span class="tooltiptext">any unit accepted (see manual)</span>
+                                    <span class="tooltiptext">any unit accepted (see manual)</span>
                                 </label>
                                 <p:inputText id="rtimes" size="2" maxlength="10"  
                                              value="#{theoreticalCompoundsController.queryInputRetentionTimes}"
@@ -116,7 +117,7 @@
                                     <span class="tooltiptext">Search restricted to selected elements<br/>
                                     </span>
                                 </label>
-                                
+
                                 <p:selectOneListbox id="chemicalalphabet" 
                                                     value="#{theoreticalCompoundsController.chemAlphabet}"
                                                     style="width:100%">
@@ -140,7 +141,7 @@
                                     <span class="tooltiptext">Modifiers added to the mobile phase<br/>
                                     </span>
                                 </label>
-                                
+
                                 <p:selectOneListbox id="modifiersmenu" 
                                                     value="#{theoreticalCompoundsController.modifier}" 
                                                     filter="false" 
@@ -268,7 +269,7 @@
                                     id="submit" 
                                     value="submit compounds" 
                                     actionListener="#{theoreticalCompoundsController.submitCompoundsAdvanced()}" 
-                                    action="/theoreticalCompounds/Advancedlist"
+                                    action="Advancedlist?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>

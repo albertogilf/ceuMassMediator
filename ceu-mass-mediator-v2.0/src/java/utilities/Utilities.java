@@ -7,6 +7,7 @@ package utilities;
 
 import java.util.List;
 import oxidation.CompoundFA;
+import persistence.CEProductIon;
 import persistence.oxidizedTheoreticalCompound.FACompound;
 import static utilities.ConstantesForOxidation.H_WEIGHT;
 import static utilities.ConstantesForOxidation.PROTON_WEIGHT;
@@ -38,15 +39,15 @@ public final class Utilities {
     public static Double calculateMZFromNeutralMass(Double inputMass, int massesMode, int ionizationMode) {
         Double mzInputMass = inputMass;
         if (massesMode == 0 && ionizationMode == 1) {
-            mzInputMass = inputMass + Constantes.PROTON_WEIGHT;
+            mzInputMass = inputMass + Constants.PROTON_WEIGHT;
         } else if (massesMode == 0 && ionizationMode == 2) {
-            mzInputMass = inputMass - Constantes.PROTON_WEIGHT;
+            mzInputMass = inputMass - Constants.PROTON_WEIGHT;
         }
         return mzInputMass;
     }
 
     /**
-     * Set the ppm difference between meassured mass and theoretical mass
+     * Returns the ppm difference between meassured mass and theoretical mass
      *
      * @param measuredMass Mass meassured by MS
      * @param theoreticalMass Theoretical mass of the compound
@@ -56,6 +57,19 @@ public final class Utilities {
         ppmIncrement = (int) Math.round(Math.abs((measuredMass - theoreticalMass) * 1000000
                 / theoreticalMass));
         return ppmIncrement;
+    }
+
+    /**
+     * Set the ppm difference between meassured mass and theoretical mass
+     *
+     * @param experimentalRMT RMT in CEMS experiment
+     * @param theoreticalRMT RMT in CEMS experiment
+     * @return 
+     */
+    public static Integer calculateRMTError(Double experimentalRMT, Double theoreticalRMT) {
+        int RMTError;
+        RMTError = (int) Math.round(Math.abs((experimentalRMT - theoreticalRMT)/theoreticalRMT * 100));
+        return RMTError;
     }
 
     /**
@@ -316,8 +330,7 @@ public final class Utilities {
      * @return
      */
     public static Double calculateFAEMFromPIandOtherFAEM(Double ParentIonNeutralMass, Double FAEM1) {
-        if(ParentIonNeutralMass == null || FAEM1 == null)
-        {
+        if (ParentIonNeutralMass == null || FAEM1 == null) {
             return null;
         }
         double FAEM2;
@@ -347,7 +360,7 @@ public final class Utilities {
 
         return sqlCondition;
     }
-    
+
     /**
      * Calculate the delta to search based on the mass, the tolerance Mode and
      * the tolerance
@@ -364,7 +377,7 @@ public final class Utilities {
             Double tolerance) {
         Double delta;
         String toleranceModeString = DataFromInterfacesUtilities.toleranceTypeToString(toleranceMode);
-        return calculateDeltaPPM(massToSearch,toleranceModeString,tolerance);
+        return calculateDeltaPPM(massToSearch, toleranceModeString, tolerance);
     }
 
     /**
@@ -401,9 +414,59 @@ public final class Utilities {
         return delta;
     }
 
+    /**
+     * Calculate the delta to search based on the RMT, the RMT Tolerance Mode
+     * and the RMT Tolerance
+     *
+     * @param RMTToSearch Mass RMT search to calculate delta based on the RMT
+     * tolerance
+     * @param RMTtoleranceMode % or abs
+     * @param RMTtolerance RMTTolerance value
+     *
+     * @return the mass difference within the tolerance respecting to the
+     * Relative migration time
+     */
+    public static Double calculateDeltaRMT(Double RMTToSearch, String RMTtoleranceMode,
+            Double RMTtolerance) {
+        Double delta;
+        switch (RMTtoleranceMode) {
+            // Case mDa
+            case "percentage":
+                delta = RMTToSearch * (RMTtolerance / 100);
+                break;
+            // Case ppm
+            case "absolute":
+                delta = RMTtolerance;
+                break;
+            default:
+                delta = RMTtolerance;
+                break;
+        }
+        return delta;
+    }
+
     public static String escapeSQLForREGEXP(String value) {
-        value = value.replace("\\","\\\\");
+        value = value.replace("\\", "\\\\");
         return value;
+    }
+    
+    public static String generateStringFragmentsNointensity(List<CEProductIon> ceProductIons) {
+        String fragments = "";
+        for (CEProductIon ceProductIon : ceProductIons) {
+            Double mz = ceProductIon.getMz();
+            fragments = fragments + mz + ", ";
+        }
+        return fragments.substring(0, fragments.length() - 2);
+    }
+
+    public static String generateStringFragments(List<CEProductIon> ceProductIons) {
+        String fragments = "";
+        for (CEProductIon ceProductIon : ceProductIons) {
+            Double mz = ceProductIon.getMz();
+            Double intensity = ceProductIon.getIntensity();
+            fragments = "(" + mz + ", " + intensity + "), ";
+        }
+        return fragments.substring(0, fragments.length() - 2);
     }
 
     /**

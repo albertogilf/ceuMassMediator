@@ -5,9 +5,9 @@
  */
 package ruleengine;
 
-import LCMS.CompoundLCMS;
-import LCMS.CompoundsLCMSGroupByAdduct;
-import LCMS.Feature;
+import LCMS_FEATURE.CompoundLCMS;
+import LCMS_FEATURE.CompoundsLCMSGroupByAdduct;
+import LCMS_FEATURE.Feature;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -698,7 +698,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401"); // PG
-        newComp = new NewCompound(comp, 750.54108526, 1D, 750.54108526, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 750.54108526, 1D, 750.54108526, "M+H", false, "", true, 1);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -709,7 +709,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP02");
         comp.setSubClass("GP0201"); // PE
-        newComp = new NewCompound(comp, 719.546504989, 4D, 719.546504989, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 719.546504989, 4D, 719.546504989, "M+H", false, "", true, 2);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -720,7 +720,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP06");
         comp.setSubClass("GP0601"); // PI
-        newComp = new NewCompound(comp, 838.557129254, 2D, 838.557129254, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 838.557129254, 2D, 838.557129254, "M+H", false, "", true, 3);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -731,7 +731,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP10");
         comp.setSubClass("GP1001"); // PA
-        newComp = new NewCompound(comp, 676.504309, 3D, 676.504309, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 676.504309, 3D, 676.504309, "M+H", false, "", true, 4);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -742,7 +742,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP03");
         comp.setSubClass("GP0301"); // PS
-        newComp = new NewCompound(comp, 763.536334233, 5D, 763.536334233, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 763.536334233, 5D, 763.536334233, "M+H", false, "", true, 5);
         compounds.add(newComp);
 
         comp = new NewCompounds();
@@ -753,7 +753,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP01");
         comp.setSubClass("GP0101"); // PC
-        newComp = new NewCompound(comp, 761.593455181, 6D, 761.593455181, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 761.593455181, 6D, 761.593455181, "M+H", false, "", true, 6);
         compounds.add(newComp);
 
         return compounds;
@@ -783,7 +783,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401");
-        newComp = new NewCompound(comp, 750.54108526, 1D, 750.54108526, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 750.54108526, 1D, 750.54108526, "M+H", false, "", true, 1);
         compounds.add(newComp);
 
         // 34	1	3
@@ -795,7 +795,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401");
-        newComp = new NewCompound(comp, 750.54108526, 3D, 750.54108526, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 750.54108526, 3D, 750.54108526, "M+H", false, "", true, 2);
         compounds.add(newComp);
 
         // 32	0	4
@@ -807,7 +807,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401"); // PG
-        newComp = new NewCompound(comp, 750.54108526, 4D, 750.54108526, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 750.54108526, 4D, 750.54108526, "M+H", false, "", true, 3);
         compounds.add(newComp);
 
         // 32	1	2
@@ -819,7 +819,7 @@ public class RuleProcessor {
         comp.setCategory("GP");
         comp.setMainClass("GP04");
         comp.setSubClass("GP0401"); // PG
-        newComp = new NewCompound(comp, 750.54108526, 2D, 750.54108526, "M+H", false, "", true);
+        newComp = new NewCompound(comp, 750.54108526, 2D, 750.54108526, "M+H", false, "", true, 4);
         compounds.add(newComp);
 
         return compounds;

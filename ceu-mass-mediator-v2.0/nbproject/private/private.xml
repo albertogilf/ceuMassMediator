@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/web/cems_list.xhtml</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/web/cems_targeted_search.xhtml</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/CEMS/CEMSCompound.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/utilities/Constants.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/CEMS/CEMSAdapter.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/utilities/Utilities.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/web/batch_advanced_search.xhtml</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/services/rest/api/APIServices.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/conf/persistence.xml</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/web/META-INF/context.xml</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/web/cems_search.xhtml</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/CEMS/CEMSCompoundsGroupByAdduct.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/CEMS/CEMSFeature.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/presentation/TheoreticalCompoundsController.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/facades/TheoreticalCompoundsFacade.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/LCMS_FEATURE/Experiment.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/DBManager/QueryConstructor.java</file>
+            <file>file:/C:/Users/ceu/Desktop/alberto/repo_CMM/mediator/frontEnd/ceu-mediator-v2-2014-7-9/src/java/controllers/CEMSController.java</file>
+        </group>
+    </open-files>
+</project-private>

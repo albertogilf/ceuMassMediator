@@ -11,11 +11,11 @@ package facades;
 
 import DBManager.DBManager;
 import DBManager.QueryConstructor;
-import LCMS.CompoundLCMS;
-import LCMS.Feature;
+import LCMS_FEATURE.CompoundLCMS;
+import LCMS_FEATURE.Feature;
+import compound.CMMCompound;
 import compound.Chain;
 import compound.Classyfire_Classification;
-import compound.Compound;
 import compound.LM_Classification;
 import compound.Lipids_Classification;
 import compound.Structure;
@@ -25,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-import pathway.Pathway;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import msms.MSMSCompound;
 import msms.Peak;
+import pathway.Pathway;
 import utilities.AdductProcessing;
 import static utilities.DataFromInterfacesUtilities.MAPDATABASES;
 import utilities.Utilities;
@@ -52,44 +52,17 @@ import static utilities.Utilities.escapeSQLForREGEXP;
  * @author Alberto Gil de la Fuente
  */
 public class MSFacade implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
-    private final DBManager dbm;
-    private Connection conn;
-    //public long JDBCcounter;
-    //public long objectLCMSCompoundCounter;
-    //public long queryCreation;
-    //public long structureCounter;
-    //public long pathwayCounter;
-    //public long LMClassificationCounter;
-    //public long lipidsClassificationCounter;
-    //public long classifierClassificationCounter;
+    private static final DBManager DBM = new DBManager();
+    private final Connection conn;
 
-    /**
-     * Creates a new instance of MSFacade
-     */
     public MSFacade() {
-        this.dbm = new DBManager();
-        connect();
+        this.conn = MSFacade.DBM.connect();
     }
 
-    // TODO IMPORTANT! ONLY FOR TESTING. CHANGE IT FOR PRODUCTION
-    /*
-    private void connect() {
-         this.conn = this.dbm.connect();
-    }
-     */
-    private void connect() {
-
-        this.conn = this.dbm.connect();
-    }
-
-    private void disconnect() {
-        try {
-            this.conn.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(MSMSFacade.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void disconnect() {
+        MSFacade.DBM.disconnect();
     }
 
     /**
@@ -195,7 +168,7 @@ public class MSFacade implements Serializable {
         PreparedStatement prepSt;
         String aliasTable = "c";
         double RT = feature.getRT();
-        Map<Double, Integer> CS = feature.getCS();
+        Map<Double, Double> CS = feature.getCS();
         boolean isSignificative = feature.isIsSignificativeFeature();
 
         //long start = System.currentTimeMillis();
@@ -205,7 +178,7 @@ public class MSFacade implements Serializable {
         sql = QueryConstructor.addFilterIntegerFormulaTypeJDBC(aliasTable, sql, chemAlphabet);
         sql = QueryConstructor.addFilterMassesJDBC(aliasTable, sql);
         sql = QueryConstructor.addOrderByMassesJDBC(aliasTable, sql);
-        
+
         // System.out.println("SQL: " + sql);
         //long end = System.currentTimeMillis();
         //queryCreation = queryCreation + (end - start);
@@ -286,7 +259,7 @@ public class MSFacade implements Serializable {
 
                 //end2 = System.currentTimeMillis();
                 //LMClassificationCounter = LMClassificationCounter + (end2 - start2);
-                //To null since its not used so is not filled yet 
+                //To null since its not used so is not filled yet
                 //List<Classyfire_Classification> classyfire_classifications =getClassyfire_ClassificationByCompound_id(compound_id);
                 List<Classyfire_Classification> classyfire_classifications = null;
 
@@ -295,7 +268,8 @@ public class MSFacade implements Serializable {
                 //end2 = System.currentTimeMillis();
                 //pathwayCounter = pathwayCounter + (end2 - start2);
 
-                CompoundLCMS compoundLCMS = new CompoundLCMS(EM, RT, CS, adduct, EMMode, ionizationMode, isSignificative,
+                CompoundLCMS compoundLCMS = new CompoundLCMS(EM, RT, CS, adduct, 
+                        EMMode, ionizationMode, isSignificative,
                         compound_id, mass, formula, name, cas_id, formula_type_int, compound_type,
                         compound_status, charge_type, charge_number,
                         lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id,
@@ -339,14 +313,14 @@ public class MSFacade implements Serializable {
         PreparedStatement prepSt;
         String aliasTable = "c";
         double RT = feature.getRT();
-        Map<Double, Integer> CS = feature.getCS();
+        Map<Double, Double> CS = feature.getCS();
         boolean isSignificative = feature.isIsSignificativeFeature();
 
         sql = QueryConstructor.createSQLInSilicoCompoundViewWithDBIds();
         sql = QueryConstructor.addFilterIntegerFormulaTypeJDBC(aliasTable, sql, chemAlphabet);
         sql = QueryConstructor.addFilterMassesJDBC(aliasTable, sql);
         sql = QueryConstructor.addOrderByMassesJDBC(aliasTable, sql);
-        
+
         List<CompoundLCMS> compounds = new LinkedList<>();
 
         try {
@@ -387,7 +361,8 @@ public class MSFacade implements Serializable {
                 List<Pathway> pathways = null;
                 Structure structure = new Structure(inchi, inchi_key, smiles);
 
-                CompoundLCMS compoundLCMS = new CompoundLCMS(EM, RT, CS, adduct, EMMode, ionizationMode, isSignificative,
+                CompoundLCMS compoundLCMS = new CompoundLCMS(EM, RT, CS, adduct, 
+                        EMMode, ionizationMode, isSignificative,
                         compound_id, mass, formula, name, cas_id, formula_type_int, compound_type,
                         compound_status, charge_type, charge_number,
                         lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, mine_id,
@@ -409,14 +384,14 @@ public class MSFacade implements Serializable {
      * @param compound_id
      * @return
      */
-    public Compound getCompoundFromExperiment(int compound_id) {
+    public CMMCompound getCompoundFromExperiment(int compound_id) {
         // Search in the database
         String sql;
         ResultSet rs;
         PreparedStatement prepSt;
         sql = QueryConstructor.createSQLCompoundViewWithDBIds();
         sql = sql + " c.compound_id = ?";
-        Compound compound;
+        CMMCompound compound;
         try {
             prepSt = conn.prepareStatement(sql);
             prepSt.setInt(1, compound_id);
@@ -454,11 +429,11 @@ public class MSFacade implements Serializable {
             Structure structure = new Structure(inchi, inchi_key, smiles);
             Lipids_Classification lipids_classification = new Lipids_Classification(lipid_type, num_chains, number_carbons, double_bonds);
             LM_Classification lm_classification = new LM_Classification(category, main_class, sub_class, class_level4);
-            //To null since its not used so is not filled yet 
+            //To null since its not used so is not filled yet
             List<Classyfire_Classification> classyfire_classifications = null;
             List<Pathway> pathways = getPathwaysByCompound_id(compound_id);
 
-            compound = new Compound(compound_id, mass, formula, name, cas_id, formula_type_int,
+            compound = new CMMCompound(compound_id, mass, formula, name, cas_id, formula_type_int,
                     compound_type, compound_status, charge_type, charge_number,
                     lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id,
                     structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
@@ -529,7 +504,7 @@ public class MSFacade implements Serializable {
                 int number_carbons = rs.getInt(3);
                 int double_bonds = rs.getInt(4);
                 List<Chain> chains = getListChainsByCompound_id(compound_id);
-                lipids_classification = new Lipids_Classification(lipidtype, num_chains, double_bonds, number_carbons, chains, null);
+                lipids_classification = new Lipids_Classification(lipidtype, num_chains, number_carbons, double_bonds, chains, null);
             }
         } catch (SQLException ex) {
             Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
@@ -614,7 +589,7 @@ public class MSFacade implements Serializable {
      * @param pathway_id
      * @return
      */
-    public List<Compound> getCompoundsByPathway_id(int pathway_id) {
+    public List<CMMCompound> getCompoundsByPathway_id(int pathway_id) {
 
         String sql = "SELECT c.compound_id, c.mass, c.formula, c.compound_name, "
                 + "c.cas_id, c.charge_type, c.charge_number, "
@@ -625,8 +600,8 @@ public class MSFacade implements Serializable {
                 + "c.category, c.main_class, c.sub_class, c.class_level4 "
                 + "FROM compounds_view c INNER JOIN compounds_pathways ON pathway_id=?";
 
-        List<Compound> compounds = new LinkedList();
-        Compound compound;
+        List<CMMCompound> compounds = new LinkedList();
+        CMMCompound compound;
         PreparedStatement prepSt;
         ResultSet rs;
 
@@ -679,7 +654,7 @@ public class MSFacade implements Serializable {
 
             List<Pathway> pathways = getPathwaysByCompound_id(compound_id);
 
-            compound = new Compound(compound_id, mass, formula, name, cas_id, formula_type_int, compound_type,
+            compound = new CMMCompound(compound_id, mass, formula, name, cas_id, formula_type_int, compound_type,
                     compound_status, charge_type, charge_number,
                     lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id,
                     structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
@@ -940,14 +915,14 @@ public class MSFacade implements Serializable {
         return msmsCompounds;
     }
 
-    public List<Compound> findCompoundsBrowseSearch(
+    public List<CMMCompound> findCompoundsBrowseSearch(
             String nameQuery,
             boolean exactName,
             String formulaQuery,
             boolean exactFormula,
             List<Integer> databases,
             String metabolitesType) {
-        List<Compound> compoundsList;
+        List<CMMCompound> compoundsList;
 
         // If the search is only in MINE, it goes directly to findRangeGeneratedAdvanced
         if (databases.size() == 1 && databases.contains(MAPDATABASES.get("MINE (Only In Silico Compounds)"))) {
@@ -964,7 +939,7 @@ public class MSFacade implements Serializable {
                     exactFormula,
                     databases,
                     metabolitesType);
-            List<Compound> InSilicoCompoundsList = findInSilicoBrowseSearch(
+            List<CMMCompound> InSilicoCompoundsList = findInSilicoBrowseSearch(
                     nameQuery,
                     exactName,
                     formulaQuery,
@@ -995,14 +970,14 @@ public class MSFacade implements Serializable {
      * @param metabolitesType metabolites Type to search
      * @return a List of theoreticalCompounds (SuperClass)
      */
-    public List<Compound> findExperimentalCompoundsBrowseSearch(
+    public List<CMMCompound> findExperimentalCompoundsBrowseSearch(
             String nameQuery,
             boolean exactName,
             String formulaQuery,
             boolean exactFormula,
             List<Integer> databases,
             String metabolitesType) {
-        List<Compound> compoundsList = new LinkedList<>();
+        List<CMMCompound> compoundsList = new LinkedList<>();
         //System.out.println("Databases " + databases);
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
@@ -1050,7 +1025,7 @@ public class MSFacade implements Serializable {
             return compoundsList;
         }
         sql = sql + " order by mass, compound_name limit 1000";
-        Compound compound;
+        CMMCompound compound;
         try {
             prepSt = conn.prepareStatement(sql);
             switch (numberParameters) {
@@ -1066,7 +1041,7 @@ public class MSFacade implements Serializable {
                     prepSt.setString(2, formulaQuery);
                     break;
                 default:
-                    // never arrives here, if there is no parameters, an empty list 
+                    // never arrives here, if there is no parameters, an empty list
                     // is returned before
                     return compoundsList;
             }
@@ -1111,7 +1086,7 @@ public class MSFacade implements Serializable {
                 List<Classyfire_Classification> classyfire_classifications = null;
                 List<Pathway> pathways = getPathwaysByCompound_id(compound_id);
 
-                compound = new Compound(compound_id, mass, formula, name, cas_id, formula_type_int,
+                compound = new CMMCompound(compound_id, mass, formula, name, cas_id, formula_type_int,
                         compound_type, compound_status, charge_type, charge_number,
                         lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, MINE_id,
                         structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
@@ -1137,12 +1112,12 @@ public class MSFacade implements Serializable {
      * @param metabolitesType metabolites Type to search
      * @return a List of theoreticalCompounds (SuperClass)
      */
-    private List<Compound> findInSilicoBrowseSearch(
+    private List<CMMCompound> findInSilicoBrowseSearch(
             String nameQuery,
             boolean exactName,
             String formulaQuery,
             boolean exactFormula) {
-        List<Compound> compoundsList = new LinkedList<>();
+        List<CMMCompound> compoundsList = new LinkedList<>();
 
 // Create the common part of the query (Databases, Chemical Alphabet. Only the mass changes.
         String sql;
@@ -1184,7 +1159,7 @@ public class MSFacade implements Serializable {
             return compoundsList;
         }
         sql = sql + " order by mass, compound_name limit 1000";
-        Compound compound;
+        CMMCompound compound;
         try {
             prepSt = conn.prepareStatement(sql);
             switch (numberParameters) {
@@ -1200,7 +1175,7 @@ public class MSFacade implements Serializable {
                     prepSt.setString(2, formulaQuery);
                     break;
                 default:
-                    // never arrives here, if there is no parameters, an empty list 
+                    // never arrives here, if there is no parameters, an empty list
                     // is returned before
                     return compoundsList;
             }
@@ -1233,7 +1208,7 @@ public class MSFacade implements Serializable {
                 List<Classyfire_Classification> classyfire_classifications = null;
                 List<Pathway> pathways = null;
                 Structure structure = new Structure(inchi, inchi_key, smiles);
-                compound = new Compound(compound_id, mass, formula, name, cas_id, formula_type_int,
+                compound = new CMMCompound(compound_id, mass, formula, name, cas_id, formula_type_int,
                         compound_type, compound_status, charge_type, charge_number,
                         lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, mine_id,
                         structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
@@ -1271,7 +1246,7 @@ public class MSFacade implements Serializable {
         }
         return peaks;
     }
-    
+
     private List<String> getDataForConnection() {
         List<String> dataToConnect = new LinkedList<>();
         try {

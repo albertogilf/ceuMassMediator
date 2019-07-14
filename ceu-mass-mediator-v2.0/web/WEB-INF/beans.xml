@@ -10,4 +10,6 @@
        http://cxf.apache.org/jaxws
        http://cxf.apache.org/schemas/jaxws.xsd"
 >
+    <!--<context:annotation-config />-->
+
 </beans>

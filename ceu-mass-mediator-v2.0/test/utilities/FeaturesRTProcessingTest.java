@@ -5,9 +5,9 @@
  */
 package utilities;
 
-import LCMS.CompoundLCMS;
-import LCMS.Feature;
-import LCMS.FeaturesGroupByRT;
+import LCMS_FEATURE.CompoundLCMS;
+import LCMS_FEATURE.Feature;
+import LCMS_FEATURE.FeaturesGroupByRT;
 import facades.MSFacade;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,14 +29,14 @@ public class FeaturesRTProcessingTest {
     public void groupFeaturesByRT() {
         int massesMode = 1;
         int ionizationMode = 1;
-        Feature f1 = new Feature(18, 1, true, massesMode, ionizationMode);
-        Feature f2 = new Feature(14, 2, true, massesMode, ionizationMode);
-        Feature f3 = new Feature(10, 1, true, massesMode, ionizationMode);
-        Feature f8 = new Feature(8, 0, true, massesMode, ionizationMode);
-        Feature f4 = new Feature(12, 1, true, massesMode, ionizationMode);
-        Feature f5 = new Feature(13, 3, true, massesMode, ionizationMode);
-        Feature f6 = new Feature(18, 2, true, massesMode, ionizationMode);
-        Feature f7 = new Feature(18, 0, true, massesMode, ionizationMode);
+        Feature f1 = new Feature(18d, 1d, true, massesMode, ionizationMode);
+        Feature f2 = new Feature(14d, 2d, true, massesMode, ionizationMode);
+        Feature f3 = new Feature(10d, 1d, true, massesMode, ionizationMode);
+        Feature f8 = new Feature(8d, 0d, true, massesMode, ionizationMode);
+        Feature f4 = new Feature(12d, 1d, true, massesMode, ionizationMode);
+        Feature f5 = new Feature(13d, 3d, true, massesMode, ionizationMode);
+        Feature f6 = new Feature(18d, 2d, true, massesMode, ionizationMode);
+        Feature f7 = new Feature(18d, 0d, true, massesMode, ionizationMode);
 
         List<Feature> features = new LinkedList<>();
 
@@ -79,7 +79,7 @@ public class FeaturesRTProcessingTest {
         expResult.add(fRT0ACheck);
         expResult.add(fRT0BCheck);
 
-        List<FeaturesGroupByRT> result = FeaturesRTProcessing.groupFeaturesByRT(features, Constantes.RT_WINDOW);
+        List<FeaturesGroupByRT> result = FeaturesRTProcessing.groupFeaturesByRT(features, Constants.RT_WINDOW);
 
         assertEquals(expResult.size(), result.size());
     }
@@ -100,17 +100,17 @@ public class FeaturesRTProcessingTest {
         int ionMode = 1;
         Double EM = 281.24765d;
         double RT = 13.4;
-        Map<Double, Integer> CS = new TreeMap();
+        Map<Double, Double> CS = new TreeMap();
 
-        CS.put(561.4858d, 236);
-        CS.put(141.1306, 297);
-        CS.put(281.24765, 8532);
-        CS.put(263.23685, 2734);
-        CS.put(264.24228, 616);
-        CS.put(265.2474, 97);
-        CS.put(303.2296, 3154);
-        CS.put(304.2393, 718);
-        CS.put(305.23438, 272);
+        CS.put(561.4858d, 236d);
+        CS.put(141.1306, 297d);
+        CS.put(281.24765, 8532d);
+        CS.put(263.23685, 2734d);
+        CS.put(264.24228, 616d);
+        CS.put(265.2474, 97d);
+        CS.put(303.2296, 3154d);
+        CS.put(304.2393, 718d);
+        CS.put(305.23438, 272d);
 
         List<String> adducts = new LinkedList<>();
         adducts.add("M+H");
@@ -200,11 +200,11 @@ public class FeaturesRTProcessingTest {
 
         int massesMode = 1;
         int ionizationMode = 1;
-        Feature f1 = new Feature(1, 2, true, massesMode, ionizationMode);
-        Feature f2 = new Feature(3, 4, true, massesMode, ionizationMode);
-        Feature f3 = new Feature(5, 4, true, massesMode, ionizationMode);
-        Feature f4 = new Feature(4, 8, true, massesMode, ionizationMode);
-        Feature f5 = new Feature(3, 31, true, massesMode, ionizationMode);
+        Feature f1 = new Feature(1d, 2d, true, massesMode, ionizationMode);
+        Feature f2 = new Feature(3d, 4d, true, massesMode, ionizationMode);
+        Feature f3 = new Feature(5d, 4d, true, massesMode, ionizationMode);
+        Feature f4 = new Feature(4d, 8d, true, massesMode, ionizationMode);
+        Feature f5 = new Feature(3d, 31d, true, massesMode, ionizationMode);
         features.add(f1);
         features.add(f2);
         features.add(f3);
@@ -247,9 +247,9 @@ public class FeaturesRTProcessingTest {
         List<Feature> features = new LinkedList<>();
         int massesMode = 1;
         int ionizationMode = 1;
-        Feature f1 = new Feature(451.19362653, 2, true, massesMode, ionizationMode);
-        Feature f2 = new Feature(367.2038211, 2, true, massesMode, ionizationMode);
-        Feature f3 = new Feature(291.2687907, 2, true, massesMode, ionizationMode);
+        Feature f1 = new Feature(451.19362653, 2d, true, massesMode, ionizationMode);
+        Feature f2 = new Feature(367.2038211, 2d, true, massesMode, ionizationMode);
+        Feature f3 = new Feature(291.2687907, 2d, true, massesMode, ionizationMode);
         features.add(f1);
         features.add(f2);
         features.add(f3);
@@ -263,14 +263,16 @@ public class FeaturesRTProcessingTest {
                 "Geranylgeranyl diphosphate", null, 2, 1, 0, 0, 0,
                 "", "", "", "", "", "", "", null, null, null, null, null);
         f1.addAnnotation(c, "M+H");
-        double tolerance = Constantes.TOLERANCE_FOR_MSMS_PEAKS_POSSIBLE_FRAGMENTS;
-        MSFacade mfacade = new MSFacade();
+        double tolerance = Constants.TOLERANCE_FOR_MSMS_PEAKS_POSSIBLE_FRAGMENTS;
+        MSFacade msfacade = new MSFacade();
 
-        FeaturesRTProcessing.setFragments(featuresGroups, tolerance, mfacade, 1);
+        FeaturesRTProcessing.setFragments(featuresGroups, tolerance, msfacade, 1);
 
         assertEquals(features.get(0).isPossibleFragment(), true);
         assertEquals(features.get(1).isPossibleFragment(), true);
         assertEquals(features.get(2).isPossibleFragment(), false);
+
+        msfacade.disconnect();
 
     }
 
@@ -282,11 +284,11 @@ public class FeaturesRTProcessingTest {
         int massesMode = 1;
         int ionizationMode = 1;
         List<Feature> features = new LinkedList<>();
-        Feature f1 = new Feature((191.067068 + Constantes.PROTON_WEIGHT), 2, true, massesMode, ionizationMode);//'91162', '332-80-9', '169.085126611', 'C7H11N3O2', '169.085126611', (M+Na)
-        Feature f2 = new Feature(146.481938, 2, true, massesMode, ionizationMode);//Fragment: 124.5 (M+Na) 146.481938
-        Feature f3 = new Feature(90.021938, 2, true, massesMode, ionizationMode);//Fragment: 68.04 (M+Na) 90,021938
-        Feature f4 = new Feature((300.172544634 + Constantes.PROTON_WEIGHT), 2, true, massesMode, ionizationMode);//'39400', NULL, '2-Methoxyestrone', 'C19H24O3', '300.172544634', (none-->all)
-        Feature f5 = new Feature(187, 2, true, massesMode, ionizationMode);//Fragment: 187 (M+H) 187
+        Feature f1 = new Feature((191.067068 + Constants.PROTON_WEIGHT), 2d, true, massesMode, ionizationMode);//'91162', '332-80-9', '169.085126611', 'C7H11N3O2', '169.085126611', (M+Na)
+        Feature f2 = new Feature(146.481938, 2d, true, massesMode, ionizationMode);//Fragment: 124.5 (M+Na) 146.481938
+        Feature f3 = new Feature(90.021938, 2d, true, massesMode, ionizationMode);//Fragment: 68.04 (M+Na) 90,021938
+        Feature f4 = new Feature((300.172544634 + Constants.PROTON_WEIGHT), 2d, true, massesMode, ionizationMode);//'39400', NULL, '2-Methoxyestrone', 'C19H24O3', '300.172544634', (none-->all)
+        Feature f5 = new Feature(187d, 2d, true, massesMode, ionizationMode);//Fragment: 187 (M+H) 187
         features.add(f1);
         features.add(f2);
         features.add(f3);
@@ -301,14 +303,14 @@ public class FeaturesRTProcessingTest {
                 39400, 300.172544634, "C19H24O3", "2-Methoxyestrone", null, 2, 1, 0, 0, 0,
                 "", "", "", "", "", "", "", null, null, null, null, null);
         f4.addAnnotation(c2, "M+H");
-        double tolerance = Constantes.TOLERANCE_FOR_MSMS_PEAKS_POSSIBLE_FRAGMENTS;
-        MSFacade mfacade = new MSFacade();
+        double tolerance = Constants.TOLERANCE_FOR_MSMS_PEAKS_POSSIBLE_FRAGMENTS;
+        MSFacade msfacade = new MSFacade();
 
         List<FeaturesGroupByRT> featuresGroups = new LinkedList<>();
         FeaturesGroupByRT group = new FeaturesGroupByRT(2, features);
         featuresGroups.add(group);
 
-        FeaturesRTProcessing.setFragments(featuresGroups, tolerance, mfacade, 1);
+        FeaturesRTProcessing.setFragments(featuresGroups, tolerance, msfacade, 1);
 
         assertEquals(features.get(0).isPossibleFragment(), true);
         assertEquals(features.get(1).isPossibleFragment(), true);
@@ -319,7 +321,7 @@ public class FeaturesRTProcessingTest {
         for (Feature f : features) {
             System.out.println(f.toString() + " " + f.isPossibleFragment());
         }
-
+        msfacade.disconnect();
     }
 
 }

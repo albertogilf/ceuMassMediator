@@ -12,6 +12,7 @@
         </ui:define>
         
         <ui:param name="onloadbody" value="#{theoreticalCompoundsController.clearForm()}"/>
+        <ui:param name="idbody" value="searchbody"/>
         
         <ui:define name="intro-wrapper">
             <!--
@@ -22,7 +23,7 @@
                 <h:form id="mainsearch" prependId="false">
                     <p:focus for="inputmasses"/>
                     <h:commandButton id="dummy" actionListener="#{theoreticalCompoundsController.submitCompoundsSimple()}" 
-                                     action="/theoreticalCompounds/List" style="display:none;"
+                                     action="/List?faces-redirect=true" style="display:none;"
                                      />
                     <div id="highlights" class="container whiteborder">
 
@@ -188,7 +189,7 @@
                                     id="submit" 
                                     value="submit for compounds" 
                                     actionListener="#{theoreticalCompoundsController.submitCompoundsSimple()}" 
-                                    action="/theoreticalCompounds/List"
+                                    action="/List?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>

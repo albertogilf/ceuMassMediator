@@ -68,6 +68,8 @@ public class TestAlgorithms {
         System.out.println("top 5: "+((double)(top5)/30d)*100d+"%");
         
         System.out.println("full: "+((double)(full)/30d)*100d+"%");
+        
+        msmsFacade.disconnect();
     }
     
 }

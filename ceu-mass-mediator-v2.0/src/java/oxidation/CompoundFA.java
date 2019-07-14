@@ -10,7 +10,7 @@
 package oxidation;
 
 import compound.Classyfire_Classification;
-import compound.Compound;
+import compound.CMMCompound;
 import compound.LM_Classification;
 import compound.Lipids_Classification;
 import compound.Structure;
@@ -28,7 +28,7 @@ import utilities.Utilities;
  *
  * @author Alberto Gil de la Fuente
  */
-public class CompoundFA extends Compound {
+public class CompoundFA extends CMMCompound {
 
     private final Double FAEM;
     private final String oxidationType;
@@ -40,7 +40,7 @@ public class CompoundFA extends Compound {
 
     
     /**
-     * Constructor of Compound FA. It has all the attributes from the compound
+     * Constructor of CMMCompound FA. It has all the attributes from the compound
      *
      * @param compound_id
      * @param mass

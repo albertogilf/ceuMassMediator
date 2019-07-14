@@ -9,6 +9,7 @@
  */
 package utilities;
 
+import controllers.BrowseSearchControllerJDBC;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public final class DataFromInterfacesUtilities {
     public static String ALLADDUCTS_NEUTRAL = "allNeutral";
     public static String ALLADDUCTS_POSITIVE = "allPositives";
     public static String ALLADDUCTS_NEGATIVE = "allNegatives";
-    
+
     public static final Map<String, Integer> MAPCHEMALPHABET;
 
     static {
@@ -203,7 +204,8 @@ public final class DataFromInterfacesUtilities {
      *
      * @param ionizationMode 0 neutral, 1 positive, 2 negative
      * @param adducts list of adducts
-     * @return the list of adducts for positive, negative or neutral if the adduct is unknown ("all")
+     * @return the list of adducts for positive, negative or neutral if the
+     * adduct is unknown ("all")
      */
     public static List<String> getValueAllAductsBasedOnIonMode(int ionizationMode, List<String> adducts) {
         if (adducts.contains("all")) {
@@ -260,5 +262,8 @@ public final class DataFromInterfacesUtilities {
         }
         return caInt;
     }
+    
+    // STARTING CE DATA INTERFACE 
+    
 
 }

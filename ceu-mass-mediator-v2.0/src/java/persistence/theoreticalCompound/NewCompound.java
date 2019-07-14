@@ -17,7 +17,7 @@ import utilities.Utilities;
 public class NewCompound extends TheoreticalCompoundsAdapter implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     final NewCompounds newCompounds;
 
     /**
@@ -30,24 +30,24 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
      * @param adduct
      * @param isAdductAutoDetected
      * @param adductAutoDetected
+     * @param hypothesisId
      */
-    public NewCompound(NewCompounds nc, 
-            Double em, 
-            Double rt, 
-            Double masstoSearch, 
-            String adduct, 
+    public NewCompound(NewCompounds nc,
+            Double em,
+            Double rt,
+            Double masstoSearch,
+            String adduct,
             boolean isAdductAutoDetected,
-            String adductAutoDetected) {
-        super(em,rt,adduct,isAdductAutoDetected,adductAutoDetected);
+            String adductAutoDetected,
+            Integer hypothesisId) {
+        super(em, rt, adduct, isAdductAutoDetected, adductAutoDetected, hypothesisId);
         this.newCompounds = nc;
         if (this.newCompounds == null) {
-            this.incrementPPM=0;
+            this.incrementPPM = 0;
         } else {
-            this.incrementPPM=Utilities.calculatePPMIncrement(masstoSearch, (Double) this.newCompounds.getMass());
+            this.incrementPPM = Utilities.calculatePPMIncrement(masstoSearch, (Double) this.newCompounds.getMass());
         }
-        
     }
-    
 
     /**
      * Constructor of NewCompoundsAdapter
@@ -60,21 +60,23 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
      * @param isAdductAutoDetected
      * @param adductAutoDetected
      * @param isSignificative
+     * @param hypothesisId
      */
-    public NewCompound(NewCompounds nc, 
-            Double em, 
-            Double rt, 
-            Double masstoSearch, 
-            String adduct, 
+    public NewCompound(NewCompounds nc,
+            Double em,
+            Double rt,
+            Double masstoSearch,
+            String adduct,
             boolean isAdductAutoDetected,
-            String adductAutoDetected, 
-            boolean isSignificative) {
-        super(em,rt,adduct,isAdductAutoDetected,adductAutoDetected,isSignificative);
+            String adductAutoDetected,
+            boolean isSignificative,
+            Integer hypothesisId) {
+        super(em, rt, adduct, isAdductAutoDetected, adductAutoDetected, isSignificative, hypothesisId);
         this.newCompounds = nc;
         if (this.newCompounds == null || masstoSearch == null) {
-            this.incrementPPM=0;
+            this.incrementPPM = 0;
         } else {
-            this.incrementPPM=Utilities.calculatePPMIncrement(masstoSearch, (Double) this.newCompounds.getMass());
+            this.incrementPPM = Utilities.calculatePPMIncrement(masstoSearch, (Double) this.newCompounds.getMass());
         }
     }
 
@@ -300,7 +302,7 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
             return this.newCompounds.getInChiKey();
         }
     }
-    
+
     @Override
     public String getSMILES() {
         if (this.newCompounds == null) {
@@ -367,4 +369,16 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
             return this.newCompounds.getDoubleBonds();
         }
     }
+
+    @Override
+    public String getLipidType() {
+        return this.newCompounds.getLipidType();
+    }
+
+    @Override
+    public String toString() {
+        return "NewCompound{" + "newCompounds=" + newCompounds + '}'
+                + "\n KBSystemProlog: " + super.getKbSystemResults();
+    }
+
 }

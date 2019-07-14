@@ -20,10 +20,15 @@ import persistence.theoreticalCompound.TheoreticalCompounds;
  */
 public class CompoundExcelExporter extends ExcelExporter {
 
-    public CompoundExcelExporter() {
-        super("ceumass_compounds.xls");
-        super.setNumberOfColumns(30);
-        this.setFileName("ceumass_compounds.xls");
+    /**
+     * Constructor
+     *
+     * @param flag 0 for LCMS without RT, 1 for LCMS with RT. 2 for Browse 
+     * 3 for CEMSCompounds 
+     */
+    public CompoundExcelExporter(int flag) {
+        super(flag);
+        super.setNumberOfColumns(40);
     }
 
     /**
@@ -469,5 +474,10 @@ public class CompoundExcelExporter extends ExcelExporter {
         Hyperlink link = ch.createHyperlink(HyperlinkType.URL);
         link.setAddress(p.obtainPathwayWebPage());
         cell.setHyperlink(link);
+    }
+
+    @Override
+    protected void generateCompoundDataCEMS(Object element, HSSFSheet sheet) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -5,8 +5,6 @@
  */
 package facades;
 
-import msms.ScoreComparator;
-import msms.MSMSCompound;
 import DBManager.DBManager;
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,17 +14,17 @@ import java.io.IOException;
 import java.io.Serializable;
 import static java.lang.Math.abs;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import msms.MSMSCompound;
 import msms.Msms;
 import msms.Peak;
-import static utilities.Constantes.MIN_SCORE_FOR_EUCLIDEAN_DISTANCE;
+import msms.ScoreComparator;
+import static utilities.Constants.MIN_SCORE_FOR_EUCLIDEAN_DISTANCE;
 import utilities.Utilities;
 
 /**
@@ -45,29 +43,15 @@ public final class MSMSFacade implements Serializable {
     private static final double INTEXP = 0.6d;
     private static final double EUCLIDEAN_EXP_MZ = 4d;
     private static final double EUCLIDEAN_EXP_INTENSITY = 2d;
-    private final DBManager dbm;
-    private Connection conn;
+    private static final DBManager DBM = new DBManager();
+    private final Connection conn;
 
     public MSMSFacade() {
-        this.dbm = new DBManager();
-        connect();
+        this.conn = MSMSFacade.DBM.connect();
     }
 
-    /*
-    private void connect() {
-      this.conn = this.dbm.connect();
-    }
-     */
-    private void connect() {
-        this.conn = this.dbm.connect();
-    }
-    
-    private void disconnect() {
-        try {
-            this.conn.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(MSMSFacade.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void disconnect() {
+        MSMSFacade.DBM.disconnect();
     }
 
     /**
@@ -105,7 +89,7 @@ public final class MSMSFacade implements Serializable {
      * @return a list msms candidates from compound with a mass within the
      * tolerance window
      */
-    public List<MSMSCompound> getMsmsCandidates(Msms inputMsms, double precursorIonTolerance, String toleranceType) {
+    public List<MSMSCompound> getMsmsCandidates(Msms inputMsms, Double precursorIonTolerance, String toleranceType) {
 
         //System.out.println("PRECURSOR ION TOLERANCE MODE: " +precursorIonTolerance+" " +toleranceType);
         double massToSearch = inputMsms.getPrecursorIonNeutralMass();
@@ -224,7 +208,7 @@ public final class MSMSFacade implements Serializable {
                 // not used YET
                 String inchi = rs.getString("inchi");
 
-                // Set to each msms its' corresponding peaks                
+                // Set to each msms its' corresponding peaks
                 List<Peak> peaksFromDatabase = getPeaksFromDataBase(msms_id);
 
                 MSMSCompound libraryMsms = new MSMSCompound(
@@ -285,7 +269,8 @@ public final class MSMSFacade implements Serializable {
      * @param toleranceType
      * @return a list of of scored MSMSCompounds
      */
-    public List<MSMSCompound> scoreMatchedPeaks(Msms inputMsms, List<MSMSCompound> candidatesList, double mzTolerance, String toleranceType) {
+    public List<MSMSCompound> scoreMatchedPeaks(Msms inputMsms, List<MSMSCompound> candidatesList,
+            Double mzTolerance, String toleranceType) {
         //System.out.println("INITIAL MZ TOLERANCE: "+mzTolerance+" "+toleranceType);
         double massToSearch = inputMsms.getPrecursorIonNeutralMass();
         mzTolerance = Utilities.calculateDeltaPPM(massToSearch, toleranceType, mzTolerance);
@@ -311,7 +296,7 @@ public final class MSMSFacade implements Serializable {
         List<Peak> matchedpeaks_input;
         //Peaks to normalize:
         List<Peak> allLibraryPeaks;
-        //I will compare each input Peak with the library peaks 
+        //I will compare each input Peak with the library peaks
         // The list of input peaks does not change
         List<Peak> allInputPeaks = inputMsms.getNormalizedPeaks();
         // The compareTo was overwritten in order to sort the peask acording to mz
@@ -340,7 +325,7 @@ public final class MSMSFacade implements Serializable {
 
                         float scoreForMatch;
                         scoreForMatch = euclideanDistanceWeighted(inputPeak, match);
-                        if (scoreForMatch > scoreForPeak) {//to get the best match 
+                        if (scoreForMatch > scoreForPeak) {//to get the best match
                             scoreForPeak = scoreForMatch;
                             indexMatch = candidatePeaksNormalized.indexOf(match);
                         }
@@ -416,12 +401,12 @@ public final class MSMSFacade implements Serializable {
 //        double numeratorInput= similarityMeasure(matchedInput, matchedLibrary, 1, 1);
 //        double denominatorInput=dotProduct(allInputPeaks, allInputPeaks, 1, 1);
 //        double A= (numeratorInput/denominatorInput);
-//        
+//
 //        //calculating score (vs library)
 //        double numeratorLibrary= similarityMeasure(matchedLibrary,matchedInput, 1, 1);
 //        double denominatorLibrary=dotProduct(allLibraryPeaks, allLibraryPeaks, 1, 1);
 //        double B=(numeratorLibrary/denominatorLibrary);
-//        
+//
 //        double fitScore= (A+B)/2; //The maximum score is 1
 
     }
@@ -438,24 +423,24 @@ public final class MSMSFacade implements Serializable {
         //at metfrag an initial weight is obtained from the weighted dot product between the matched peaks (intensities and mz)
         List<Peak> inputPeaks = inputMsms.getNormalizedPeaks();
         double score = dotProduct(matchedpeaks_candidates, matchedpeaks_input, MZEXP, INTEXP);
-        System.out.println("Score before normalization: " + score);
+        // System.out.println("Score before normalization: " + score);
         double fitScore = score / dotProduct(inputPeaks, inputPeaks, MZEXP, INTEXP);
 //        List<Peak> allInputPeaks = inputMsms.getNormalizedPeaks();
 //        //calculating score (vs input)
 //        double numeratorInput= similarityMeasure(matchedInput, matchedLibrary, MZEXP, INTEXP);
-//        
+//
 //        double denominatorInput=dotProduct(allInputPeaks, allInputPeaks, MZEXP, INTEXP);
 //        double A= (numeratorInput/denominatorInput);
-//        
-//        
+//
+//
 //        //calculating score (vs library)
 //        double numeratorLibrary= similarityMeasure(matchedLibrary,matchedInput, MZEXP, INTEXP);
-//        
+//
 //        double denominatorLibrary=dotProduct(allLibraryPeaks, allLibraryPeaks, MZEXP, INTEXP);
-//        
+//
 //        double B=(numeratorLibrary/denominatorLibrary);
-//        
-//        
+//
+//
 //        double fitScore= (A+B)/2; //The maximum score is 1
 
         return fitScore;
@@ -499,7 +484,7 @@ public final class MSMSFacade implements Serializable {
         Collections.sort(innerPeaks);
         Iterator it_inner = innerPeaks.iterator();
         Iterator it_outer = outerPeaks.iterator();
-        double score = 0;
+        double score;
         while (it_inner.hasNext()) {
             Peak libraryPeak = (Peak) it_inner.next();
             Peak inputPeak = (Peak) it_outer.next();
@@ -557,7 +542,7 @@ public final class MSMSFacade implements Serializable {
     }
 
     /**
-     * From a list of MSMSCompounds returns a top N acording to the best scores
+     * From a list of MSMSCompounds returns a top N according to the best scores
      *
      * @param MsmsList The list of MSMSCompound
      * @param N the top number to return
@@ -565,22 +550,17 @@ public final class MSMSFacade implements Serializable {
      */
     public List<MSMSCompound> getTopNMatches(List<MSMSCompound> MsmsList, int N) //N is the rank of best matches
     {
-
         Collections.sort(MsmsList, new ScoreComparator());
-        Iterator it = MsmsList.iterator();
         List<MSMSCompound> topN = new LinkedList<>();
         List<Integer> topNCompound_id = new LinkedList<>();
-        while (it.hasNext()) {
-            MSMSCompound msms = (MSMSCompound) it.next();
+        for (MSMSCompound msms : MsmsList) {
             if (N > 0 && msms.getScore() > 0) {
-
                 int n = msms.getCompound_id();
                 if (!topNCompound_id.contains(n)) {
                     topNCompound_id.add(n);
                     topN.add(msms);
                     N--;
                 }
-
             }
         }
         normalizeScores(topN);
@@ -596,7 +576,7 @@ public final class MSMSFacade implements Serializable {
      * @return a score of similarity among both peaks
      */
     private float euclideanDistanceWeighted(Peak inputPeak, Peak match) {
-        float score = 0;
+        float score;
         double mz_diff = Math.abs(inputPeak.getMz() - match.getMz());
         double intensity_diff = Math.abs(inputPeak.getIntensity() - match.getIntensity());
         double distance = Math.sqrt(Math.pow(mz_diff, EUCLIDEAN_EXP_MZ) + Math.pow(intensity_diff, EUCLIDEAN_EXP_INTENSITY));
@@ -610,17 +590,19 @@ public final class MSMSFacade implements Serializable {
     }
 
     private void normalizeScores(List<MSMSCompound> topN) {
-        double maxScore = topN.get(0).getScore();
-        if (maxScore <= 1) {
-            return;
-        }
-        for (MSMSCompound c : topN) {
-            double score = c.getScore();
-            double score_normalized = score / maxScore;
-            c.setScore(score_normalized);
+        if (!topN.isEmpty()) {
+            double maxScore = topN.get(0).getScore();
+            if (maxScore <= 1) {
+                return;
+            }
+            for (MSMSCompound c : topN) {
+                double score = c.getScore();
+                double score_normalized = score / maxScore;
+                c.setScore(score_normalized);
+            }
         }
     }
-    
+
     private List<String> getDataForConnection() {
         List<String> dataToConnect = new LinkedList<>();
         try {
@@ -639,9 +621,9 @@ public final class MSMSFacade implements Serializable {
                 dataToConnect.add(line);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MSMSFacade.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(MSFacade.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MSMSFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
         return dataToConnect;
     }

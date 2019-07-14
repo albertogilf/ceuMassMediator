@@ -3,19 +3,22 @@ package presentation.paginationHelpers;
 import java.io.Serializable;
 
 /**
-   * Abstract class to paginate the results
-   * @author: San Pablo-CEU
-   * @version: 3.1, 17/02/2016
-   */
-
+ * Abstract class to paginate the results
+ *
+ * @author: San Pablo-CEU
+ * @version: 3.1, 17/02/2016
+ */
 public abstract class PaginationHelper implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final int pageSize;
     private int page;
     private final int numInputMasses;
 
-    /** 
+    /**
      * Constructor PaginationHelper
+     *
      * @param pageSize Size of the page
      * @param numInputMasses
      */
@@ -24,17 +27,15 @@ public abstract class PaginationHelper implements Serializable {
         this.numInputMasses = numInputMasses;
     }
 
-    
-    
     /**
-     * @return the first item of the page 
+     * @return the first item of the page
      */
     public int getPageFirstItem() {
         return getPage() * this.pageSize;
     }
 
     /**
-     * @return the last item of the page 
+     * @return the last item of the page
      */
     public int getPageLastItem() {
         int i = getPageFirstItem() + this.pageSize - 1;
@@ -56,14 +57,14 @@ public abstract class PaginationHelper implements Serializable {
     }
 
     /**
-     * changes to the next page 
+     * changes to the next page
      */
     public void nextPage() {
         if (isHasNextPage()) {
             setPage(getPage() + 1);
         }
     }
-    
+
     /**
      * @return a boolean which shows if there is previous pages in pagination
      */
@@ -72,13 +73,14 @@ public abstract class PaginationHelper implements Serializable {
     }
 
     /**
-     * changes to the previous page 
+     * changes to the previous page
      */
     public void previousPage() {
         if (isHasPreviousPage()) {
             setPage(getPage() - 1);
         }
     }
+
     /**
      * @return the size of the pages
      */

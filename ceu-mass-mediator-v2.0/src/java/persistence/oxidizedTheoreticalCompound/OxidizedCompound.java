@@ -277,7 +277,7 @@ public class OxidizedCompound implements OxidizedTheoreticalCompound, Serializab
     
     public String getStringMolecularWeight() {
         // Other way to deal with decimals 
-        return String.format("%.4f",this.theoreticalPIMolecularWeight);
+        return String.format("%.4f",this.theoreticalPIMolecularWeight).replace(",", ".");
         // return new DecimalFormat(".#####").format(this.theoreticalPIMolecularWeight);
     }
 
@@ -289,12 +289,15 @@ public class OxidizedCompound implements OxidizedTheoreticalCompound, Serializab
     @Override
     public String getTitleMessage() {
         String titleMessage;
-        titleMessage = "Oxidized compound found for oxidized FA: " + String.format("%.4f",this.oxidizedFAEM) + ", ";
+        titleMessage = "Oxidized compound found for oxidized FA: " + 
+                String.format("%.4f",this.oxidizedFAEM).replace(",", ".") + ", ";
         if (this.nonOxidizedFAEM > 0d) {
-            titleMessage = titleMessage + "Non-oxidized FA: " + String.format("%.4f",this.nonOxidizedFAEM) + ", ";
+            titleMessage = titleMessage + "Non-oxidized FA: " + 
+                    String.format("%.4f",this.nonOxidizedFAEM).replace(",", ".") + ", ";
         }
         if (this.parentIonEM > 0d) {
-            titleMessage = titleMessage + "parent ion: " + String.format("%.4f",this.parentIonEM) + ", ";
+            titleMessage = titleMessage + "parent ion: " 
+                    + String.format("%.4f",this.parentIonEM).replace(",", ".") + ", ";
             titleMessage = titleMessage + "adduct: " + this.adductType + " and ";
             titleMessage = titleMessage + "oxidation: " + this.oxidationType;
         }
@@ -409,4 +412,11 @@ public class OxidizedCompound implements OxidizedTheoreticalCompound, Serializab
         return String.format("%.4f", doubleToRound).replace(",", ".");
         // return new DecimalFormat(".#####").format(doubleToRound);
     }
+
+    @Override
+    public String toString() {
+        return "OxidizedCompound{" + "oxidizedFAEM=" + oxidizedFAEM + ", nonOxidizedFAEM=" + nonOxidizedFAEM + ", parentIonEM=" + parentIonEM + ", neutralMassPI=" + neutralMassPI + ", mzPositivePI=" + mzPositivePI + ", oxidationType=" + oxidationType + ", adductType=" + adductType + ", name=" + name + ", formula=" + formula + ", theoreticalPIMolecularWeight=" + theoreticalPIMolecularWeight + ", theoreticalPIEM=" + theoreticalPIEM + ", ppmIncrement=" + ppmIncrement + ", numCarbonsInFAs=" + numCarbonsInFAs + ", numDoubleBondsInFAs=" + numDoubleBondsInFAs + ", oxidationNumberType=" + oxidationNumberType + ", oxidizedFA=" + oxidizedFA + ", nonOxidizedFA=" + nonOxidizedFA + ", neutralLossesPositiveMode=" + neutralLossesPositiveMode + ", neutralLossesNegativeMode=" + neutralLossesNegativeMode + ", oxidizedCompoundsGroupByMass=" + oxidizedCompoundsGroupByMass + ", nonOxidizedCompoundsGroupByMass=" + nonOxidizedCompoundsGroupByMass + ", boolShowNonOxidizedAnnotations=" + boolShowNonOxidizedAnnotations + '}';
+    }
+    
+    
 }

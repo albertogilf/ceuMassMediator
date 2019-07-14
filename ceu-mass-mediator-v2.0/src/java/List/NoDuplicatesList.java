@@ -8,22 +8,18 @@ package List;
 import java.util.Collection;
 import java.util.LinkedList;
 
-
-
 /**
  *
  * @author María Postigo. San Pablo-CEU
  *
  */
-public class NoDuplicatesList <E> extends LinkedList <E> {
-
+public class NoDuplicatesList<E> extends LinkedList<E> {
 
     @Override
     public boolean add(E e) {
         if (this.contains(e)) {
             return false;
-        }
-        else {
+        } else {
             return super.add(e);
         }
     }
@@ -46,8 +42,7 @@ public class NoDuplicatesList <E> extends LinkedList <E> {
     public void add(int index, E element) {
         if (this.contains(element)) {
             return;
-        }
-        else {
+        } else {
             super.add(index, element);
         }
     }

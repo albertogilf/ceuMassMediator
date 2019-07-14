@@ -18,9 +18,10 @@ public class NewCompoundGenFactory implements TheoreticalCompoundFactory {
             Double massToSearch, 
             String adduct, 
             boolean isAdductAutoDetected,
-            String adductAutoDetected) {
+            String adductAutoDetected, 
+            Integer hypothesisId) {
         return new NewCompoundGen((NewCompoundsGen) ncg, mass, rt, massToSearch, 
-                adduct, isAdductAutoDetected, adductAutoDetected);
+                adduct, isAdductAutoDetected, adductAutoDetected, hypothesisId);
     }
     
     @Override
@@ -31,9 +32,10 @@ public class NewCompoundGenFactory implements TheoreticalCompoundFactory {
             String adduct, 
             boolean isAdductAutoDetected,
             String adductAutoDetected, 
-            Boolean isSignificative) {
+            Boolean isSignificative, 
+            Integer hypothesisId) {
         return new NewCompoundGen((NewCompoundsGen) ncg, mass, rt, massToSearch, 
-                adduct, isAdductAutoDetected, adductAutoDetected, isSignificative);
+                adduct, isAdductAutoDetected, adductAutoDetected, isSignificative, hypothesisId);
     }
     
 }

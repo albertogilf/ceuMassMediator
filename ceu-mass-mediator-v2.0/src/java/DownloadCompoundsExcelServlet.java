@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import utilities.Constantes;
+import utilities.Constants;
 
 /**
  * Servlet to download in excel format the compounds returned by CMM
@@ -18,7 +18,7 @@ import utilities.Constantes;
  * @version: 3.1, 17/02/2016
  */
 @WebServlet(name = "DownloadCompoundsExcelServlet", urlPatterns = {"/downloadcompounds"})
-public class DownloadCompoundsExcelServlet extends HttpServlet implements Constantes {
+public class DownloadCompoundsExcelServlet extends HttpServlet implements Constants {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

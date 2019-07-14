@@ -1,11 +1,10 @@
 package controllers;
 
-import LCMS.CompoundLCMS;
-import LCMS.CompoundsLCMSGroupByAdduct;
-import LCMS.ExperimentGroupByRT;
-import LCMS.Feature;
-import LCMS.FeaturesGroupByRT;
-import LCMS.RTComparator;
+import LCMS_FEATURE.CompoundLCMS;
+import LCMS_FEATURE.ExperimentGroupByRT;
+import LCMS_FEATURE.Feature;
+import LCMS_FEATURE.FeaturesGroupByRT;
+import LCMS_FEATURE.RTComparator;
 import List.NoDuplicatesList;
 import exporters.NewDataModelCompoundExcelExporter;
 import facades.MSFacade;
@@ -13,18 +12,18 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import utilities.Cadena;
-import utilities.Constantes;
-import static utilities.Constantes.EXAMPLEDEMOMASSES;
-import static utilities.Constantes.EXAMPLEDEMORTS;
+import static utilities.Constants.EXAMPLEDEMOMASSES;
+import static utilities.Constants.EXAMPLEDEMORTS;
 import utilities.DataFromInterfacesUtilities;
 import utilities.FeaturesRTProcessing;
+import utilities.Constants;
 
 /**
  * Controller (Bean) of the application for LC/MS Searches
@@ -44,13 +43,13 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
     public LCMSControllerGroupByRT() {
         super();
         this.allFeaturesGroupByRT = new NoDuplicatesList<>();
-        this.RT_window = String.valueOf(Constantes.RT_WINDOW);
+        this.RT_window = String.valueOf(Constants.RT_WINDOW);
     }
 
     /**
      * Method that permits to create a excel from the current results. Flag
-     * indicates if the excel generated contains RT field or not. 1 yes 0 no //
-     * TODO ALBERTO EXPORT TO EXCEL THE POSSIBLE FRAGMENTS
+     * indicates the compounds // TODO ALBERTO EXPORT TO EXCEL THE POSSIBLE
+     * FRAGMENTS
      *
      * @param flag
      */
@@ -59,7 +58,8 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
         // Only export to Excel no significative compounds
         List<CompoundLCMS> compoundsLCMS = this.experimentGroupByRT.getCompoundsLCMS();
 
-        NewDataModelCompoundExcelExporter compoundExcelExporter = new NewDataModelCompoundExcelExporter();
+        NewDataModelCompoundExcelExporter compoundExcelExporter
+                = new NewDataModelCompoundExcelExporter(flag);
         compoundExcelExporter.generateWholeExcelCompound(compoundsLCMS, flag);
     }
 
@@ -86,7 +86,7 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
             numInputMasses = massesAux.size();
             List<Double> retentionTimes = Cadena.getListOfDoubles(getQueryInputRetentionTimes(), numInputMasses);
             this.setQueryRetentionTimes(retentionTimes);
-            List<Map<Double, Integer>> compositeSpectra = getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
+            List<Map<Double, Double>> compositeSpectra = Cadena.getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
             this.setQueryCompositeSpectrum(compositeSpectra);
 
             List<Feature> significantFeatures;
@@ -95,8 +95,6 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
             Collections.sort(significantFeatures, new RTComparator());
 
             processGroupedCompoundsAdvanced(significantFeatures, significantFeatures);
-
-            
 
         } else {
 
@@ -114,7 +112,7 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
             numInputMasses = massesAux.size();
             List<Double> retentionTimes = Cadena.getListOfDoubles(getQueryInputRetentionTimes(), numInputMasses);
             this.setQueryRetentionTimes(retentionTimes);
-            List<Map<Double, Integer>> compositeSpectra = getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
+            List<Map<Double, Double>> compositeSpectra = Cadena.getListOfCompositeSpectra(getQueryInputCompositeSpectra(), numInputMasses);
             this.setQueryCompositeSpectrum(compositeSpectra);
 
             List<Feature> significantFeatures;
@@ -133,8 +131,8 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
             numInputMasses = allMassesMZFromNeutral.size();
             List<Double> allretentionTimes = Cadena.getListOfDoubles(getAllInputRetentionTimes(), numInputMasses);
             this.setQueryRetentionTimes(allretentionTimes);
-            List<Map<Double, Integer>> allcompositeSpectra;
-            allcompositeSpectra = getListOfCompositeSpectra(getAllInputCompositeSpectra(), numInputMasses);
+            List<Map<Double, Double>> allcompositeSpectra;
+            allcompositeSpectra = Cadena.getListOfCompositeSpectra(getAllInputCompositeSpectra(), numInputMasses);
             this.setQueryCompositeSpectrum(allcompositeSpectra);
 
             List<Feature> allFeatures;
@@ -145,13 +143,13 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
             FeaturesRTProcessing.setSignificantFeatures(significantFeatures, allFeatures);
 
             processGroupedCompoundsAdvanced(significantFeatures, allFeatures);
-            
+
         }
     }
-    
+
     /**
      * This method is used to load a list of queryMasses declared in the class
-     * Constantes
+ Constants
      */
     @Override
     public void setAdvancedDemoMasses() {
@@ -174,7 +172,7 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
     @Override
     protected void resetItems() {
         this.allFeaturesGroupByRT.clear();
-        this.RT_window = String.valueOf(Constantes.RT_WINDOW);
+        this.RT_window = String.valueOf(Constants.RT_WINDOW);
     }
 
     public List<FeaturesGroupByRT> getAllFeaturesGroupByRT() {
@@ -208,7 +206,7 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
      * grouping the features by retention time)
      */
     private void processGroupedCompoundsAdvanced(List<Feature> significantFeatures, List<Feature> allFeatures) {
-       //System.out.println("Entering process advanced GROUPED");
+        //System.out.println("Entering process advanced GROUPED");
 
         int tolerance = Integer.parseInt(getInputTolerance());
         boolean isAllFeatures = isIsAllFeatures();
@@ -297,7 +295,6 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
 //            }
 //        }
 //    }
-
     @Override
     protected void calculateScores() {
         this.experimentGroupByRT.calculateScoresAnnotations();
@@ -307,7 +304,7 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
     public void submitLCMSSimpleSearch() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     /**
      * Validates the input Tolerance to be a float between 0 and 10000
      *
@@ -318,19 +315,12 @@ public class LCMSControllerGroupByRT extends LCMSControllerAdapter {
      */
     public void validateInputRTTolerance(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException {
-        float inputRTTol = -1;
-        try {
-            String input = (String) arg2;
-            input = input.replace(",", ".");
-            inputRTTol = Float.parseFloat((String) input);
-            //  inputTol = Integer.valueOf((String) arg2); 
-        } catch (NumberFormatException nfe) {
-            throw new ValidatorException(new FacesMessage("The RT window should be a number between 0 and 5"));
-        }
-        if (inputRTTol <= 0) {
-            throw new ValidatorException(new FacesMessage("The RT window should be between 0 and 5"));
-        } else if (inputRTTol > 5) {
-            throw new ValidatorException(new FacesMessage("The RT window should be between 0 and 5"));
-        }
+        InterfaceValidators.validateInputRTTolerance(arg0, arg1, arg2);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        //System.out.println("DISCONNECTING LCMS GROUPED BY RT SEARCH CONTROLLER");
+        super.getMsFacade().disconnect();
     }
 }

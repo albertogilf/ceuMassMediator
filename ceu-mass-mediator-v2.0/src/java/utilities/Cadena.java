@@ -293,9 +293,9 @@ public class Cadena {
      * @param chain
      * @return
      */
-    static public List<Map<Double, Integer>> extractDataSpectrum(String chain) {
+    static public List<Map<Double, Double>> extractDataSpectrum(String chain) {
         //ArrayList because it is acceded by index
-        List<Map<Double, Integer>> dataSpectrum = new ArrayList<Map<Double, Integer>>();
+        List<Map<Double, Double>> dataSpectrum = new ArrayList<Map<Double, Double>>();
         for (String line : chain.split("\\n")) {
             dataSpectrum.add(Cadena.extractOneSpectrum(line));
         }
@@ -308,9 +308,9 @@ public class Cadena {
      * @param chain
      * @return
      */
-    static public Map<Double, Integer> extractOneSpectrum(String chain) {
-        Map<Double, Integer> peaks;
-        peaks = new TreeMap<Double, Integer>();
+    static public Map<Double, Double> extractOneSpectrum(String chain) {
+        Map<Double, Double> peaks;
+        peaks = new TreeMap<Double, Double>();
         // Two lines. Ugly way for detecting all the cases
         // (\([0-9]+\.[0-9]+\,\s*[0-9]+\.[0-9]+\))|(\([0-9]+\,\s*[0-9]+\.[0-9]+\))
         // |(\([0-9]+\.[0-9]+\,\s*[0-9]+\))|(\([0-9]+\,\s*[0-9]+\))
@@ -319,7 +319,7 @@ public class Cadena {
         String peakPattern = "(\\([0-9]+\\.?[0-9]*\\,\\s*[0-9]+\\.?[0-9]*\\))";
         String peak;
         Double peakValue;
-        Integer peakIntensity;
+        Double peakIntensity;
 
         Pattern p = Pattern.compile(peakPattern);
 
@@ -328,11 +328,36 @@ public class Cadena {
         while (m.find()) {
             peak = m.group();
             peakValue = extractFirstDouble(peak);
-            peakIntensity = extractSecondNumberToInteger(peak);
+            peakIntensity = extractSecondDouble(peak);
             // System.out.println("GROUP: " + peak + " Value: " + peakValue + " INTENSITY: " + peakIntensity);
             peaks.put(peakValue, peakIntensity);
         }
         return peaks;
+    }
+    
+    /**
+     * Get a list of all the spectra from Data
+     *
+     * @param input
+     * @param numInputMasses
+     * @return 
+     */
+    public static List<Map<Double, Double>> getListOfCompositeSpectra(String input, int numInputMasses) {
+        List<Map<Double, Double>> spectrumAux;
+        if (!input.equals("")) {
+            spectrumAux = Cadena.extractDataSpectrum(input);
+            // If there is no time for all queryMasses, fill with 0
+            for (int i = spectrumAux.size(); i < numInputMasses; i++) {
+                spectrumAux.add(new TreeMap<>());
+            }
+        } else {
+            spectrumAux = new ArrayList<>();
+            // If there is no time for all queryMasses, fill with 0
+            for (int i = 0; i < numInputMasses; i++) {
+                spectrumAux.add(new TreeMap<>());
+            }
+        }
+        return spectrumAux;
     }
 
     /**

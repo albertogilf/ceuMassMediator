@@ -10,9 +10,10 @@
         <ui:define name="head">
             <title>Simple LCMS Search. CEU mass mediator</title>
         </ui:define>
-        
+
         <ui:param name="onloadbody" value="#{LCMSController.clearForm()}"/>
-        
+        <ui:param name="idbody" value="searchbody"/>
+
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Simple Search</div>
@@ -22,7 +23,7 @@
                 <h:form id="mainsearch" prependId="false">
                     <p:focus for="inputmasses"/>
                     <h:commandButton id="dummy" actionListener="#{LCMSController.submitLCMSSimpleSearch()}" 
-                                     action="/theoreticalCompounds/lcms_list" style="display:none;"
+                                     action="/lcms_list?faces-redirect=true" style="display:none;"
                                      />
                     <div id="highlights" class="container whiteborder">
 
@@ -67,15 +68,15 @@
                                 <div class="ui-panelgrid-cell ui-grid-col-6">
                                     <label for="inputmodetolerance" style="float: top">&nbsp;</label>
                                     <p:selectOneRadio id="inputmodetolerance" 
-                                                        required="true"
-                                                        requiredMessage="Choose tolerance mode"
-                                                        value="#{LCMSController.inputModeTolerance}">
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{LCMSController.inputModeTolerance}">
                                         <f:selectItem itemValue="ppm" itemLabel="ppm"/>
                                         <f:selectItem itemValue="mDa" itemLabel="mDa"/>  
                                     </p:selectOneRadio>
                                 </div>
                             </p:row>
-                            
+
                             <p:row></p:row>
                             <p:row></p:row>
 
@@ -188,7 +189,7 @@
                                     id="submit" 
                                     value="submit for compounds" 
                                     actionListener="#{LCMSController.submitLCMSSimpleSearch()}" 
-                                    action="/theoreticalCompounds/lcms_list"
+                                    action="/lcms_list?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>

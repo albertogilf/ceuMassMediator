@@ -5,9 +5,9 @@
  */
 package pathway;
 
-import compound.Compound;
+import compound.CMMCompound;
 import java.util.List;
-import static utilities.Constantes.WEB_PATHWAY_KEGG;
+import static utilities.Constants.WEB_PATHWAY_KEGG;
 
 /**
  * Pathway. A metabolic pathway. Several pathways can have several compounds
@@ -22,9 +22,9 @@ public class Pathway {
     private final int pathway_id;
     private final String pathwayMap;
     private final String pathwayName;
-    private final List<Compound> compounds;
+    private final List<CMMCompound> compounds;
 
-    public Pathway(int pathway_id, String pathwayMap, String pathwayName, List<Compound> compounds) {
+    public Pathway(int pathway_id, String pathwayMap, String pathwayName, List<CMMCompound> compounds) {
         this.pathway_id = pathway_id;
         this.pathwayMap = pathwayMap;
         this.pathwayName = pathwayName;
@@ -43,7 +43,7 @@ public class Pathway {
         return pathwayName;
     }
 
-    public List<Compound> getCompounds() {
+    public List<CMMCompound> getCompounds() {
         return compounds;
     }
     

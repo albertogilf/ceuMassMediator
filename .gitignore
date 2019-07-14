@@ -20,3 +20,12 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+*/dist/*
+*/build/*
+*.class
+/ceu-mediator-v2.0/nbproject/private/
+/ceu-mediator-v2.0/nbproject/ant-deploy.xml
+/ceu-mediator-v2.0/nbproject/genfiles.properties
+/ceu-mediator-v2.0/nbproject/project.properties
+/ceu-mediator-v2.0/web/META-INF/context.xml

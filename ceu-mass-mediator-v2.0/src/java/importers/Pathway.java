@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import utilities.CompoundsComparer;
-import utilities.Constantes;
-import static utilities.Constantes.*;
+import static utilities.Constants.*;
+import utilities.Constants;
 
 /**
  * 
@@ -109,7 +109,7 @@ public class Pathway implements Serializable {
      * @return the web page of the compound
      */
     public String getWebPage() {
-        return Constantes.WEB_PATHWAY_KEGG + this.code;
+        return Constants.WEB_PATHWAY_KEGG + this.code;
     }
 
     /**

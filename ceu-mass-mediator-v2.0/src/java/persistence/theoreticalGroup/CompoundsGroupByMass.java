@@ -124,4 +124,10 @@ public class CompoundsGroupByMass extends CompoundsGroupAdapter implements Seria
         return titleMessage;
     }
 
+    @Override
+    public String toString() {
+        return "CompoundsGroupByMass{" + "adduct=" + adduct + ", listCompounds=" + listCompounds + ", isSignificativeCompoundGroup=" + isSignificativeCompoundGroup + '}';
+    }
+
+    
 }

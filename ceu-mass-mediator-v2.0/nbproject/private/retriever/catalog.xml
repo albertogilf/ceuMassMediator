@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
-    <system systemId="http://cxf.apache.org/jaxrs" uri="cxf.apache.org/schemas/jaxrs.xsd"/>
-    <system systemId="http://cxf.apache.org/jaxws" uri="cxf.apache.org/schemas/jaxws.xsd"/>
     <system systemId="http://cxf.apache.org/schemas/jaxrs.xsd" uri="cxf.apache.org/schemas/jaxrs.xsd"/>
     <system systemId="http://cxf.apache.org/schemas/jaxrs-common.xsd" uri="cxf.apache.org/schemas/jaxrs-common.xsd"/>
     <system systemId="http://cxf.apache.org/schemas/jaxws.xsd" uri="cxf.apache.org/schemas/jaxws.xsd"/>
     <system systemId="http://www.springframework.org/schema/beans/spring-beans.xsd" uri="www.springframework.org/schema/beans/spring-beans.xsd"/>
     <system systemId="http://cxf.apache.org/schemas/configuration/cxf-beans.xsd" uri="cxf.apache.org/schemas/configuration/cxf-beans.xsd"/>
-    <system systemId="http://omnifaces.org/ui" uri="omnifaces.org/ui/index.xml"/>
-    <system systemId="http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd" uri="www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/web-facesconfig_2_3.xsd"/>
-    <system systemId="http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/javaee_8.xsd" uri="www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/javaee_8.xsd"/>
-    <system systemId="http://www.w3.org/2001/xml.xsd" uri="www.w3.org/2001/xml.xsd"/>
-    <system systemId="http://www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/javaee_web_services_client_1_4.xsd" uri="www.oracle.com/webfolder/technetwork/jsc/xml/ns/javaee/javaee_web_services_client_1_4.xsd"/>
+    <system systemId="http://cxf.apache.org/schemas/configuration/parameterized-types.xsd" uri="cxf.apache.org/schemas/configuration/parameterized-types.xsd"/>
 </catalog>

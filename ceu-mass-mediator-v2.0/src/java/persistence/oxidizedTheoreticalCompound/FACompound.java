@@ -131,6 +131,11 @@ public class FACompound implements Serializable {
     public int getNumDoubleBonds() {
         return numDoubleBonds;
     }
+
+    @Override
+    public String toString() {
+        return "FACompound{" + "newCompounds=" + newCompounds + ", FAEM=" + FAEM + ", oxidationType=" + oxidationType + ", ppmIncrement=" + ppmIncrement + ", numCarbons=" + numCarbons + ", numDoubleBonds=" + numDoubleBonds + ", isOxidized=" + isOxidized + '}';
+    }
     
     
 

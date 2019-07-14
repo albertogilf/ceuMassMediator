@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.xml.bind.annotation.XmlRootElement;
+import model.kbsystem.KBSystemResult;
 import persistence.NewCompoundsGen;
 import persistence.NewPathways;
 import utilities.Utilities;
@@ -17,7 +18,7 @@ import utilities.Utilities;
 public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     final NewCompoundsGen newCompoundsGen;
 
     /**
@@ -30,20 +31,22 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
      * @param adduct
      * @param isAdductAutoDetected
      * @param adductAutoDetected
+     * @param hypothesisId
      */
-    public NewCompoundGen(NewCompoundsGen ncg, 
-            Double em, 
-            Double rt, 
-            Double massToSearch, 
-            String adduct, 
+    public NewCompoundGen(NewCompoundsGen ncg,
+            Double em,
+            Double rt,
+            Double massToSearch,
+            String adduct,
             boolean isAdductAutoDetected,
-            String adductAutoDetected) {
-        super(em,rt,adduct,isAdductAutoDetected,adductAutoDetected);
+            String adductAutoDetected,
+            Integer hypothesisId) {
+        super(em, rt, adduct, isAdductAutoDetected, adductAutoDetected, hypothesisId);
         this.newCompoundsGen = ncg;
         if (this.newCompoundsGen == null) {
-            this.incrementPPM=0;
+            this.incrementPPM = 0;
         } else {
-            this.incrementPPM=Utilities.calculatePPMIncrement(massToSearch, (Double) this.newCompoundsGen.getMass());
+            this.incrementPPM = Utilities.calculatePPMIncrement(massToSearch, (Double) this.newCompoundsGen.getMass());
         }
     }
 
@@ -58,21 +61,23 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
      * @param isAdductAutoDetected
      * @param adductAutoDetected
      * @param isSignificative
+     * @param hypothesisId
      */
-    public NewCompoundGen(NewCompoundsGen ncg, 
-            Double em, 
-            Double rt, 
-            Double massToSearch, 
-            String adduct, 
+    public NewCompoundGen(NewCompoundsGen ncg,
+            Double em,
+            Double rt,
+            Double massToSearch,
+            String adduct,
             boolean isAdductAutoDetected,
-            String adductAutoDetected, 
-            boolean isSignificative) {
-        super(em,rt,adduct,isAdductAutoDetected,adductAutoDetected, isSignificative);
+            String adductAutoDetected,
+            boolean isSignificative,
+            Integer hypothesisId) {
+        super(em, rt, adduct, isAdductAutoDetected, adductAutoDetected, isSignificative, hypothesisId);
         this.newCompoundsGen = ncg;
         if (this.newCompoundsGen == null) {
-            this.incrementPPM=0;
+            this.incrementPPM = 0;
         } else {
-            this.incrementPPM=Utilities.calculatePPMIncrement(massToSearch, (Double) this.newCompoundsGen.getMass());
+            this.incrementPPM = Utilities.calculatePPMIncrement(massToSearch, (Double) this.newCompoundsGen.getMass());
         }
     }
 
@@ -302,4 +307,20 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
             return this.newCompoundsGen.getSmiles();
         }
     }
+
+    @Override
+    public String getLipidType() {
+        return "";
+    }
+
+    @Override
+    public Integer getHypothesisId() {
+        return -1;
+    }
+
+    @Override
+    public void addKbSystemResult(KBSystemResult KbSystemResult) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -1,6 +1,8 @@
 package persistence.theoreticalCompound;
 
 import java.util.Collection;
+import java.util.List;
+import model.kbsystem.KBSystemResult;
 import persistence.NewPathways;
 
 /**
@@ -59,6 +61,7 @@ public interface TheoreticalCompounds {
     public String getMainClass();
     public String getSubClass();
 
+    public String getLipidType();
     public int getCarbons();
     public int getDoubleBonds();
     
@@ -98,4 +101,11 @@ public interface TheoreticalCompounds {
     //public void createPrecedenceScore();
     public void createColorRetentionTimeScore();
     public void createColorFinalScore();
+    
+    // Methods for KBSystem
+    public void addKbSystemResult(KBSystemResult KbSystemResult);
+    public Integer getHypothesisId();
+    public List<KBSystemResult> getKbSystemResults();
+    boolean areThereKbSystemResults();
+    
 }

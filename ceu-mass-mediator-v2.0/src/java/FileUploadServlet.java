@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-import utilities.Constantes;
+import utilities.Constants;
 
 /**
  *
@@ -29,7 +29,7 @@ import utilities.Constantes;
  */
 @WebServlet("/FileUploadServlet")
 @MultipartConfig
-public class FileUploadServlet extends HttpServlet implements Constantes {
+public class FileUploadServlet extends HttpServlet implements Constants {
 
     private final static Logger LOGGER = Logger.getLogger(FileUploadServlet.class.getCanonicalName());
 
@@ -84,7 +84,7 @@ public class FileUploadServlet extends HttpServlet implements Constantes {
                 response.sendRedirect("ExcelImporter.xhtml");
             }
         } catch (FileNotFoundException fne) {
-            writer.println("You either did not specify a file to upload or are "
+            writer.println("You did not specify a file to upload or you are "
                     + "trying to upload a file to a protected or nonexistent "
                     + "location.");
             writer.println("<br/> ERROR: " + fne.getMessage());

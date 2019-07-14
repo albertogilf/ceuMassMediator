@@ -9,15 +9,15 @@
  */
 package utilities;
 
-import LCMS.EMComparator;
-import LCMS.Feature;
+import LCMS_FEATURE.EMComparator;
+import LCMS_FEATURE.Feature;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import static utilities.Constantes.ADDUCT_AUTOMATIC_DETECTION_WINDOW;
+import static utilities.Constants.ADDUCT_AUTOMATIC_DETECTION_WINDOW;
 
 /**
  * Class which contains static methods to process algorithms with adducts
@@ -49,7 +49,7 @@ public class AdductProcessing {
             // negative ionization
             case 2:
                 return getMassToSearch(mzMass, "M-H", ionizationMode);
-            
+
             default:
                 return mzMass;
         }
@@ -272,13 +272,13 @@ public class AdductProcessing {
      * TESTED!
      * @return
      */
-    public static Map<Double, Integer> getMonoPeaksFromCS(Map<Double, Integer> compositeSpectrum) {
-        Map<Double, Integer> filteredCS = new TreeMap();
+    public static Map<Double, Double> getMonoPeaksFromCS(Map<Double, Double> compositeSpectrum) {
+        Map<Double, Double> filteredCS = new TreeMap();
         Double previousPeak = 0d;
-        for (Map.Entry<Double, Integer> entry : compositeSpectrum.entrySet()) {
+        for (Map.Entry<Double, Double> entry : compositeSpectrum.entrySet()) {
             Double mz = entry.getKey();
-            Integer intensity = entry.getValue();
-            if (previousPeak == 0d || Math.abs(mz - previousPeak) > Constantes.BIGGEST_ISOTOPE * Constantes.PROTON_WEIGHT) {
+            Double intensity = entry.getValue();
+            if (previousPeak == 0d || Math.abs(mz - previousPeak) > Constants.BIGGEST_ISOTOPE * Constants.PROTON_WEIGHT) {
                 filteredCS.put(mz, intensity);
             }
             previousPeak = mz;
@@ -300,11 +300,11 @@ public class AdductProcessing {
             int ionMode,
             Double inputMass,
             List<String> adducts,
-            Map<Double, Integer> compositeSpectrum) {
+            Map<Double, Double> compositeSpectrum) {
         if (compositeSpectrum.isEmpty()) {
             return "";
         }
-        Map<Double, Integer> filteredCS = getMonoPeaksFromCS(compositeSpectrum);
+        Map<Double, Double> filteredCS = getMonoPeaksFromCS(compositeSpectrum);
 
         String adductDetected = "";
         Map<String, String> mapAdducts;
@@ -400,42 +400,23 @@ public class AdductProcessing {
      * process the provisional map to perform the search. Return provisional Map
      * of adducts
      *
-     * @param massesMode if the masses are neutral (Any String except "mz") or
-     * mz ("mz")
      * @param ionMode Ionization mode (positive, negative or neutral)
      * @return provisionalMap Map to get the value of adducts
      */
-    public static Map<String, String> chooseprovisionalMapAdducts(String massesMode, int ionMode) {
+    public static Map<String, String> chooseprovisionalMapAdducts(int ionMode) {
         Map<String, String> provisionalMap;
-        switch (massesMode) {
-            case "mz":
-                switch (ionMode) {
-                    case 1:
-                        provisionalMap = AdductsLists.MAPMZPOSITIVEADDUCTS;
-                        break;
-                    case 2:
-                        provisionalMap = AdductsLists.MAPMZNEGATIVEADDUCTS;
-                        break;
-                    default:
-                        provisionalMap = AdductsLists.MAPNEUTRALADDUCTS;
-                        break;
-                }
-                return provisionalMap;
-
+        switch (ionMode) {
+            case 1:
+                provisionalMap = AdductsLists.MAPMZPOSITIVEADDUCTS;
+                break;
+            case 2:
+                provisionalMap = AdductsLists.MAPMZNEGATIVEADDUCTS;
+                break;
             default:
-                switch (ionMode) {
-                    case 1:
-                        provisionalMap = AdductsLists.MAPMZPOSITIVEADDUCTS;
-                        break;
-                    case 2:
-                        provisionalMap = AdductsLists.MAPMZNEGATIVEADDUCTS;
-                        break;
-                    default:
-                        provisionalMap = AdductsLists.MAPNEUTRALADDUCTS;
-                        break;
-                }
-                return provisionalMap;
+                provisionalMap = AdductsLists.MAPNEUTRALADDUCTS;
+                break;
         }
+        return provisionalMap;
     }
 
     /**
@@ -482,9 +463,9 @@ public class AdductProcessing {
      * @return
      */
     public static List<String> FilterAdductsFromInterface(List<String> adducts, int ionMode) {
-        if (adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_POSITIVE) || 
-                adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_NEGATIVE) || 
-                adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL)
+        if (adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_POSITIVE)
+                || adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_NEGATIVE)
+                || adducts.contains(DataFromInterfacesUtilities.ALLADDUCTS_NEUTRAL)
                 || adducts.contains("all")) {
             adducts = AdductProcessing.getAllAdducts(ionMode);
         }

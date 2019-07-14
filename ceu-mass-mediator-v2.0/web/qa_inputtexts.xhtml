@@ -10,6 +10,10 @@
         <ui:define name="head">
             <title>Quality Assurance. CEU mass mediator</title>
         </ui:define>
+        
+        <ui:param name="onloadbody" value=""/>
+        <ui:param name="idbody" value="searchbody"/>
+        
         <ui:define name="intro-wrapper">
 
             <div class="form" >
@@ -167,7 +171,7 @@
                                     id="go"
                                     type="button"
                                     value ="Process"
-                                    style ="color:black"
+                                    
                                     /> 
                             </p:row>
                             <p:row>
@@ -748,13 +752,13 @@
                 
                 function chooseColorAndTag() {
                     if (!isNaN(this.finalScore)) {
-                        if (this.finalScore &lt;= 2) {
+                        if (this.finalScore &lt;= 2.5) {
                             this.colorFinalScore = "red";
                             this.tagFinalScore = "Inadequate";
-                        } else if (this.finalScore &lt;= 3.5) {
+                        } else if (this.finalScore &lt;= 4.0) {
                             this.colorFinalScore = "yellow";
                             this.tagFinalScore = "Acceptable";
-                        } else if (this.finalScore &gt; 3.5) {
+                        } else if (this.finalScore &gt; 4.0) {
                             this.colorFinalScore = "green";
                             this.tagFinalScore = "Excellent";
                         }

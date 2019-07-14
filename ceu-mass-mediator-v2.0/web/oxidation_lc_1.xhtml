@@ -12,7 +12,8 @@
         </ui:define>
 
         <ui:param name="onloadbody" value="#{oxidationControllerJDBC.clearForm()}"/>
-        
+        <ui:param name="idbody" value="searchbody"/>
+
         <ui:define name="intro-wrapper">
 
             <div class="form" >
@@ -23,7 +24,7 @@
 
                     <p:focus for="fattyacidmass1"/>
                     <h:commandButton id="dummy" actionListener="#{oxidationControllerJDBC.submitLCOxidationCompounds()}" 
-                                     action="/theoreticalCompounds/oxidationlist" style="display:none;"
+                                     action="/oxidationlist?faces-redirect=true" style="display:none;"
                                      />
 
                     <div id="highlights" class="container whiteborder">
@@ -216,7 +217,7 @@
                                     id="submit" 
                                     value="submit compounds" 
                                     actionListener="#{oxidationControllerJDBC.submitLCOxidationCompounds()}" 
-                                    action="/theoreticalCompounds/oxidationlist_1"
+                                    action="/oxidationlist_1?faces-redirect=true"
                                     style="width:100%">
                                 </h:commandButton>
                             </p:row>

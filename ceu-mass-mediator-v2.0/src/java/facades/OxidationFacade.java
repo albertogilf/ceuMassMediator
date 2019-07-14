@@ -12,7 +12,7 @@ package facades;
 import DBManager.DBManager;
 import DBManager.QueryConstructor;
 import compound.Classyfire_Classification;
-import compound.Compound;
+import compound.CMMCompound;
 import compound.LM_Classification;
 import compound.Lipids_Classification;
 import compound.Structure;
@@ -46,9 +46,9 @@ import static utilities.Utilities.calculateFAEMFromPIandOtherFAEM;
  * @author Alberto Gil de la Fuente
  */
 public class OxidationFacade {
-
-    private final DBManager dbm;
-    private Connection conn;
+    
+    private static final DBManager DBM = new DBManager();
+    private final Connection conn;
     private final MSFacade msfacade;
 
     /**
@@ -56,21 +56,14 @@ public class OxidationFacade {
      * the database
      */
     public OxidationFacade() {
-        this.dbm = new DBManager();
         msfacade = new MSFacade();
-        connect();
+        this.conn = OxidationFacade.DBM.connect();
     }
 
-    private void connect() {
-        this.conn = this.dbm.connect();
-    }
 
-    private void disconnect() {
-        try {
-            this.conn.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(MSMSFacade.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void disconnect() {
+        OxidationFacade.DBM.disconnect();
+        this.msfacade.disconnect();
     }
 
     /**
@@ -159,6 +152,8 @@ public class OxidationFacade {
             PreparedStatement prepSt;
             String aliasTable = "c";
             sqlStart = QueryConstructor.createStartSQLForFASearch();
+            sqlStart = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
+            sqlFinal = QueryConstructor.addOrderByMassesJDBC(aliasTable, sqlStart);
 
             String oxidationValue;
 
@@ -175,8 +170,6 @@ public class OxidationFacade {
                     massToSearchForOxFA = massToSearchForOxFA + oxidationDouble;
 
                     // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
-                    sqlStart = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
-                    sqlFinal = QueryConstructor.addOrderByMassesJDBC(aliasTable, sqlStart);
                     Double delta = Utilities.calculateDeltaPPM(massToSearchForOxFA, toleranceModeForFAs, toleranceForFAs);
                     Double low = massToSearchForOxFA - delta;
                     Double high = massToSearchForOxFA + delta;
@@ -314,7 +307,8 @@ public class OxidationFacade {
             PreparedStatement prepSt;
             String aliasTable = "c";
             sqlStart = QueryConstructor.createStartSQLForFASearch();
-
+            sqlStart = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
+            sqlFinal = QueryConstructor.addOrderByMassesJDBC(aliasTable, sqlStart);
             String oxidationValue;
 
             //System.out.println("\n FA: " + fattyAcylMass);
@@ -329,8 +323,6 @@ public class OxidationFacade {
                     massToSearchForOxFA = mzOxidizedFAMass + ConstantesForOxidation.H_WEIGHT;
                     massToSearchForOxFA = massToSearchForOxFA + oxidationDouble;
 
-                    sqlStart = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
-                    sqlFinal = QueryConstructor.addOrderByMassesJDBC(aliasTable, sqlStart);
                     Double delta = Utilities.calculateDeltaPPM(massToSearchForOxFA, toleranceModeForFA, toleranceForFA);
                     Double low = massToSearchForOxFA - delta;
                     Double high = massToSearchForOxFA + delta;
@@ -393,7 +385,6 @@ public class OxidationFacade {
                             massToSearchForOxFA = mzOxidizedFAMass + ConstantesForOxidation.H_WEIGHT;
                             massToSearchForOxFA = massToSearchForOxFA + oxidationDouble;
 
-                            sqlStart = QueryConstructor.addFilterMassesJDBC(aliasTable, sqlStart);
                             sqlFinal = QueryConstructor.addOrderByMassesJDBC(aliasTable, sqlStart);
                             delta = Utilities.calculateDeltaPPM(massToSearchForOxFA, toleranceModeForFA, toleranceForFA);
                             low = massToSearchForOxFA - delta;
@@ -507,7 +498,7 @@ public class OxidationFacade {
         // System.out.println("ADDUCT: " + s + " MASS TO SEARCH: " + massToSearch);
         sql = QueryConstructor.addFilterMassesJDBC(aliasCompoundsTable, sql);
         sql = QueryConstructor.addOrderByMassesJDBC(aliasCompoundsTable, sql);
-        
+
         Double delta = Utilities.calculateDeltaPPM(massToSearchForNonOxFA, toleranceModeForFA, toleranceForFA);
         Double low = massToSearchForNonOxFA - delta;
         Double high = massToSearchForNonOxFA + delta;
@@ -615,7 +606,6 @@ public class OxidationFacade {
         }
         sql = QueryConstructor.addFilterMassesJDBC(aliasTable, sql);
         sql = QueryConstructor.addOrderByMassesJDBC(aliasTable, sql);
-        
 
         Double delta = Utilities.calculateDeltaPPM(massToSearch, toleranceModeForPI, toleranceForPI);
         Double low = massToSearch - delta;
@@ -676,7 +666,7 @@ public class OxidationFacade {
                         List<Classyfire_Classification> classyfire_classifications = new LinkedList();
                         List<Pathway> pathways = new LinkedList();
                         Structure structure = null;
-                        Compound oxidizedAnnotation = new Compound(compound_id, mass, formula, name, cas_id,
+                        CMMCompound oxidizedAnnotation = new CMMCompound(compound_id, mass, formula, name, cas_id,
                                 formula_type_int, compound_type, compound_status, charge_type, charge_number,
                                 lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, MINE_id,
                                 structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
@@ -827,7 +817,7 @@ public class OxidationFacade {
                         List<Classyfire_Classification> classyfire_classifications = new LinkedList();
                         List<Pathway> pathways = new LinkedList();
                         Structure structure = null;
-                        Compound nonOxidizedAnnotation = new Compound(compound_id, mass, formula, name, cas_id,
+                        CMMCompound nonOxidizedAnnotation = new CMMCompound(compound_id, mass, formula, name, cas_id,
                                 formula_type_int, compound_type, compound_status, charge_type, charge_number,
                                 lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, MINE_id,
                                 structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
