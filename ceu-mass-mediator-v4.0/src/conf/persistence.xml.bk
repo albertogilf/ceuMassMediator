@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="ceuMassMediator" transaction-type="JTA">
+    <!--<jta-data-source>compuestos</jta-data-source>-->
+    <!--<jta-data-source>jdbc/compounds</jta-data-source>-->
+    <!--<jta-data-source>jdbc/proof</jta-data-source>-->
+    <jta-data-source>jdbc/newDataModel</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties/>
+  </persistence-unit>
+  <!-- IMPORTANT -->
+  <!-- This file is pointing at a JDBC resource in glassfish server named "compounds_new". This resource has also
+    asociated a JDBC connection pool. The name doesn't matter, just take care of the direction of the database and the port
+
+    For example: URL:jdbc:mysql://localhost/compounds_new  PORT: 3306
+    
+    The datasource classname is:   com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+    if Glassfish doesn't recognise it. You should put the jar library in the glassfishPath/domain1/lib/ext. Where domain1
+    is the name of the domain you are using.
+    
+    This process is easily made if you start with the netbeans interface when your are creating a new project.
+      
+    -->
+</persistence>

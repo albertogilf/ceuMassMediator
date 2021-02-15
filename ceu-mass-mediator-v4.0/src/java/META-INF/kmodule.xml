@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
+    <kbase name="LipidsTypeIonRulesTCKBase" packages="rules.lipids.ionization">
+        <ksession name="LipidsTypeIonRulesTCKSession"/>
+    </kbase>
+    <kbase name="AdductRelationRulesTCKBase" packages="rules.lipids.adductsrelations">
+        <ksession name="AdductRelationRulesTCKSession"/>
+    </kbase>
+    <!--<kbase name="LipidsPrecedenceRulesTCKBase" packages="rules.lipids.precedence">
+        <ksession name="LipidsPrecedenceRulesTCKSession"/>
+    </kbase>-->
+    <kbase name="LackAdductRelationRulesTCKBase" packages="rules.lipids.lackadductsrelations">
+        <ksession name="LackAdductRelationRulesTCKSession"/>
+    </kbase>
+    <kbase name="LipidsRTRulesTCKBase" packages="rules.lipids.retentiontime">
+        <ksession name="LipidsRTRulesTCKSession"/>
+    </kbase>
+    
+    <kbase name="LipidsTypeIonRulesCompoundsKBase" packages="rules.lipids_compoundsLCMS.ionization">
+        <ksession name="LipidsTypeIonRulesCompoundsKSession"/>
+    </kbase>
+    <kbase name="AdductRelationRulesCompoundsKBase" packages="rules.lipids_compoundsLCMS.adductsrelations">
+        <ksession name="AdductRelationRulesCompoundsKSession"/>
+    </kbase>
+    <!--<kbase name="LipidsPrecedenceRulesCompoundsKBase" packages="rules.lipids_compoundsLCMS.precedence">
+        <ksession name="LipidsPrecedenceRulesCompoundsKSession"/>
+    </kbase>-->
+    <kbase name="LackAdductRelationRulesCompoundsKBase" packages="rules.lipids_compoundsLCMS.lackadductsrelations">
+        <ksession name="LackAdductRelationRulesCompoundsKSession"/>
+    </kbase>
+    <kbase name="LipidsRTTimeRulesCompoundsKBase" packages="rules.lipids_compoundsLCMS.retentiontime">
+        <ksession name="LipidsRTRulesCompoundsKSession"/>
+    </kbase>
+    
+</kmodule>
+

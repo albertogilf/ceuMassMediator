@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>Simple Search. CEU mass mediator</title>
+        </ui:define>
+        
+        <ui:param name="onloadbody" value="#{theoreticalCompoundsController.clearForm()}"/>
+        <ui:param name="idbody" value="searchbody"/>
+        
+        <ui:define name="intro-wrapper">
+            <!--
+            <div class="title">Simple Search</div>
+            -->
+
+            <div class="form" >
+                <h:form id="mainsearch" prependId="false">
+                    <p:focus for="inputmasses"/>
+                    <h:commandButton id="dummy" actionListener="#{theoreticalCompoundsController.submitCompoundsSimple()}" 
+                                     action="/List?faces-redirect=true" style="display:none;"
+                                     />
+                    <div id="highlights" class="container whiteborder">
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label style="float: top">All fields are required</label>
+
+                            </p:row>
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="inputmasses" style="float: top">Experimental Mass: </label>
+                                <p:inputText id="inputmasses" size="2" maxlength="10"  
+                                             value="#{theoreticalCompoundsController.queryInputMasses}"
+                                             validator="#{theoreticalCompoundsController.validateInputSingleMass}"
+                                             required="true"
+                                             pt:placeholder="enter input mass"
+                                             style="width:100%"
+                                             />
+                                <p:message for="inputmasses" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputtolerance" style="float: top">Tolerance: &nbsp;</label>
+                                    <p:inputText id="inputtolerance" size="2" maxlength="4"  
+                                                 value="#{theoreticalCompoundsController.inputTolerance}" 
+                                                 validator="#{theoreticalCompoundsController.validateInputTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="inputtolerance" styleClass="errormessage"></p:message>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmodetolerance" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmodetolerance" 
+                                                        required="true"
+                                                        requiredMessage="Choose tolerance mode"
+                                                        value="#{theoreticalCompoundsController.inputModeTolerance}">
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>
+                                        <f:selectItem itemValue="mDa" itemLabel="mDa"/>  
+                                    </p:selectOneRadio>
+                                </div>
+                            </p:row>
+                            
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="databasesmenu" style="float: top">Databases: &nbsp;</label>
+                                <p:selectManyMenu id="databasesmenu" 
+                                                  value="#{theoreticalCompoundsController.databases}" 
+                                                  filter="false" 
+                                                  filterMatchMode="contains"
+                                                  showCheckbox="true"
+                                                  required="true"
+                                                  requiredMessage="Choose some database"
+                                                  style="width:100%">
+                                    <f:ajax execute="databasesmenu" render=" databasesmenu"/>
+                                    <f:selectItems value="#{theoreticalCompoundsController.DBcandidates}" />
+                                </p:selectManyMenu>
+                                <p:message for="databasesmenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="metabolitestypemenu" style="float: top">Metabolites: &nbsp;</label>
+                                <p:selectOneListbox id="metabolitestypemenu" 
+                                                    value="#{theoreticalCompoundsController.metabolitesType}" 
+                                                    filter="false" 
+                                                    filterMatchMode="contains"
+                                                    required="true"
+                                                    requiredMessage="Choose type of metabolites to search"
+                                                    style="width:100%">
+                                    <f:ajax execute="metabolitestypemenu" render=" metabolitestypemenu"/>
+                                    <f:selectItems value="#{theoreticalCompoundsController.metabolitesTypecandidates}" />
+                                </p:selectOneListbox>
+                                <p:message for="metabolitestypemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row>
+                                <label for="massesmodemenu" style="float: top">Input Mass Mode:</label>
+                                <p:selectOneListbox id="massesmodemenu" 
+                                                    value="#{theoreticalCompoundsController.massesMode}"
+                                                    style="width:100%">
+                                    <f:selectItem itemValue="neutral" itemLabel="Neutral Masses"/>
+                                    <f:selectItem itemValue="mz" itemLabel="m/z Masses"/>
+                                    <!--<f:selectItem itemValue="recalculated" itemLabel="Recalculated m/z Masses"/>-->
+                                    <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu 
+                                            adductsmenu messageionmode"/>
+                                </p:selectOneListbox>
+                                <p:message for="massesmodemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row>
+                                <label for="ionmodemenu" style="float: top">Ionization Mode:</label>
+                                <p:selectOneListbox id="ionmodemenu" 
+                                                    value="#{theoreticalCompoundsController.ionMode}"
+                                                    required="true"
+                                                    requiredMessage="Choose an ionization mode"
+                                                    style="width:100%">
+                                    <f:selectItems value="#{theoreticalCompoundsController.ionizationModeCandidates}" />
+                                    <f:ajax execute="ionmodemenu" render=" ionmodemenu adductsmenu messageionmode"/>
+                                </p:selectOneListbox>
+                                <p:message for="ionmodemenu" styleClass="errormessage"></p:message>
+                                <p:outputLabel id="messageionmode"
+                                               value="#{theoreticalCompoundsController.showMessageForNeutralMasses()}"
+                                               style="float: top"
+                                               />
+                            </p:row>
+
+                            <p:row>
+                                <label for="adductsmenu" style="float: top">Adducts:</label>
+                                <p:selectManyMenu id="adductsmenu" 
+                                                  value="#{theoreticalCompoundsController.adducts}" 
+                                                  filter="false" 
+                                                  filterMatchMode="contains"
+                                                  showCheckbox="true"
+                                                  required="true"
+                                                  requiredMessage="Choose some adduct"
+                                                  style="width:100%">
+                                    <f:selectItems value="#{theoreticalCompoundsController.adductsCandidates}" />
+                                </p:selectManyMenu>
+                                <p:message for="adductsmenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                        </p:panelGrid>
+                        <hr/>
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+                            <p:row>      
+                                <h:commandButton 
+                                    id="loadDemo" 
+                                    type="submit" 
+                                    value="Load demo data" 
+                                    action="#{theoreticalCompoundsController.setDemoMass()}" 
+                                    immediate="true"
+                                    style="width:100%">
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>
+                                <h:commandButton
+                                    id="submit" 
+                                    value="submit for compounds" 
+                                    actionListener="#{theoreticalCompoundsController.submitCompoundsSimple()}" 
+                                    action="/List?faces-redirect=true"
+                                    style="width:100%">
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>
+                                <h:commandButton  
+                                    id="reset" 
+                                    type="submit" 
+                                    value="reset" 
+                                    action="#{theoreticalCompoundsController.clearForm()}"
+                                    immediate="true"
+                                    style="width:100%"> 
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+
+                        </p:panelGrid>
+
+                    </div>
+                </h:form>
+            </div>
+        </ui:define>
+    </ui:composition>
+
+</html>

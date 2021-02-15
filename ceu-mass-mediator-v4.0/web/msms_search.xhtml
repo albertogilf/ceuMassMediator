@@ -1,0 +1,244 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>MS/MS Search. CEU mass mediator</title>
+        </ui:define>
+
+        <ui:param name="onloadbody" value="#{MSMSController.clearForm()}"/>
+        <ui:param name="idbody" value="searchbody"/>
+        
+        <ui:define name="intro-wrapper">
+            <!--
+            <div class="title">Batch Simple Search</div>
+            -->
+
+            <div class="form">
+
+                <h:form id="mainsearch" enctype="multipart/form-data" prependId="false">
+                    <p:focus for="inputpeaks"/>
+                    <h:commandButton id="dummy" actionListener="#{MSMSController.submit()}" 
+                                     action="/msms_list?faces-redirect=true" style="display:none;"
+                                     />
+                    <p:clock rendered="false"/>
+                    <div id="highlights" class="container whiteborder">
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label style="float: top">All fields are required</label>
+
+                            </p:row>
+                            <p:row></p:row>
+                            <p:row></p:row>
+                         
+                            <p:row>
+                                <div class="form-group">
+                                    <label style="float: top">Precursor Ion Mass (m/z): </label>
+                                    <p:inputText id="precursorionmass"
+                                                 required="true"
+                                                 value="#{MSMSController.precursorIonMass}"
+                                                 validator="#{MSMSController.validatePrecursorIonMass}"
+                                                 pt:placeholder="enter precursor ion mass"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="precursorionmass" styleClass="errormessage"></p:message>
+                                </div>
+                            </p:row>
+
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="inputpeaks" class="tooltip">MS/MS Peak List:
+                                    <span class="tooltiptext">
+                                        Introduce m/z and intensities.
+                                    </span>
+                                </label>
+                                
+                                <p:inputTextarea id="inputpeaks"
+                                                 value="#{MSMSController.queryPeaks}"
+                                                 validator="#{MSMSController.validatePeaks}"
+                                                 required="true"
+                                                 pt:placeholder="enter one peak per line"
+                                                 autoResize="false" 
+                                                 style=" overflow: auto; width:100%"/>
+                                <p:message for="inputpeaks" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <div class="col-sm-9">
+                                    <label style="float: top">Precursor Ion Tolerance: </label>
+                                    <p:inputText id="inputpitolerance" size="2" maxlength="4"  
+                                                 value="#{MSMSController.precursorIonTolerance}" 
+                                                 validator="#{MSMSController.validateInputMZTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="inputpitolerance" styleClass="errormessage"></p:message>
+                                </div>
+                                 <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmodetolerancepi" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmodetolerancepi" 
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{MSMSController.precursorIonToleranceMode}" >
+                                        <f:selectItem itemValue="Da" itemLabel="Da"/>
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>  
+                                    </p:selectOneRadio>
+                                </div>
+                                
+                            </p:row>
+
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+                            
+                            <p:row>
+                                <div class="col-sm-9">
+                                    <label style="float: top">M/Z Tolerance: </label>
+                                    <p:inputText id="inputmztolerance" size="2" maxlength="4"  
+                                                 value="#{MSMSController.mzTolerance}" 
+                                                 validator="#{MSMSController.validateInputMZTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="inputmztolerance" styleClass="errormessage"></p:message>
+                                </div>
+                                 <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmodetolerancemz" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmodetolerancemz" 
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{MSMSController.mzToleranceMode}" >
+                                        <f:selectItem itemValue="Da" itemLabel="Da"/>
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>  
+                                    </p:selectOneRadio>
+                                </div>
+                                
+                            </p:row>
+
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+
+
+                            <p:row></p:row>
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row>
+                                <label for="ionizationmodemenu" style="float: top">Ionization Mode:</label>
+                                <p:selectOneListbox id="ionizationmodemenu" 
+                                                    value="#{MSMSController.ionizationMode}"
+                                                    style="width:100%">
+                                    <f:selectItem itemValue="1" itemLabel="Positive"/>
+                                    <f:selectItem itemValue="2" itemLabel="Negative"/>
+                                    <!--<f:selectItem itemValue="recalculated" itemLabel="Recalculated m/z Masses"/>-->
+                                    <f:ajax execute="ionizationmodemenu" />
+                                </p:selectOneListbox>
+                                <p:message for="voltagemodemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row>
+                                <label for="ionizationmodemenu" style="float: top">Ionization Voltage:</label>
+                                <p:selectOneListbox id="voltagemodemenu" 
+                                                    value="#{MSMSController.ionizationVoltageLevel}"
+                                                    required="true"
+                                                    requiredMessage="Choose an ionization mode"
+                                                    style="width:100%">
+                                    <f:selectItem itemValue="low" itemLabel="Low (10V)"/>
+                                    <f:selectItem itemValue="med" itemLabel="Medium (20V)"/>
+                                    <f:selectItem itemValue="high" itemLabel="High (40V)"/>
+                                    <f:selectItem itemValue="all" itemLabel="All"/>
+                                    <f:ajax execute="voltagemodemenu" />
+                                </p:selectOneListbox>
+                                <p:message for="voltagemodemenu" styleClass="errormessage"></p:message>
+                                
+                            </p:row>
+                             <p:row>
+                                <label for="spectraTypemenu" style="float: top">Type of spectra:</label>
+                                <p:selectManyMenu id="spectraTypemenu" 
+                                                  value="#{MSMSController.spectraType}" 
+                                                  filter="false" 
+                                                  filterMatchMode="contains"
+                                                  showCheckbox="true"
+                                                  required="true"
+                                                  requiredMessage="Choose Predicted and/or Experimental"
+                                                  style="width:100%">
+                                    <f:ajax execute="spectraTypemenu" render="spectraTypemenu"/>
+                                    <f:selectItems value="#{MSMSController.spectraTypeCandidates}" />
+                                </p:selectManyMenu>
+                                <p:message for="spectraTypemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+                            
+               
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">    
+                            <p:row> 
+                                <h:commandButton 
+                                    id="loadDemo" 
+                                    type="submit" 
+                                    value="Load demo data" 
+                                    action="#{MSMSController.setDemo()}" 
+                                    immediate="true"
+                                    style="width:100%">
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>
+                                <h:commandButton
+                                    id="submit" 
+                                    value="submit compounds" 
+                                    actionListener="#{MSMSController.submit()}" 
+                                    action="/msms_list?faces-redirect=true"
+                                    style="width:100%">
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>                            
+                                <h:commandButton  
+                                    id="reset" 
+                                    type="submit" 
+                                    value="reset" 
+                                    action="#{MSMSController.clearForm()}"
+                                    immediate="true"
+                                    style="width:100%"> 
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+                        </p:panelGrid>
+
+
+                    </div>
+                </h:form>
+            </div>
+
+            <script type="text/javascript">
+
+            </script>
+            <script defer="defer" src="assets/js/jquery.csv.min.js" type="text/javascript"></script>
+            <script defer="defer" src="assets/js/jszip.min.js" type="text/javascript"></script>
+            <script defer="defer" src="assets/js/xlsx.min.js" type="text/javascript"></script>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,359 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>CE/MS EFF MOB Search. CEU mass mediator</title>
+        </ui:define>
+
+        <ui:param name="onloadbody" value="#{CEMSEffMobController.clearForm()}"/>
+        <ui:param name="idbody" value="searchbody"/>
+
+        <ui:define name="intro-wrapper">
+
+            <div class="form" >
+                <h:form id="mainsearch" prependId="false">
+                    <h:commandButton id="dummy" actionListener="#{CEMSEffMobController.submitCEMSEffMobSearch()}" 
+                                     action="cems_list_effmob?faces-redirect=true" style="display:none;"
+                                     />
+                    <div id="highlights" class="container whiteborder">
+                        <center>
+                            <label style="float: top">Beta version</label>
+                            <label style="float: top">(*) Mandatory fields</label>
+
+                            
+                            <h:commandButton 
+                                    id="loadDemo" 
+                                    type="submit" 
+                                    value="Load demo data" 
+                                    action="#{CEMSEffMobController.setCEEffMobDemoMasses()}" 
+                                    immediate="true"
+                                    style="width:40%">
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                            </h:commandButton>
+                            <br/>
+                            <br/>
+                            <input id="uploadceexperiment" type="file"  accept="text/plain,.csv, 
+                                application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 
+                                application/vnd.ms-excel" name="file" size="30"/>
+                        </center>
+                        
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row>
+                                <label for="bgemenu" style="float: top">BGE: &nbsp;</label>
+                                <p:selectOneListbox id="bgemenu" 
+                                                    required="true"
+                                                    value="#{CEMSEffMobController.bufferTemperatureCode}"
+                                                    requiredMessage="Choose the background electrolyte"
+                                                    style="width:100%">
+                                    <f:selectItems value="#{CEMSEffMobController.bufferCandidates}" />
+                                    <f:ajax execute="bgemenu" render="bgemenu"/>
+                                </p:selectOneListbox>
+                                <p:message for="bgemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row>
+                                <label for="polaritymenu" style="float: top">Polarity: &nbsp;</label>
+                                <p:selectOneListbox id="polaritymenu" 
+                                                    required="true"
+                                                    value="#{CEMSEffMobController.polarity}"
+                                                    requiredMessage="Choose the background electrolyte"
+                                                    style="width:100%">
+                                    <f:selectItems value="#{CEMSEffMobController.polarityCandidates}" />
+                                    <f:ajax execute="polaritymenu" render="bgemenu"/>
+                                </p:selectOneListbox>
+                                <p:message for="polaritymenu" styleClass="errormessage"></p:message>
+                            </p:row>
+                            
+                            <p:row>
+                                <label for="chemicalalphabet" class="tooltip">Chemical Alphabet (*): &nbsp;
+                                    <span class="tooltiptext">Search restricted to selected elements<br/>
+                                    </span>
+                                </label>
+                                <p:selectOneListbox id="chemicalalphabet" 
+                                                    value="#{CEMSEffMobController.chemAlphabet}"
+                                                    style="width:100%">
+                                    <f:selectItems value="#{CEMSEffMobController.chemAlphabetCandidates}" />
+                                </p:selectOneListbox>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <p:outputLabel for="@next" value="Deuterium: " />
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <p:selectBooleanCheckbox id="checkboxdeuterium" value="#{CEMSEffMobController.includeDeuterium}" />
+                                </div>
+                            </p:row>
+                            
+                        </p:panelGrid>
+                            
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row>
+                                <label for="massesmodemenu" style="float: top">Input Mass Mode:</label>
+                                <p:selectOneListbox id="massesmodemenu" 
+                                                    value="#{CEMSEffMobController.massesMode}"
+                                                    style="width:100%">
+                                    <f:selectItem itemValue="0" itemLabel="Neutral Masses"/>
+                                    <f:selectItem itemValue="1" itemLabel="m/z Masses"/>
+                                    <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu 
+                                            adductsmenu messageionmode bgemenu"/>
+                                </p:selectOneListbox>
+                                <p:message for="massesmodemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row>
+                                <label for="ionmodemenu" style="float: top">Ionization Mode:</label>
+                                <p:selectOneListbox id="ionmodemenu" 
+                                                    value="#{CEMSEffMobController.ionMode}"
+                                                    required="true"
+                                                    requiredMessage="Choose an ionization mode"
+                                                    style="width:100%">
+                                    <f:selectItems value="#{CEMSEffMobController.ionizationModeCandidates}" />
+                                    <f:ajax execute="ionmodemenu" render=" ionmodemenu adductsmenu messageionmode bgemenu"/>
+                                </p:selectOneListbox>
+                                <p:message for="ionmodemenu" styleClass="errormessage"></p:message>
+                                <p:outputLabel id="messageionmode"
+                                               value="#{CEMSEffMobController.showMessageForNeutralMasses()}"
+                                               style="float: top"
+                                               />
+                            </p:row>
+
+                            <p:row>
+                                <label for="adductsmenu" style="float: top">Adducts:</label>
+                                <p:selectManyMenu id="adductsmenu" 
+                                                  value="#{CEMSEffMobController.adducts}" 
+                                                  filter="false" 
+                                                  filterMatchMode="contains"
+                                                  showCheckbox="true"
+                                                  required="true"
+                                                  requiredMessage="Choose some adduct"
+                                                  style="width:100%">
+                                    <f:selectItems value="#{CEMSEffMobController.adductsCandidates}" />
+                                </p:selectManyMenu>
+                                <p:message for="adductsmenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                        </p:panelGrid>
+                        <hr/>
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+                            <p:row>
+                                <label for="inputmasses" class="tooltip">Experimental Masses (*):
+                                    <span class="tooltiptext">m/z of the experimental masses</span>
+                                </label>
+                                <p:inputTextarea id="inputmasses"
+                                                 value="#{CEMSEffMobController.queryInputMasses}"
+                                                 required="true"
+                                                 pt:placeholder="enter CE m/zs"
+                                                 autoResize="false"                                                 
+                                                 style=" overflow: auto; width:100%"
+                                                 />
+                                <p:message for="inputmasses" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row>
+                                <label for="effmobs" class="tooltip">Effective Mobilities: 
+                                    <span class="tooltiptext">
+                                        Effective Mobilities
+                                    </span>
+                                </label>
+                                <p:inputTextarea id="effmobs"
+                                                 value="#{CEMSEffMobController.queryInputEffMobs}"
+                                                 pt:placeholder="enter effective mobilities"
+                                                 autoResize="false"     
+                                                 style=" overflow: auto; width:100%"
+                                                 />
+                                <p:message for="effmobs" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmztolerance" style="float: top">m/z tolerance: &nbsp;</label>
+                                    <p:inputText id="inputmztolerance" size="2" maxlength="4"  
+                                                 value="#{CEMSEffMobController.inputmzTolerance}" 
+                                                 validator="#{CEMSEffMobController.validateInputTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance for m/z"
+                                                 style="width:100%"
+                                                 />
+                                    <p:message for="inputmztolerance" styleClass="errormessage"></p:message>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmzmodetolerance" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmzmodetolerance" 
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{CEMSEffMobController.inputmzModeTolerance}">
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>
+                                        <f:selectItem itemValue="mDa" itemLabel="mDa"/>  
+                                    </p:selectOneRadio>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputeffmobtolerance" style="float: top">EFF MOB tolerance: &nbsp;</label>
+                                    <p:inputText id="inputeffmobtolerance" size="2" maxlength="4"  
+                                                 value="#{CEMSEffMobController.inputEffMobTolerance}" 
+                                                 validator="#{CEMSEffMobController.validateInputTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance for the effective mobilities"
+                                                 style="width:100%"
+                                                 />
+                                    <p:message for="inputeffmobtolerance" styleClass="errormessage"></p:message>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputeffmobmodetolerance" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputeffmobmodetolerance" 
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{CEMSEffMobController.inputEffMobModeTolerance}">
+                                        <f:selectItem itemValue="percentage" itemLabel="%"/>
+                                    </p:selectOneRadio>
+                                </div>
+                            </p:row>
+                            
+                        </p:panelGrid>
+                        
+                        <hr/>
+                        
+                        <center>
+
+                            <h:commandButton
+                                id="submit" 
+                                value="submit" 
+                                actionListener="#{CEMSEffMobController.submitCEMSEffMobSearch()}" 
+                                action="cems_list_effmob?faces-redirect=true"
+                                style="width:40%">
+                            </h:commandButton>
+                            <br/>
+                            <br/>
+                            <h:commandButton  
+                                id="reset" 
+                                type="submit" 
+                                value="reset" 
+                                action="#{CEMSEffMobController.clearForm()}"
+                                immediate="true"
+                                style="width:40%"> 
+                                <f:ajax render="@form"/>
+                                <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                            </h:commandButton>
+                        </center>
+
+                    </div>
+                </h:form>
+            </div>
+            
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    function to_csv(workbook) {
+                        var result = [];
+                        var csvFile;
+                        workbook.SheetNames.forEach(function(sheetName) {
+                            var csv = XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName]);
+                            if(csv.length > 0){
+                                csvFile = csv;
+                            }
+                        });
+                        return csvFile;
+                    }
+                    function detectSeparator(firstLine) {
+                        var firstLine = firstLine.split('\n')[0];
+                        if (firstLine.includes(",")){
+                            return ",";
+                        }
+                        if (firstLine.includes(";")){
+                            return ";";
+                        }
+                        if (firstLine.includes("|")){
+                            return "|";
+                        }
+                        if (firstLine.includes("\t")){
+                            return "\t";
+                        }
+                    }
+                    function handleFileSelect(evt) {
+                        async:false
+                        var files = evt.target.files; // FileList object
+
+                        // use the 1st file from the list
+                        f = files[0];
+                        var reader = new FileReader();
+                        var extension = f.name.split('.').pop().toLowerCase();
+                        // Closure to capture the file information.
+                        reader.onload = (function (theFile) {
+                            return function (e) {
+                                switch (extension) {
+                                    case 'txt':
+                                    case 'csv':
+                                        var csvFile = e.target.result;
+                                        var delimiter = detectSeparator(csvFile);
+                                        var options={"separator" : delimiter};
+                                        var rows = $.csv.toArrays(csvFile);
+                                        break;
+                                    case 'xls':
+                                    case 'xlsx':
+                                        var data = e.target.result;
+                                        var workbook = XLSX.read(data, {type: 'binary'});
+                                        var csvFile = to_csv(workbook);
+                                        var rows = $.csv.toArrays(csvFile);
+                                        break;
+                                }
+                                var mzColumn = -1;
+                                var mzs ="";
+                                var effMobColumn = -1;
+                                var effMobs ="";
+                                
+                                for (var i = 0; i &lt; rows[0].length; i++) {
+                                    if (rows[0][i].includes("mz")) {
+                                        var mzColumn = i;
+                                    }
+                                    if (rows[0][i].includes("effMob")) {
+                                        var effMobColumn = i;
+                                    }
+                                }
+                                if(mzColumn &gt;= 0)
+                                {
+                                    for (var i = 1; i  &lt; rows.length; i++) {
+                                        mzs += rows[i][mzColumn] + "\n";
+                                }
+                                    jQuery('#inputmasses').val(mzs);
+                                }
+                                else{
+                                    jQuery('#inputmasses').val("Upload a correct file (see manual)");
+                                }
+                                if(effMobColumn &gt;= 0)
+                                {
+                                    for (var i = 1; i  &lt; rows.length; i++) {
+                                        effMobs += rows[i][effMobColumn] + "\n";
+                                }
+                                    jQuery('#effmobs').val(effMobs);
+                                }
+                                else{
+                                    jQuery('#effmobs').val("See format for uploading files in manual");
+                                }
+                                
+                            };
+                        })(f);
+			switch (extension) {
+                            case 'txt':
+                            case 'csv':
+	      	              reader.readAsText(f);
+			      break;
+                            case 'xls':
+                            case 'xlsx':
+	      	              reader.readAsBinaryString(f);
+			      break;
+			}
+                    }
+                    document.getElementById('uploadceexperiment').addEventListener('change', handleFileSelect, false);
+                });
+                
+            </script>
+            <script defer="defer" src="assets/js/jquery.csv.min.js" type="text/javascript"></script>
+            <script defer="defer" src="assets/js/jszip.min.js" type="text/javascript"></script>
+            <script defer="defer" src="assets/js/xlsx.min.js" type="text/javascript"></script>
+        </ui:define>
+    </ui:composition>
+
+</html>

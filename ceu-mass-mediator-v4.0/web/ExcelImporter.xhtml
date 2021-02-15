@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>Pathway Displayer. CEU mass mediator</title>
+        </ui:define>
+        
+        <ui:param name="onloadbody" value=""/>
+        <ui:param name="idbody" value="bodylistcompounds"/>
+        
+        <ui:define name="intro-wrapper">
+            <!--
+            <div class="title">Results</div>
+            -->
+            <div class="form">
+                <h:panelGroup rendered="#{pagepathway.isTherePathways()}">
+                    <center>
+                        <form action="download" method="post" enctype="multipart/form-data">
+                            <input type="submit" value="Generate Excel"></input>
+                        </form>
+                    </center>
+                </h:panelGroup>
+                <h:form id="listpathways" prependId="false" >
+                    <!--
+                    <h:panelGroup id="messagePanel" layout="block">
+                        <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                    </h:panelGroup>
+                    -->
+                    <center>
+                        <p class="style1">
+                            <h:outputText escape="false" value="No compound with pathways in the input file" rendered="#{not pagepathway.isTherePathways()}"/>
+                        </p>
+
+                    </center>
+                    <h:panelGroup rendered="#{pagepathway.isTherePathways()}">
+
+                        <p:dataList value="#{pagepathway.listPathways}" 
+                                    var="pathway"
+                                    id="datalistresults"
+                                    type="unordered" 
+                                    itemType="none" 
+                                    paginator="true" 
+                                    rows="#{pagepathway.numPathways()}"
+                                    styleClass="paginated"
+                                    >
+                            <f:facet name="header">
+                                Compounds order by Pathway
+                            </f:facet>
+                            <h:outputText value="Compounds present in "/>
+                            <h:outputLink value="#{pathway.getWebPage()}" styleClass="prime">
+                                <h:outputText value="#{pathway.name}" />  
+                            </h:outputLink>
+                            <p:dataTable value="#{pathway.compounds}" 
+                                         var="compound" 
+                                         sortMode="multiple"
+                                         id="datatablecompound"
+                                         styleClass="compoundresults"
+                                         >
+                                <!-- Every column has the minimum pixels enough to show information.
+                                     The addition of every column is the widh of body -> 1600px
+                                -->
+                                <p:column headerText="Experimental mass" sortBy="#{compound.expmass}" style="width:120px">
+                                    <h:outputText value="#{compound.expmass}" />
+                                </p:column>
+                                <p:column headerText="Retetion Time" sortBy="#{compound.retentionTime}" 
+                                          rendered="#{pagepathway.isThereFlag()}" style="width:90px">
+                                    <h:outputText value="#{compound.retentionTime}" />
+                                </p:column>
+                                <!--<ui:remove>-->
+                                <p:column headerText="Id" 
+                                          sortBy="#{compound.identifier}" 
+                                          style="width:75px">
+                                    <h:outputText value="#{compound.identifier}" />
+                                </p:column>
+                                
+                                <p:column headerText="Adduct" sortBy="#{compound.adduct}" style="width:120px">
+                                    <h:outputText value="#{compound.adduct}" />
+                                </p:column>
+                                
+                                <p:column headerText="error PPM" sortBy="#{compound.ppmError}" style="width:75px">
+                                    <h:outputText value="#{compound.ppmError}" />
+                                </p:column>
+                                <!--</ui:remove>-->
+                                <p:column headerText="Molecular Weight" sortBy="#{compound.molecularWeight}" style="width:100px">
+                                    <h:outputText value="#{compound.molecularWeight}" />
+                                </p:column>
+                                
+                                <p:column headerText="Name" sortBy="#{compound.name}" style="width:405px">
+                                    <h:outputText value="#{compound.name}" />
+                                </p:column>
+                                
+                                <p:column headerText="Formula" sortBy="#{compound.formula}" style="width:150px">
+                                    <h:outputText value="#{compound.formula}" />
+                                </p:column>
+                                
+                                <p:column headerText="Cas" sortBy="#{compound.casId}" style="width:120px">
+                                    <h:outputText value="#{compound.casId}" />
+                                </p:column>
+
+
+                                <p:column sortBy="#{compound.keggCompound}" style="width:90px">
+                                    <f:facet name="header">  
+                                        <h:outputLink value="#{pathway.keggWebPage()}" styleClass="prime">
+                                            <h:outputText value="KEGG" />  
+                                        </h:outputLink>
+                                    </f:facet> 
+                                    <h:outputLink value="#{compound.keggCompoundWebPage()}" styleClass="prime">
+                                        <h:outputText value="#{compound.keggCompound}" />
+                                    </h:outputLink>
+                                </p:column>
+                                <p:column sortBy="#{compound.HMDBCompound}" style="width:120px">
+                                    <f:facet name="header">  
+                                        <h:outputLink value="#{pathway.HMDBWebPage()}" styleClass="prime">
+                                            <h:outputText value="HMDB" />  
+                                        </h:outputLink>
+                                    </f:facet> 
+                                    <h:outputLink value="#{compound.HMDBCompoundWebPage()}" styleClass="prime">
+                                        <h:outputText value="#{compound.HMDBCompound}" />
+                                    </h:outputLink>
+                                </p:column>
+                                <p:column sortBy="#{compound.LMCompound}" style="width:125px">
+                                    <f:facet name="header">  
+                                        <h:outputLink value="#{pathway.LMWebPage()}" styleClass="prime">
+                                            <h:outputText value="LipidMaps" />  
+                                        </h:outputLink>
+                                    </f:facet> 
+                                    <h:outputLink value="#{compound.LMCompoundWebPage()}" styleClass="prime">
+                                        <h:outputText value="#{compound.LMCompound}" />
+                                    </h:outputLink>
+                                </p:column>
+                                <p:column sortBy="#{compound.metlinCompound}" style="width:100px">
+                                    <f:facet name="header">  
+                                        <h:outputLink value="#{pathway.metlinWebPage()}" styleClass="prime">
+                                            <h:outputText value="Metlin" />  
+                                        </h:outputLink>
+                                    </f:facet> 
+                                    <h:outputLink value="#{compound.metlinCompoundWebPage()}" styleClass="prime">
+                                        <h:outputText value="#{compound.metlinCompound}" />
+                                    </h:outputLink>
+                                </p:column>
+
+                                <p:column sortBy="#{compound.PCCompound}" style="width:120px">
+                                    <f:facet name="header">  
+                                        <h:outputLink value="#{pathway.PCWebPage()}" styleClass="prime">
+                                            <h:outputText value="PubChem" />  
+                                        </h:outputLink>
+                                    </f:facet> 
+                                    <h:outputLink value="#{compound.PCCompoundWebPage()}" styleClass="prime">
+                                        <h:outputText value="#{compound.PCCompound}" />
+                                    </h:outputLink>
+                                </p:column>
+                                
+                            </p:dataTable>
+                        </p:dataList>
+                    </h:panelGroup>
+                </h:form>
+            </div>
+        </ui:define>
+    </ui:composition>
+
+</html>
+
+

@@ -1,0 +1,792 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>Quality Assurance. CEU mass mediator</title>
+        </ui:define>
+        
+        <ui:param name="onloadbody" value=""/>
+        <ui:param name="idbody" value="searchbody"/>
+        
+        <ui:define name="intro-wrapper">
+
+            <div class="form" >
+                <h:form id="mainsearch" prependId="false">
+                    <div id="highlights" class="container whiteborder">
+                        <p:panelGrid columns="3"  columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+                            <p:row></p:row>
+                            <p:row>
+                                <label style="float: top">All fields are required</label>
+                            </p:row>
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+                            <p:row>
+                                
+                                <label for="averagemssignal" style="float: top">Average signal in MS mode: </label>
+                                
+                                <input id="averagemssignal" 
+                                       placeholder="enter the average signal in MS level" 
+                                       type="text" maxlength="10" 
+                                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" 
+                                       required="true"
+                                       onfocusout="validateMSSignal()" 
+                                       >
+                                </input>
+                            </p:row>
+                            <p:row>
+                                <label for="erroraveragemssignal" style="float: top"> </label>
+                                <span class="ui-message-error ui-message-error-detail" id="erroraveragemssignal"> </span>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="overallmsmsintensity" style="float: top">Overall intensity of MS/MS spectra: </label>
+                                
+                                <input id="overallmsmsintensity" 
+                                       placeholder="enter the overall intensity of MS/MS spectra" 
+                                       type="text" maxlength="10" 
+                                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" 
+                                       required="true"
+                                       onfocusout="validateOverallIntensity()">
+                                </input>
+                            </p:row>
+                            <p:row>
+                                <label for="erroroverallmsmsintensity" style="float: top"> </label>
+                                <span class="ui-message-error ui-message-error-detail" 
+                                      id="erroroverallmsmsintensity"> </span>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="noise" style="float: top">Noise (%): </label>
+                                
+                                <input id="noise" 
+                                       placeholder="enter the noise level percentage" 
+                                       type="text" maxlength="5" 
+                                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" 
+                                       required="true"
+                                       onfocusout="validateNoise()">
+                                </input>
+                            </p:row>
+                            <p:row>
+                                <label for="errornoise" style="float: top"> </label>
+                                <span class="ui-message-error ui-message-error-detail" 
+                                      id="errornoise"> </span>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="numscans" style="float: top">Number of scans: </label>
+                                <input id="numscans" 
+                                       placeholder="enter the number of scans of MS/MS" 
+                                       type="text" maxlength="3" 
+                                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" 
+                                       required="true"
+                                       onfocusout="validateNumScans()">
+                                </input>
+                            </p:row>
+                            <p:row>
+                                <label for="errornumscans" style="float: top"> </label>
+                                <span class="ui-message-error ui-message-error-detail" 
+                                      id="errornumscans"> </span>
+                            </p:row>
+                            
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="numsamples" style="float: top">Number of samples: </label>
+                                
+                                <input id="numsamples" 
+                                       placeholder="enter the number of scans of MS/MS" 
+                                       type="text" maxlength="3" 
+                                       class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" 
+                                       required="true"
+                                       onfocusout="validateNumSamples()">
+                                </input>
+                            </p:row>
+                            <p:row>
+                                <label for="errornumsamples" style="float: top"> </label>
+                                <span class="ui-message-error ui-message-error-detail" 
+                                      id="errornumsamples"> </span>
+                            </p:row>
+
+                        </p:panelGrid>
+                        <p:panelGrid columns="1"  columnClasses="centerStyle" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row >
+                                <label for="coelution" style="float: top">Co-elution</label>
+                                <p:selectOneButton id="coelution" 
+                                                   required="true"
+                                                   requiredMessage="Choose co-elution mode"
+                                                   >
+                                    <f:selectItem itemValue="2" itemLabel="no co-elution"/>
+                                    <f:selectItem itemValue="1" itemLabel="with known compound"/>  
+                                    <f:selectItem itemValue="0" itemLabel="with unknown compound"/>
+                                </p:selectOneButton>
+                            </p:row>
+                            <p:row>
+                                <label for="crosstalk" style="float: top">Cross-talk</label>
+                                <p:selectOneButton id="crosstalk" 
+                                                   required="true"
+                                                   requiredMessage="Choose cross-talk" >
+                                    <f:selectItem itemValue="2" itemLabel="no cross-talk"/>
+                                    <f:selectItem itemValue="1" itemLabel="soft cross-talk"/>  
+                                    <f:selectItem itemValue="0" itemLabel="hard cross-talk"/>
+                                </p:selectOneButton>
+                            </p:row>
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+                            <p:row>
+                                    <input 
+                                    id="loadDemo" 
+                                    value="Load data example" 
+                                    onclick="loadDataExample()"
+                                    type="button"
+                                    style="width:100%" />
+                            </p:row>
+                            <p:row>
+                                <input 
+                                    id="clearform" 
+                                    value="reset" 
+                                    onclick="clearForm()"
+                                    type="button"
+                                    style="width:100%" />
+                            </p:row>
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="1" columnClasses="centerStyle" layout="grid" styleClass="ui-panelgrid-blank">
+                            <p:row>
+                                <input 
+                                    id="go"
+                                    type="button"
+                                    value ="Process"
+                                    
+                                    /> 
+                            </p:row>
+                            <p:row>
+                                <h:outputText value="Overall score of your spectrum: " styleClass="qa-result"/>
+                                <h:outputText id="finalscore" styleClass="qa-result"
+                                              />
+                            </p:row>
+                            <p:row>
+                                <input 
+                                    id="tagfinalscore"
+                                    type="button"
+                                    style ="color:black"
+                                    />
+                            </p:row>
+                            <p:row>
+                                <h:outputText value="Partial scores: " styleClass="qa-result"/>
+                                <h:outputText id="intensityscore" styleClass="qa-result"/>
+                                <h:outputText id="noisescore" styleClass="qa-result"/>
+                                <h:outputText id="scansscore" styleClass="qa-result"/>
+                                <h:outputText id="coelutionscore" styleClass="qa-result"/>
+                                <h:outputText id="crosstalkscore" styleClass="qa-result"/>
+
+                            </p:row>
+
+                        </p:panelGrid>
+                    </div>
+                </h:form>
+            </div>
+            
+            <center>
+                <canvas id="pentagon" style="canvas-poligon" width="400" height="400">
+                    Your browser does not support HTML5. Please, update it to see the 
+                    quality of your spectra in a pentagram basis.
+                </canvas>
+            </center>
+
+            
+
+            <script type="text/javascript">
+                // vars for html inputs 
+                // 5 for lower 10E4
+                // 4 for 10E4-10E5
+                // 3 for 10E5-10E6
+                // 2 for 10E6-10E7
+                // 1 for 10E7-10E8
+                // 0 for higher 10E8
+                var avgMSIntensity;
+
+                // 2 for best
+                // 1 for middle range
+                // 0 for worse
+                var overallMSMSIntensity;
+
+                // 2 for lower 5 %
+                // 1 for 5-20%
+                // 0 for higher 20 %
+                var noisePercentage;
+
+                // 2 for lower 5 scans
+                // 1 for 3-5 scans
+                // 0 for higher 3 scans
+                // 2 for higher 2 samples
+                var numScans;
+
+                // value of the samples itself. 
+                var numSamples;
+
+                // 2 for no co-elution
+                // 1 for co-elution with known compound.
+                // 0 for co-elution with unknown. 
+                var coElution;
+                // 2 for no cross-talk
+                // 1 for small cross-talk
+                // 0 for big cross-talk
+                var crossTalk;
+                
+                // vars for scores
+                var intensityScore = "";
+                var noiseScore = "";
+                var scansScore = "";
+                var coElutionScore = "";
+                var crossTalkScore = "";
+                
+                var finalScore = "";
+                var tagFinalScore = "";
+                var colorFinalScore = ""; 
+               
+                
+                // vars for canvas and drawing
+                var canvas = document.getElementById("pentagon");
+                var ctx = canvas.getContext("2d");
+                var cw = canvas.width;
+                var ch = canvas.height;
+
+                var startX = cw/2;
+                var startY = ch/2;
+                var sides = 5;
+                var radius=100;
+                var startAngle = - Math.PI / 2;
+                var anticlockwise = false;
+                
+                var pointsXBigPolygon = [];
+                var pointsYBigPolygon = [];
+                var pointsXSmallPolygon = [];
+                var pointsYSmallPolygon = [];
+                
+                
+                calcPointsBigPolygon(ctx, startX, startY, radius, sides, startAngle, pointsXBigPolygon,pointsYBigPolygon);
+                
+                
+                window.onload = function() {
+                clearForm();
+                };
+                
+                document.getElementById('go').onclick = function () {
+                    // First, clear the context
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // draw full polygon
+                    ctx.strokeStyle = "Black";
+                    drawArists(ctx, startX, startY, sides, pointsXBigPolygon, pointsYBigPolygon);
+                    ctx.stroke();
+                    drawPolygon(ctx, sides, pointsXBigPolygon, pointsYBigPolygon);
+                    ctx.stroke();
+                    drawLabels(ctx, pointsXBigPolygon, pointsYBigPolygon);
+                    
+                    
+                    
+                    submitFeatures();
+                    colorPentagon = getColorPentagon();
+                    calcPointsSmallPolygon(ctx, startX, startY, radius, sides, startAngle, pointsXSmallPolygon,pointsYSmallPolygon);
+                    ctx.strokeStyle = colorPentagon;
+                    drawArists(ctx, startX, startY, sides, pointsXSmallPolygon, pointsYSmallPolygon);
+                    ctx.stroke();
+                    drawPolygon(ctx, sides, pointsXSmallPolygon, pointsYSmallPolygon);
+                    ctx.stroke();
+                    
+                };
+                
+                function clearForm() {
+                    document.getElementById('averagemssignal').value = "";
+                    document.getElementById('overallmsmsintensity').value = "";
+                    document.getElementById('noise').value = "";
+                    document.getElementById('numscans').value = "";
+                    document.getElementById('numsamples').value = "";
+                    uncheckValueFromSelectOneButton('coelution',"ui-state-active");
+                    uncheckValueFromSelectOneButton('crosstalk',"ui-state-active");
+                    
+                    this.finalScore = "";
+                    this.tagFinalScore = "";
+                    this.colorFinalScore = "";
+                } 
+                
+                function loadDataExample() {
+                    document.getElementById('averagemssignal').value = "100000";
+                    document.getElementById('overallmsmsintensity').value = "100000";
+                    document.getElementById('noise').value = "10";
+                    document.getElementById('numscans').value = "7";
+                    document.getElementById('numsamples').value = "1";
+                    uncheckValueFromSelectOneButton('coelution',"ui-state-active");
+                    uncheckValueFromSelectOneButton('crosstalk',"ui-state-active");
+                    checkValueFromSelectOneButton('coelution',2,"ui-state-active");
+                    checkValueFromSelectOneButton('crosstalk',2,"ui-state-active");
+                    // Validation of the values since they loose the focus
+                    validateMSSignal();
+                    validateOverallIntensity();
+                    validateNoise();
+                    validateNumScans();
+                    validateNumSamples();
+                }
+                
+                function getColorPentagon() {
+                    return this.colorFinalScore;
+                }
+                
+                function submitFeatures() {
+                    try {
+                        isValidInputFieldNumberRange('averagemssignal',0,1000000000);
+                        isValidInputFieldNumberRange('overallmsmsintensity',0,1000000000);
+                        isValidInputFieldNumberRange('noise',0,100);
+                        isValidInputFieldNumberRange('numscans',0,100);
+                        isValidInputFieldNumberRange('numsamples',0,100);
+                        this.coElution = getValueFromSelectOneButton('coelution');
+                        this.crossTalk = getValueFromSelectOneButton('crosstalk');
+                    }
+                    catch(err) {
+                        this.finalScore = null;
+                        resetColorAndTag();
+                        alert(err);
+                        return;
+                    }
+                    calculateFinalScore();
+                    chooseColorAndTag();
+                    updateFieldsHTML();
+                }
+                
+                function calculateFinalScore() {
+                    if (this.coElution == 0) {
+                        this.calculateScoreScans();
+                        this.calculateScoreNoisePercentage();
+                        this.calculateScoreOverallMSMSIntensity();
+                        this.calculateScoreCrossTalk();
+                        this.coElutionScore = 0;
+                        this.finalScore = 0;
+                    } else {
+                        this.calculateScoreScans();
+                        this.calculateScoreNoisePercentage();
+                        this.calculateScoreOverallMSMSIntensity();
+                        this.calculateScoreCrossTalk();
+                        this.calculateScoreCoElution();
+                        this.finalScore = this.crossTalkScore + this.coElutionScore
+                                + this.scansScore + this.noiseScore + this.intensityScore;
+                    }
+                }
+                
+                function calculateScoreOverallMSMSIntensity() {
+                    var scoreOverallMSMSIntensity = 0;
+                    var minRangeScore;
+                    var maxRangeScore;
+                    if (this.avgMSIntensity &lt; 10000) {
+                        minRangeScore = 100;
+                        maxRangeScore = 1000;
+                        if (this.overallMSMSIntensity &lt; minRangeScore) {
+                            scoreOverallMSMSIntensity = 0;
+                        } else if (this.overallMSMSIntensity &gt;= maxRangeScore) {
+                            scoreOverallMSMSIntensity = 1;
+                        } else {
+                            scoreOverallMSMSIntensity = (this.overallMSMSIntensity - minRangeScore) / 
+                                    (maxRangeScore - minRangeScore);
+                        }
+                    } else if (this.avgMSIntensity &lt; 100000) {
+                        minRangeScore = 1000;
+                        maxRangeScore = 10000;
+                        if (this.overallMSMSIntensity &lt; minRangeScore) {
+                            scoreOverallMSMSIntensity = 0;
+                        } else if (this.overallMSMSIntensity &gt;= maxRangeScore) {
+                            scoreOverallMSMSIntensity = 1;
+                        } else {
+                            scoreOverallMSMSIntensity = (this.overallMSMSIntensity - minRangeScore) / 
+                                    (maxRangeScore - minRangeScore);
+                        }
+                    } else if (this.avgMSIntensity &lt; 1000000) {
+                        minRangeScore = 1000;
+                        maxRangeScore = 10000;
+                        if (this.overallMSMSIntensity &lt; minRangeScore) {
+                            scoreOverallMSMSIntensity = 0;
+                        } else if (this.overallMSMSIntensity &gt;= maxRangeScore) {
+                            scoreOverallMSMSIntensity = 1;
+                        } else {
+                            scoreOverallMSMSIntensity = (this.overallMSMSIntensity - minRangeScore) / 
+                                    (maxRangeScore - minRangeScore);
+                        }
+                    } else if (this.avgMSIntensity &lt; 10000000) {
+                        minRangeScore = 10000;
+                        maxRangeScore = 100000;
+                        if (this.overallMSMSIntensity &lt; minRangeScore) {
+                            scoreOverallMSMSIntensity = 0;
+                        } else if (this.overallMSMSIntensity &gt;= maxRangeScore) {
+                            scoreOverallMSMSIntensity = 1;
+                        } else {
+                            scoreOverallMSMSIntensity = (this.overallMSMSIntensity - minRangeScore) / 
+                                    (maxRangeScore - minRangeScore);
+                        }
+                    } else if (this.avgMSIntensity &lt; 100000000) {
+                        minRangeScore = 100000;
+                        maxRangeScore = 1000000;
+                        if (this.overallMSMSIntensity &lt; minRangeScore) {
+                            scoreOverallMSMSIntensity = 0;
+                        } else if (this.overallMSMSIntensity &gt;= maxRangeScore) {
+                            scoreOverallMSMSIntensity = 1;
+                        } else {
+                            scoreOverallMSMSIntensity = (this.overallMSMSIntensity - minRangeScore) / 
+                                    (maxRangeScore - minRangeScore);
+                        }
+                    } else {
+                        minRangeScore = 100000;
+                        maxRangeScore = 1000000;
+                        if (this.overallMSMSIntensity &lt; minRangeScore) {
+                            scoreOverallMSMSIntensity = 0;
+                        } else if (this.overallMSMSIntensity &gt;= maxRangeScore) {
+                            scoreOverallMSMSIntensity = 1;
+                        } else {
+                            scoreOverallMSMSIntensity = (this.overallMSMSIntensity - minRangeScore) / 
+                                    (maxRangeScore - minRangeScore);
+                        }
+                    }
+
+                    if (this.noisePercentage &lt;= 5 &amp;&amp; scoreOverallMSMSIntensity &lt; 0.3) {
+                        scoreOverallMSMSIntensity = scoreOverallMSMSIntensity + 0.2;
+                    } else if (this.noisePercentage &lt;= 5 &amp;&amp; scoreOverallMSMSIntensity &lt; 0.5) {
+                        scoreOverallMSMSIntensity = 0.5;
+                    }
+                    this.intensityScore = scoreOverallMSMSIntensity;
+                }
+                
+                function calculateScoreNoisePercentage() {
+                    var scoreNoisePercentage = 0;
+                    var minRangeScore = 5;
+                    var maxRangeScore = 20;
+                    if (this.noisePercentage &lt;= minRangeScore) {
+                        scoreNoisePercentage = 1;
+                    } else if (this.noisePercentage &gt; maxRangeScore) {
+                        scoreNoisePercentage = 0;
+                    } else {
+                        scoreNoisePercentage = 
+                                Math.abs(1 - 
+                                (this.noisePercentage - minRangeScore) / 
+                                (maxRangeScore - minRangeScore));
+                    }
+                    this.noiseScore = scoreNoisePercentage;
+                }
+                
+                function calculateScoreScans() {
+                    var scoreNumScans = 0;
+                    var minRangeScore = 3;
+                    var maxRangeScore = 5;
+                    if (this.numSamples &gt; 1) {
+                        scoreNumScans = 1;
+                    } else if (this.numScans &lt; minRangeScore) {
+                        scoreNumScans = 0;
+                    } else if (this.numScans &gt; maxRangeScore) {
+                        scoreNumScans = 1;
+                    } else if (this.numScans == 5) {
+                        scoreNumScans = 0.75;
+                    } else if (this.numScans == 4) {
+                        scoreNumScans = 0.5;
+                    } else if (this.numScans == 3) {
+                        scoreNumScans = 0.25;
+                    }
+                    this.scansScore = scoreNumScans;
+                }
+                
+                function calculateScoreCoElution() {
+                    this.coElutionScore = this.coElution / 2;
+                }
+                function calculateScoreCrossTalk() {
+                    this.crossTalkScore = this.crossTalk / 2;
+                }
+                
+                function calcPointsBigPolygon(ctx, x, y, radius, sides, startAngle, pointsXPolygon, pointsYPolygon) {
+                    if (sides &lt; 3)
+                        return;
+                    var a = (Math.PI * 2) / sides;
+                    var partialX;
+                    var partialY;
+                    for (var i = 0; i &lt; sides; i++) {
+                        // Translate to x,y to start drawing
+                        partialX = x + radius * Math.cos(startAngle + (a * i)); 
+                        partialY = y + radius * Math.sin(startAngle + (a * i)); 
+                        pointsXPolygon[i] = partialX;
+                        pointsYPolygon[i] = partialY;
+                    }
+                }
+                
+                
+                function calcPointsSmallPolygon(ctx, x, y, radius, sides, startAngle, pointsXPolygon, pointsYPolygon) {
+                    if (sides &lt; 3)
+                        return;
+                    var a = (Math.PI * 2) / sides;
+                    var partialX;
+                    var partialY;
+                    
+                    partialX = x + radius * this.intensityScore * Math.cos(startAngle + (a * 0)); 
+                    partialY = y + radius * this.intensityScore * Math.sin(startAngle + (a * 0)); 
+                    pointsXPolygon[0] = partialX;
+                    pointsYPolygon[0] = partialY;
+
+                    partialX = x + radius * this.noiseScore * Math.cos(startAngle + (a * 1)); 
+                    partialY = y + radius * this.noiseScore * Math.sin(startAngle + (a * 1)); 
+                    pointsXPolygon[1] = partialX;
+                    pointsYPolygon[1] = partialY;
+
+                    
+                    partialX = x + radius * this.scansScore * Math.cos(startAngle + (a * 2)); 
+                    partialY = y + radius * this.scansScore * Math.sin(startAngle + (a * 2)); 
+                    pointsXPolygon[2] = partialX;
+                    pointsYPolygon[2] = partialY;
+
+                    
+                    partialX = x + radius * this.coElutionScore * Math.cos(startAngle + (a * 3)); 
+                    partialY = y + radius * this.coElutionScore * Math.sin(startAngle + (a * 3)); 
+                    pointsXPolygon[3] = partialX;
+                    pointsYPolygon[3] = partialY;
+
+                    partialX = x + radius * this.crossTalkScore * Math.cos(startAngle + (a * 4)); 
+                    partialY = y + radius * this.crossTalkScore * Math.sin(startAngle + (a * 4)); 
+                    pointsXPolygon[4] = partialX;
+                    pointsYPolygon[4] = partialY;
+                }
+                
+                function drawArists(ctx, x, y, sides, pointsXPolygon, pointsYPolygon) {
+                    if (sides &lt; 3)
+                        return;
+                    ctx.save();
+                    ctx.beginPath();
+                    for (var i = 0; i &lt; sides; i++) {
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(pointsXPolygon[i], pointsYPolygon[i]);
+                    }
+                    ctx.restore();
+                }
+                
+                function drawPolygon(ctx, sides, pointsXPolygon, pointsYPolygon) {
+                    if (sides &lt; 3)
+                        return;
+                    ctx.save();
+                    ctx.beginPath();
+                    for (var i = 0; i &lt; sides; i++) {
+                        ctx.lineTo(pointsXPolygon[i], pointsYPolygon[i]);
+                    }
+                    ctx.closePath();
+                    ctx.restore();
+                }
+                
+                function drawLabels(ctx, pointsXPolygon, pointsYPolygon)
+                {
+                    ctx.font = "20px Georgia";
+                    ctx.fillText("Intensity", pointsXPolygon[0] - 40, pointsYPolygon[0] - 10);
+                    
+                    ctx.fillText("Noise", pointsXPolygon[1] + 10, pointsYPolygon[1]);
+                    
+                    ctx.fillText("Scans", pointsXPolygon[2] - 20, pointsYPolygon[2] + 20);
+                    
+                    ctx.fillText("Co-elution", pointsXPolygon[3] - 50, pointsYPolygon[3] + 20);
+                    
+                    ctx.fillText("CrossTalk", pointsXPolygon[4] - 95, pointsYPolygon[4]);
+                }
+                
+                function validateMSSignal() {
+                    var x = document.getElementById("averagemssignal").value;
+                    var errorText = "";
+                    
+                    if(x=="")
+                    {
+                        errorText = "The average signal in MS mode is required";
+                    }
+                    else if (isNaN(x) || x&lt;=0 || x&gt;1000000000) {
+                        errorText = "The average signal should be a number between 0 and 1000000000";
+                    }
+                    else{
+                        this.avgMSIntensity = x;
+                    }
+                    document.getElementById("erroraveragemssignal").innerHTML = errorText;
+                }
+                
+                
+                function validateOverallIntensity() {
+                    var x = document.getElementById("overallmsmsintensity").value;
+                    var errorText = "";
+                    
+                    if(x=="")
+                    {
+                        errorText = "The overall intensity in MS mode is required";
+                    }
+                    else if (isNaN(x) || x&lt;=0 || x&gt;1000000000) {
+                        errorText = "The overall intensity should be a number between 0 and 1000000000";
+                    }
+                    else{
+                        this.overallMSMSIntensity = x;
+                    }
+                    document.getElementById("erroroverallmsmsintensity").innerHTML = errorText;
+                }
+                
+                
+                function validateNoise() {
+                    var x = document.getElementById("noise").value;
+                    var errorText = "";
+                    
+                    if(x=="")
+                    {
+                        errorText = "The noise percentage is required";
+                    }
+                    else if (isNaN(x) || x&lt;=0 || x&gt;=100) {
+                        errorText = "The noise should be a number between 0 and 100";
+                    }
+                    else{
+                        this.noisePercentage = x;
+                    }
+                    document.getElementById("errornoise").innerHTML = errorText;
+                }
+                
+                function validateNumScans() {
+                    var x = document.getElementById("numscans").value;
+                    var errorText = "";
+                    
+                    if(x=="")
+                    {
+                        errorText = "The number of scans of MS/MS spectra is required";
+                    }
+                    else if (isNaN(x) || !isInt(x) || x&lt;=0 || x&gt;=100) {
+                        errorText = "The number of scans of MS/MS spectra should be an integer between 0 and 100";
+                    }
+                    else{
+                        this.numScans = x;
+                    }
+                    document.getElementById("errornumscans").innerHTML = errorText;
+                }
+                
+                function validateNumSamples() {
+                    var x = document.getElementById("numsamples").value;
+                    var errorText = "";
+                    
+                    if(x=="")
+                    {
+                        errorText = "The number of samples of MS/MS spectra is required";
+                    }
+                    else if (isNaN(x) || !isInt(x) || x&lt;=0 || x&gt;=100) {
+                        errorText = "The number of samples of MS/MS spectra should be a an integer between 0 and 100";
+                    }
+                    else{
+                        this.numSamples = x;
+                    }
+                    document.getElementById("errornumsamples").innerHTML = errorText;
+                }
+                
+                function isInt(n) {
+                    return n % 1 === 0;
+                }
+                
+                
+                function getValueFromSelectOneButton(nameDiv) {
+                    var childsNumber = document.getElementById(nameDiv).childElementCount;
+                    var childs=document.getElementById(nameDiv).childNodes;
+                    for (var i=0; i &lt; childsNumber ; i++) {
+                        var child = childs[i].childNodes[0];
+                        if(child.checked)
+                        {
+                            return child.value;
+                        }
+                    }
+                    throw "A button for " + nameDiv + " has to be selected";
+                }
+                
+                function uncheckValueFromSelectOneButton(nameDiv, classToRemove) {
+                    var childsNumber = document.getElementById(nameDiv).childElementCount;
+                    var childs=document.getElementById(nameDiv).childNodes;
+                    for (var i=0; i &lt; childsNumber ; i++) {
+                        var child = childs[i].childNodes[0];
+                        if(child.checked)
+                        {
+                            if(childs[i].classList.contains(classToRemove))
+                            {
+                                childs[i].classList.remove(classToRemove);
+                            }
+                            childs[i].childNodes[0].checked = false;
+                        }
+                    }
+                }
+                
+                function checkValueFromSelectOneButton(nameDiv, valueToCheck, classToAdd) {
+                    var childsNumber = document.getElementById(nameDiv).childElementCount;
+                    var childs=document.getElementById(nameDiv).childNodes;
+                    for (var i=0; i &lt; childsNumber ; i++) {
+                        var child = childs[i].childNodes[0];
+                        if(child.value==valueToCheck)
+                        {
+                            childs[i].classList.add(classToAdd);
+                            childs[i].childNodes[0].checked = true;
+                        }
+                        
+                    }
+                }
+                
+                function isValidInputFieldNumberRange(nameInputField, startRange, endRange) {
+                    var numericValue = parseInt(document.getElementById(nameInputField).value)
+                    
+                    if(isNaN(numericValue))
+                    {
+                        throw nameInputField + " is not a number";
+                    }
+                    else if (numericValue &lt;= startRange) {
+                        throw nameInputField + " is &lt;= " + startRange;
+                    }
+                    else if (numericValue &gt; endRange) {
+                        throw nameInputField + " is &gt; " + endRange;
+                    }
+                }
+                
+                function chooseColorAndTag() {
+                    if (!isNaN(this.finalScore)) {
+                        if (this.finalScore &lt;= 2.5) {
+                            this.colorFinalScore = "red";
+                            this.tagFinalScore = "Inadequate";
+                        } else if (this.finalScore &lt;= 4.0) {
+                            this.colorFinalScore = "yellow";
+                            this.tagFinalScore = "Acceptable";
+                        } else if (this.finalScore &gt; 4.0) {
+                            this.colorFinalScore = "green";
+                            this.tagFinalScore = "Excellent";
+                        }
+                    }
+                }
+                
+                function resetColorAndTag() {
+                    this.colorFinalScore = "";
+                    this.tagFinalScore = "Introduce valid data";
+                }
+                
+                function updateFieldsHTML() {
+                    document.getElementById('finalscore').innerHTML = this.finalScore.toFixed(3);
+                    document.getElementById('intensityscore').innerHTML = "Intensity: " + this.intensityScore.toFixed(3);
+                    document.getElementById('noisescore').innerHTML = "Noise percentage: " + this.noiseScore.toFixed(3);
+                    document.getElementById('scansscore').innerHTML = "Num scans: " + this.scansScore.toFixed(3);
+                    document.getElementById('coelutionscore').innerHTML = "Co-elution: " + this.coElutionScore.toFixed(3);
+                    document.getElementById('crosstalkscore').innerHTML = "Cross-talk: " + this.crossTalkScore.toFixed(3);
+                    document.getElementById('tagfinalscore').value = this.tagFinalScore;
+                    document.getElementById("tagfinalscore").style.backgroundColor = this.colorFinalScore;
+                }
+                
+                function createTagsCanvas() {
+                    
+                }
+              
+            </script>
+        </ui:define>
+    </ui:composition>
+
+</html>

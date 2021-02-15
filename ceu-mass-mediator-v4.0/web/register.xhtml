@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>Register in CEU mass mediator</title>
+        </ui:define>
+        
+        <ui:param name="onloadbody" value=""/>
+        <ui:param name="idbody" value="registerbody"/>
+        
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+
+                <h:panelGroup style="text-align: left ; margin-left: 20px" layout="block">
+                    <h:outputText value="Username " />
+                    <h:inputText id="username" value="#{login.username}" 
+                                 required="true" requiredMessage="Please enter username" 
+                                 validatorMessage="Username should start with an alphabetic character, cannot contain special characters and should finish with an alphabetic character">
+                        <f:validateRegex pattern="[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){4,18}[a-zA-Z0-9]" />
+                        <f:ajax event="blur" render="usernameMessage" />
+                    </h:inputText>
+                    <h:message id="usernameMessage" for="username" style="color: red"></h:message>
+                    <br /><br />
+
+                    <h:outputLabel for="password" value="Password : " />
+                    <h:inputSecret id="password" value="#{login.password}" required="true"
+                                   requiredMessage="Please enter password">
+                        <f:validator validatorId="passwordValidator" />
+                        <f:attribute name="confirmPassword" value="#{confirmPassword}" />
+                    </h:inputSecret>
+                    <h:message for="password" style="color: red;" />
+                    <br /><br />
+                    <h:outputLabel for="confirmPassword" value="Confirm password : " />
+                    <h:inputSecret id="confirmPassword" required="true"
+                                   binding="#{confirmPassword}"
+                                   requiredMessage="Please enter password">
+                        <f:ajax event="blur" render="passwordMessage" />
+                    </h:inputSecret>
+                    <h:message id="passwordMessage" for="confirmPassword" style="color: red;" />
+                    <br /><br />
+                    <h:outputText value="First Name " />
+                    <h:inputText id="firstname" value="#{login.firstName}" required="true" requiredMessage="Please enter first name">
+                        <f:ajax event="blur" render="firstnameMessage" />
+                    </h:inputText>
+                    <h:message id="firstnameMessage" for="firstname" style="color: red"></h:message>
+                    <br /><br />
+
+                    <h:outputText value="Last Name " />
+                    <h:inputText id="lastname" value="#{login.lastName}"></h:inputText>
+                    <h:message for="lastname"></h:message>
+                    <br /><br />
+
+                    <h:outputText value="email " />
+                    <h:inputText id="email" value="#{login.email}" required="true" requiredMessage="Please enter email" validatorMessage="Please write a valid mail">
+                        <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                        <f:ajax event="blur" render="emailMessage" />
+                    </h:inputText>
+                    <h:message id="emailMessage" for="email" style="color: red"></h:message>
+                    <br /><br />
+
+
+                    <h:commandButton action="#{login.register}"
+                                     value="register"></h:commandButton>
+                    <h:messages globalOnly="true" layout="table" />
+                    <br /><br />
+                </h:panelGroup>
+                <h:panelGroup style="text-align: center" layout="block">
+                    <h:commandButton value="Help" action="/help.pdf" immediate="true" />
+                    <h:commandLink style="color : black" value="Main page" action="/index" immediate="true" />
+                </h:panelGroup>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+
+</html>

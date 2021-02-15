@@ -1,0 +1,112 @@
+/*
+        CSS for RESTful API Resources
+        Free for personal and commercial use under the CCA 3.0 license 
+        Sergio Saugar
+*/
+
+
+.pair{
+    display:grid; 
+    grid-template-columns: 20% 80%; 
+    grid-gap:10px;
+    position: relative; 
+}
+
+#compresults{
+    text-align: left;
+    border: 1px solid #2080A0;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 50%;
+    margin: auto;
+}
+
+#cfoot{
+    text-align: right;
+    padding: 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+#cid{
+    font-weight:bold;
+    font-size: 10px;
+    vertical-align: top;
+}
+
+#cname{
+    font-weight:bold; 
+    font-size: 24px;
+    word-break: break-all;
+}
+
+
+fieldset.attributes{
+    border-radius: 25px;
+    border: 1px solid #2080A0;
+    padding: 10px;
+    width: 90%;
+    display: block;
+    margin: auto;
+    margin-bottom: 2%;
+    background-color: #2090AE;
+}
+
+legend{
+    font-style: oblique;
+}
+
+.complabname{
+    display: inline-block;
+    font-style: italic; 
+    text-align:right; 
+    float: left; 
+    padding: 5px;
+    position: relative; 
+
+}
+
+.compvalue{
+    padding: 0px 10px;
+    background: #40A0C0;
+    border: 1px; 
+    border-radius: 5px; 
+    color: #ffffff; 
+    outline: none; 
+    float: right; 
+    margin-top: 5px; 
+    margin-bottom: 5px; 
+    width: 95%;
+}
+
+#longvalue.compvalue{
+    text-align: left;
+    word-break: break-all;
+    margin:5px 0;
+    padding:0px 10px;
+    height: 90px;
+}
+
+a.compref{
+    color: #ffffff;
+    vertical-align: top;
+    text-align: center;
+
+}
+
+a.compref:hover {
+    border-radius: 5px;
+    background-color: #222835;
+}
+
+.hugetext{
+    padding: 0px 10px;
+    border: 1px; 
+    border-radius: 10px;
+    height: 90px;
+    overflow: hidden;
+    overflow-y:  scroll;
+    background-color: #40A0C2;
+    margin-top: 5px; 
+    margin-bottom: 5px; 
+}

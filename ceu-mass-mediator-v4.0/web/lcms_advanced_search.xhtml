@@ -1,0 +1,297 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>Advanced Search. CEU mass mediator</title>
+        </ui:define>
+
+        <ui:param name="onloadbody" value="#{LCMSController.clearForm()}"/>
+        <ui:param name="idbody" value="searchbody"/>
+        
+        <ui:define name="intro-wrapper">
+            <!--
+            <div class="title">Advanced Search</div>
+            -->
+
+            <div class="form" >
+                <h:form id="mainsearch" prependId="false">
+                    <p:focus for="inputmasses"/>
+                    <h:commandButton id="dummy" actionListener="#{LCMSController.submitLCMSAdvancedSearch()}" 
+                                     action="/lcms_advanced_list?faces-redirect=true" style="display:none;"
+                                     />
+                    <div id="highlights" class="container whiteborder">
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label style="float: top">(*) Mandatory fields</label>
+
+                            </p:row>
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="inputmasses" style="float: top">Experimental Mass (*):</label>
+                                <p:inputText id="inputmasses" size="2" maxlength="10"  
+                                             value="#{LCMSController.queryInputMasses}"
+                                             validator="#{LCMSController.validateInputSingleMass}"
+                                             required="true"
+                                             pt:placeholder="enter input mass"
+                                             style="width:100%"
+                                             />
+                                <p:message for="inputmasses" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputtolerance" style="float: top">Tolerance (*): &nbsp;</label>
+                                    <p:inputText id="inputtolerance" size="2" maxlength="4"  
+                                                 value="#{LCMSController.inputmzTolerance}" 
+                                                 validator="#{LCMSController.validateInputTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="inputtolerance" styleClass="errormessage"></p:message>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmodetolerance" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmodetolerance" 
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{LCMSController.inputmzModeTolerance}" >
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>
+                                        <f:selectItem itemValue="mDa" itemLabel="mDa"/>  
+                                    </p:selectOneRadio>
+                                </div>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="rtimes" class="tooltip">Retention Time:
+                                <span class="tooltiptext">any unit accepted (see manual)</span>
+                                </label>
+                                <p:inputText id="rtimes" size="2" maxlength="10"  
+                                             value="#{LCMSController.queryInputRetentionTimes}"
+                                             validator="#{LCMSController.validateSingleRT}"
+                                             pt:placeholder="enter retention time"
+                                             style="width:100%"
+                                             />
+                                <p:message for="rtimes" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="compositespectrum" class="tooltip">Composite Spectrum: &nbsp;
+                                    <span class="tooltiptext">(m/z,intensity) for all clustered ions<br/>
+                                    </span>
+                                </label>
+                                <p:inputText id="compositespectrum" size="2" 
+                                             value="#{LCMSController.queryInputCompositeSpectra}"
+                                             pt:placeholder="enter composite spectrum"
+                                             style="width:100%"
+                                             />
+                                <p:message for="compositespectrum" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="chemicalalphabet" class="tooltip">Chemical Alphabet (*): &nbsp;
+                                    <span class="tooltiptext">Search restricted to selected elements<br/>
+                                    </span>
+                                </label>
+                                
+                                <p:selectOneListbox id="chemicalalphabet" 
+                                                    value="#{LCMSController.chemAlphabet}"
+                                                    style="width:100%">
+                                    <f:selectItem itemLabel="All" itemValue="ALL" />
+                                    <f:selectItem itemLabel="CHNOPS" itemValue="CHNOPS" />
+                                    <f:selectItem itemLabel="CHNOPS + Cl" itemValue="CHNOPSCL" />
+                                </p:selectOneListbox>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <p:outputLabel for="@next" value="Deuterium: " />
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <p:selectBooleanCheckbox id="checkboxdeuterium" value="#{LCMSController.includeDeuterium}" />
+                                </div>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="modifiersmenu" class="tooltip">Modifiers (*): &nbsp;
+                                    <span class="tooltiptext">Modifiers added to the mobile phase<br/>
+                                    </span>
+                                </label>
+                                
+                                <p:selectOneListbox id="modifiersmenu" 
+                                                    value="#{LCMSController.modifier}" 
+                                                    filter="false" 
+                                                    filterMatchMode="contains"
+                                                    required="true"
+                                                    requiredMessage="Choose a modifier"
+                                                    style="width:100%">
+                                    <f:ajax execute="modifiersmenu" render=" modifiersmenu"/>
+                                    <f:selectItems value="#{LCMSController.modifierCandidates}" />
+                                </p:selectOneListbox>
+                                <p:message for="modifiersmenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="databasesmenu" style="float: top">Databases (*): &nbsp;</label>
+                                <p:selectManyMenu id="databasesmenu" 
+                                                  value="#{LCMSController.databases}" 
+                                                  filter="false" 
+                                                  filterMatchMode="contains"
+                                                  showCheckbox="true"
+                                                  required="true"
+                                                  requiredMessage="Choose some database"
+                                                  style="width:100%">
+                                    <f:ajax execute="databasesmenu" render=" databasesmenu"/>
+                                    <f:selectItems value="#{LCMSController.DBcandidates}" />
+                                </p:selectManyMenu>
+                                <p:message for="databasesmenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="metabolitestypemenu" style="float: top">Metabolites (*): &nbsp;</label>
+                                <p:selectOneListbox id="metabolitestypemenu" 
+                                                    value="#{LCMSController.metabolitesType}" 
+                                                    filter="false" 
+                                                    filterMatchMode="contains"
+                                                    required="true"
+                                                    requiredMessage="Choose type of metabolites to search"
+                                                    style="width:100%">
+                                    <f:ajax execute="metabolitestypemenu" render=" metabolitestypemenu"/>
+                                    <f:selectItems value="#{LCMSController.metabolitesTypecandidates}" />
+                                </p:selectOneListbox>
+                                <p:message for="metabolitestypemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row>
+                                <label for="massesmodemenu" style="float: top">Input Mass Mode (*):</label>
+                                <p:selectOneListbox id="massesmodemenu" 
+                                                    value="#{LCMSController.massesMode}"
+                                                    style="width:100%">
+                                    <f:selectItem itemValue="0" itemLabel="Neutral Masses"/>
+                                    <f:selectItem itemValue="1" itemLabel="m/z Masses"/>
+                                    <!--<f:selectItem itemValue="recalculated" itemLabel="Recalculated m/z Masses"/>-->
+                                    <f:ajax execute="massesmodemenu" render="massesmodemenu ionmodemenu 
+                                            adductsmenu messageionmode"/>
+                                </p:selectOneListbox>
+                                <p:message for="massesmodemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row>
+                                <label for="ionmodemenu" style="float: top">Ionization Mode (*):</label>
+                                <p:selectOneListbox id="ionmodemenu" 
+                                                    value="#{LCMSController.ionMode}"
+                                                    required="true"
+                                                    requiredMessage="Choose an ionization mode"
+                                                    style="width:100%">
+                                    <f:selectItems value="#{LCMSController.ionizationModeCandidates}" />
+                                    <f:ajax execute="ionmodemenu" render=" ionmodemenu adductsmenu messageionmode"/>
+                                </p:selectOneListbox>
+                                <p:message for="ionmodemenu" styleClass="errormessage"></p:message>
+                                <p:outputLabel id="messageionmode"
+                                               value="#{LCMSController.showMessageForNeutralMasses()}"
+                                               style="float: top"
+                                               />
+                            </p:row>    
+
+                            <p:row>
+                                <label for="adductsmenu" style="float: top">Adducts (*):</label>
+                                <p:selectManyMenu id="adductsmenu" 
+                                                  value="#{LCMSController.adducts}" 
+                                                  filter="false" 
+                                                  filterMatchMode="contains"
+                                                  showCheckbox="true"
+                                                  required="true"
+                                                  requiredMessage="Choose some adducts to search"
+                                                  style="width:100%">
+                                    <f:ajax execute="adductsmenu" render=" adductsmenu"/>
+                                    <f:selectItems value="#{LCMSController.adductsCandidates}" />
+                                </p:selectManyMenu>
+                                <p:message for="adductsmenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+                            <p:row>
+                                <h:commandButton 
+                                    id="loadDemo" 
+                                    type="submit" 
+                                    value="Load demo data" 
+                                    action="#{LCMSController.setAdvancedDemoMass()}" 
+                                    immediate="true"
+                                    style="width:100%">
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>
+                                <h:commandButton
+                                    id="submit" 
+                                    value="submit compounds" 
+                                    actionListener="#{LCMSController.submitLCMSAdvancedSearch}" 
+                                    action="/lcms_advanced_list?faces-redirect=true"
+                                    style="width:100%">
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>
+                                <h:commandButton  
+                                    id="reset" 
+                                    type="submit" 
+                                    value="reset" 
+                                    action="#{LCMSController.clearForm()}"
+                                    immediate="true"
+                                    style="width:100%"> 
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+                        </p:panelGrid>
+
+                    </div>
+                </h:form>
+            </div>
+
+        </ui:define>
+    </ui:composition>
+
+</html>

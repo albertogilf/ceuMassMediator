@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>CEU mass mediator manual</title>
+        </ui:define>
+        
+        <ui:param name="onloadbody" value=""/>
+        <ui:param name="idbody" value="manualsbody"/>
+        
+        <ui:define name="header">
+            <div class="header-new container" style="padding:1px;">
+                <img src="images/cembio_banner.jpg" alt="CEMBIO Banner" width="100%"/>
+            </div>
+        </ui:define>
+        
+        <ui:define name="intro-wrapper">
+            <!--
+            <div class="title">Introduction</div>
+            -->
+            <div class="container whiteborder">
+                <p><strong>CEU Mass Mediator User's Manual</strong>:</p>
+
+                <p:panelGrid columns="1" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+                    <p:row>
+                        <a href="https://cmm-manual.github.io/" target="_blank" class="style3 small" style="width:100%">Online version</a>
+                        <br/>
+                        <a href="resources/CMM_manual_version_3.0.pdf" target="_blank" class="style3 small" style="width:100%">PDF version 3.0</a>
+                    </p:row>
+                </p:panelGrid>
+            </div>
+            <br/>
+            <div class="container whiteborder">
+                <p class="style2">
+                    <center><strong><h2>Services</h2></strong></center>
+                    <br/>
+                    <strong>Browse search</strong>: search of metabolites through name and/or formula.
+                    <br/>
+                    <strong>LC-MS search</strong>: search of metabolites through neutral mass or m/z. 
+                    Retention Time (RT) of the signals and Composite Spectra (CS) can be provided to apply knowledge 
+                    by the expert system.
+                    <br/>
+                    <strong>MS/MS search</strong>: search of metabolites based on the fragmentation pattern.
+                    <br/>
+                    <strong>CE-MS search</strong>: search of metabolites throguh neutral mass or m/z. 
+                    Elution Time can be provided to apply knowledge by the expert system. 
+                    <br/>
+                    <strong>Pathway displayer</strong>: Grouping of annotations presented in different pathways. 
+                    The pathway's significance is calculated according to the formula: 
+
+                    <br/>
+                    <strong>Annotation of oxidized lipids</strong>: search of oxidized lipids based 
+                    on their MS/MS fragmentation. 
+
+                    <br/>
+                    <strong>Spectral Quality assessment</strong>: measure the quality of your spectra 
+                    for identification purpose.
+                    <br/>
+                </p>
+            </div>
+            <br/>
+            <div class="container whiteborder">
+                <p class="style2">
+                    <center><strong><h2>Programatic Access</h2></strong></center>
+                    <br/>
+                    <strong>API Rest</strong>: There are two end-points available for the batch search and the batch 
+                    advance search. See the PDF manual to read the full description of the REST services. 
+                    <br/>
+                    <strong>R library</strong>: <a href="https://github.com/lzyacht">Yaoxiang Li</a> has created an R library 
+                    <a href="https://github.com/lzyacht/cmmr">https://github.com/lzyacht/cmmr</a> to consume the end-points 
+                    of CMM! See the PDF manual to read the full description of the R library.
+                    <br/>
+                </p>
+            </div>
+
+        </ui:define>
+    </ui:composition>
+
+</html>
+
+
+

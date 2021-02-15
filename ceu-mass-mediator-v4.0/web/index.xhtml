@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>CEU mass mediator</title>
+        </ui:define>
+
+        <ui:param name="onloadbody" value=""/>
+        <ui:param name="idbody" value="indexbody"/>
+
+        <ui:define name="header">
+            <div class="header-new container" style="padding:1px;">
+                <img src="images/cembio_banner.jpg" alt="CEMBIO Banner" width="100%"/>
+            </div>
+        </ui:define>
+
+        <ui:define name="intro-wrapper">
+            <!--
+            <div class="title">Introduction</div>
+            -->
+            <div class="container whiteborder">
+                <ui:remove>
+                    <center>
+                        <p>We are performing a survey for helping the researchers with the metabolomics annotation and 
+                            identification! Please, help us and fill it 
+                            <br/>
+                            <strong>
+                                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdIQ5MVpA4gNi7lE3vrr0KKnkSJUXC7bF0NpaQ8wBjfzdtyRw/viewform?c=0&amp;w=1"
+                                   target="_blank">
+                                    HERE
+                                </a>
+                            </strong>
+                        </p>
+                    </center>
+                </ui:remove>
+
+                <center>
+                    <p class="style2"><strong>CEU Mass Mediator</strong> offers a brand new database devoted to Aspergillus, 
+                        <strong>the aspergillus metabolome database</strong>. Feel free to try it!</p>
+                
+                
+                
+                        <a href="aspergillus_metabolome_search.xhtml" class="button style3 medium" style="width:70%">Aspergillus Metabolome Database</a>
+                </center>    
+                <br/>
+
+                <p class="style2"><strong>CEU Mass Mediator</strong> is a tool for searching metabolites 
+                    in different databases (Kegg, HMDB, LipidMaps, Metlin, MINE and an in-house library). This is specially 
+                    designed for searches through experimental masses obtained from mass spectrometry techniques.</p>
+
+                <p class="style2"><strong>CEU Mass Mediator</strong> unifies compounds from different sources 
+                    based on the InChI Key. 
+                    It will save time to researchers which have to find the compounds in the databases one by one 
+                    and unifying them manually as well as it reduces the risk of a wrong manual unification.
+                </p>
+
+                <p class="style2">The LC-MS batch advanced search calculates a scoring for the annotations based on three aspects: 
+
+                    <br/><strong>1. </strong>Probability of the compound to form a specific adduct.
+                    <br/><strong>2. </strong>Presence of other adducts coming from the same signal
+                    in the same RT window.
+                    <br/><strong>3. </strong>RT of the lipids with the same head depending on the number of 
+                    carbons and double bonds (and, consequently, the hydrophobicity of them).
+                    <br/>A final score is calculated based on these three aspects 
+                    (see <a href="manuals.xhtml" target="_blank">manual</a> for more information).
+                </p>
+
+                <p class="style2">The CE-MS services allows to search compounds using experimental information from Capillary Electrophoresis 
+                    in different set-ups (background electrolyte, polarity and ionization mode). It permits searches using the effective mobility, 
+                    the experimental relative migration time and the predicted absolute or relative migration time.
+                </p>
+
+                <p class="style2">
+                    Furthermore, it offers the next services: 
+                    <br/><strong>1. </strong>
+                    A Lipid Annotation Service (LAS) for annotating lipids using a totally isolated docker implemented in Prolog and applying the same rules
+                    than the LC-MS batch advanced search.
+                    <br/><strong>2. </strong>
+                    A pathway displayer for sorting the most relevant pathways in a previous search from CMM. 
+                    <br/><strong>3. </strong>
+                    Identification of oxidized glycerophosphocholines (oxPCs) based on the MS/MS spectrum of them. 
+                    <br/><strong>4. </strong>
+                    A spectral quality controller to measure the reliability of a spectrum for identification purposes.
+                </p>
+
+                <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+
+                    <p:row>
+                        <a href="simple_search.xhtml" class="button style3 small" style="width:100%">Simple Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="advanced_search.xhtml" class="button style3 small" style="width:100%">Advanced Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="batch_search.xhtml" class="button style3 small" style="width:100%">Batch Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="batch_advanced_search.xhtml" class="button style3 small" style="width:100%">Batch Advanced Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="prolog_batch_advanced_search.xhtml" class="button style3 small" style="width:100%">LAS service</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="index_cesearch.xhtml" class="button style3 small" style="width:100%">CE-MS Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="browse_search.xhtml" class="button style3 small" style="width:100%">Browse Search</a>
+                    </p:row>
+
+                    <ui:remove>
+                        <p:row>
+                            <a href="lcms_grouped_rt_search.xhtml" class="button style3 small" style="width:100%">Advanced Search grouped by RT</a>
+                        </p:row>
+                    </ui:remove>
+                    <p:row>
+                        <a href="msms_search.xhtml" class="button style3 small" style="width:100%">MS/MS search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="pathway_displayer.xhtml" class="button style3 small" style="width:100%">Pathway Displayer</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="oxidation_lc_1.xhtml" class="button style3 small" style="width:100%">Long Chain Oxidation</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="oxidation_sc_1.xhtml" class="button style3 small" style="width:100%">Short Chain Oxidation</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="qa_inputtexts.xhtml" class="button style3 small" style="width:100%">Spectral Quality Controller</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="manuals.xhtml" class="button style3 small" style="width:100%">Manual</a>
+                    </p:row>
+
+                </p:panelGrid>
+                <br/><br/>
+            </div>
+
+
+        </ui:define>
+    </ui:composition>
+
+</html>
+
+
+

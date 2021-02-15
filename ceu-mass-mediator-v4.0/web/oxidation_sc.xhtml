@@ -1,0 +1,221 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>Oxidized fatty acids. CEU mass mediator</title>
+        </ui:define>
+        
+        <ui:param name="onloadbody" value="#{oxidationController.clearForm()}"/>
+
+        <ui:define name="intro-wrapper">
+
+            <div class="form" >
+                <h:form id="mainsearch" prependId="false">
+                    <f:metadata>
+                        <f:viewAction action="#{oxidationController.loadSCOxidations()}" />
+                    </f:metadata>
+
+                    <p:focus for="fattyacidmass1"/>
+                    <h:commandButton id="dummy" actionListener="#{oxidationController.submitSCOxidationCompounds()}" 
+                                     action="/oxidationlist?faces-redirect=true" style="display:none;"
+                                     />
+
+                    <div id="highlights" class="container whiteborder">
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" 
+                                     layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label style="float: top">All fields are required</label>
+                            </p:row>
+                            <p:row></p:row>
+
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="fattyacidmass1" style="float: top">Non oxidized fatty acid m/z: &nbsp;</label>
+                                <p:inputText id="fattyacidmass1"
+                                             value="#{oxidationController.queryInputFattyAcidMass1}"
+                                             pt:placeholder="enter non oxidized fatty acid m/z"
+                                             validator="#{oxidationController.validateFattyAcidMass}"
+                                             required="true"
+                                             style="width:100%"
+                                             />
+                                <p:message for="fattyacidmass1" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+                            <p:row>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputtoleranceforfa" style="float: top">Tolerance for Fatty Acids: &nbsp;</label>
+                                    <p:inputText id="inputtoleranceforfa" size="2" maxlength="4"  
+                                                 value="#{oxidationController.inputToleranceForFA}" 
+                                                 validator="#{oxidationController.validateInputTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance for FA"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="inputtoleranceforfa" styleClass="errormessage"></p:message>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmodetoleranceforfa" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmodetoleranceforfa" 
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{oxidationController.inputModeToleranceForFA}" >
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>
+                                        <f:selectItem itemValue="mDa" itemLabel="mDa"/>  
+                                    </p:selectOneRadio>
+                                </div>
+                            </p:row>
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="parentionmass" style="float: top">Precursor -m/z for negative mode-: </label>
+                                <p:inputText id="parentionmass"
+                                             value="#{oxidationController.queryInputParentIonMass}"
+                                             validator="#{oxidationController.validateParentIonMass}"
+                                             pt:placeholder="enter parent ion m/z"
+                                             required="true"
+                                             style=" width:100%"
+                                             />
+                                <p:message for="parentionmass" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row></p:row>
+
+                            <p:row></p:row>
+                            <p:row>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputtoleranceforpi" style="float: top">Tolerance for precursor(*): &nbsp;</label>
+                                    <p:inputText id="inputtoleranceforpi" size="2" maxlength="4"  
+                                                 value="#{oxidationController.inputToleranceForPI}" 
+                                                 validator="#{oxidationController.validateInputTolerance}"
+                                                 required="true"
+                                                 pt:placeholder="enter tolerance for precursor"
+                                                 style="width:100%;height: 300%"
+                                                 />
+                                    <p:message for="inputtoleranceforpi" styleClass="errormessage"></p:message>
+                                </div>
+                                <div class="ui-panelgrid-cell ui-grid-col-6">
+                                    <label for="inputmodetoleranceforpi" style="float: top">&nbsp;</label>
+                                    <p:selectOneRadio id="inputmodetoleranceforpi" 
+                                                      required="true"
+                                                      requiredMessage="Choose tolerance mode"
+                                                      value="#{oxidationController.inputModeToleranceForPI}" >
+                                        <f:selectItem itemValue="ppm" itemLabel="ppm"/>
+                                        <f:selectItem itemValue="mDa" itemLabel="mDa"/>  
+                                    </p:selectOneRadio>
+                                </div>
+                            </p:row>
+                            <p:row></p:row>
+
+                            <ui:remove>
+
+                                <p:row></p:row>
+
+                                <p:row>
+                                    <label for="ionisationmode" style="float: top">Ionisation Mode (*):</label>
+                                    <p:selectOneListbox id="ionisationmode" 
+                                                        value="#{oxidationController.ionMode}"
+                                                        style="width:100%">
+                                        <f:selectItem itemLabel="Positive" itemValue="positive" />
+                                        <f:selectItem itemLabel="Negative" itemValue="negative" />
+                                        <f:ajax execute="ionisationmode" render=" ionisationmode"/>
+                                    </p:selectOneListbox>
+                                </p:row>
+                                <p:row></p:row>
+
+
+                                <p:row></p:row>
+                                <p:row>
+                                    <label for="databasesmenu" style="float: top">Databases (*):</label>
+                                    <p:selectManyMenu id="databasesmenu" 
+                                                      value="#{oxidationController.databasesForPISearch}" 
+                                                      filter="false" 
+                                                      filterMatchMode="contains"
+                                                      showCheckbox="true"
+                                                      required="true"
+                                                      requiredMessage="Choose some database"
+                                                      style="width:100%">
+                                        <f:ajax execute="databasesmenu" render=" databasesmenu"/>
+                                        <f:selectItems value="#{oxidationController.DBcandidates}" />
+                                    </p:selectManyMenu>
+                                    <p:message for="databasesmenu" styleClass="errormessage"></p:message>
+                                </p:row>                        
+                                <p:row></p:row>
+                            </ui:remove>
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="oxidationmenu" style="float: top">Possible oxidations (*):</label>
+                                <p:selectManyMenu id="oxidationmenu" 
+                                                  value="#{oxidationController.oxidations}" 
+                                                  filter="false" 
+                                                  filterMatchMode="contains"
+                                                  showCheckbox="true"
+                                                  required="true"
+                                                  requiredMessage="Choose some oxidations to search"
+                                                  style="width:100%">
+                                    <f:ajax execute="oxidationmenu" render=" oxidationmenu"/>
+                                    <f:selectItems value="#{oxidationController.oxidationsCandidates}" />
+                                </p:selectManyMenu>
+                                <p:message for="oxidationmenu" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row></p:row>
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" 
+                                     layout="grid" styleClass="ui-panelgrid-blank">
+                            <p:row>                                
+                                <h:commandButton 
+                                    id="loadDemo" 
+                                    type="submit" 
+                                    value="Loading of demo data" 
+                                    action="#{oxidationController.setSCDemoMasses()}" 
+                                    immediate="true"
+                                    style="width:100%">
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>  
+                            <p:row>
+                                <h:commandButton
+                                    id="submit" 
+                                    value="submit compounds" 
+                                    actionListener="#{oxidationController.submitSCOxidationCompounds()}" 
+                                    action="/oxidationlist?faces-redirect=true"
+                                    style="width:100%">
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>
+                                <h:commandButton  
+                                    id="reset" 
+                                    type="submit" 
+                                    value="reset" 
+                                    action="#{oxidationController.clearForm()}"
+                                    immediate="true"
+                                    style="width:100%"> 
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+                        </p:panelGrid>
+
+                    </div>
+                </h:form>
+            </div>
+        </ui:define>
+    </ui:composition>
+
+</html>

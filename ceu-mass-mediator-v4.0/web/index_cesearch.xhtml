@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>CE-MS Search</title>
+        </ui:define>
+
+        <ui:param name="onloadbody" value=""/>
+        <ui:param name="idbody" value="indexbody"/>
+
+        <ui:define name="header">
+            <div class="header-new container" style="padding:1px;">
+                <img src="images/cembio_banner.jpg" alt="CEMBIO Banner" width="100%"/>
+            </div>
+        </ui:define>
+
+        <ui:define name="intro-wrapper">
+            <!--
+            <div class="title">Introduction</div>
+            -->
+            <div class="container whiteborder">
+                <p class="style2"><strong>CE-MS services</strong> permit different type of searches depending on the input data. 
+                    It allows searches using the 
+                    <a href="https://www.researchgate.net/publication/322218783_ROMANCE_A_new_software_tool_to_improve_data_robustness_and_feature_identification_in_CE-MS_metabolomics" target="_blank">
+                        effective mobilities</a>, the migration times or the relative migration times.
+
+                    The experimental conditions shall be introduced in order to refine the search. The buffer used (formic or 
+                    acetic acid), the polarity (direct or inverse), the capillary length and the capillary voltage.
+                    The next list briefly describes each service:
+                    <ul>
+                        <li>
+                            <strong>CE-MS experimental RMT search</strong>: <strong>mz/s</strong> and <strong>RMTs</strong> 
+                            respecting methionine sulfone or paracetamol. The information was collected experimentally 
+                            in positive ionization mode. For more information, check the CMM manual.
+                        </li>
+                        <li>
+                            <strong>CE-MS effective mobility search</strong>: <strong>mz/s</strong> and 
+                            <strong>effective mobilities</strong> 
+                            collected experimentally in both positive and negative ionization mode. For more information, check the CMM manual.
+                        </li>
+                        <li>
+                            <strong>CE-MS absolute Migration Times search using 1 marker</strong>: <strong>mz/s</strong> and <strong>MTs</strong>. 
+                            The capillary length (mm), the capillary voltage (kV) and the migration time of 1 marker 
+                            present in the database shall be introduced in order to predict the MTs of all the database compounds. 
+                            The prediction is based on the effective mobilities acquired experimentally in both positive and negative ionization mode.
+                        </li>
+                        <li>
+                            <strong>CE-MS absolute Migration Times search using 2 markers</strong>: <strong>mz/s</strong> and <strong>MTs</strong>. 
+                            The migration time of 2 markers present in the database shall be introduced in order to predict the MTs of all the database compounds. 
+                            The prediction is based on the effective mobilities acquired experimentally in both positive and negative ionization mode.
+                        </li>
+                        <li>
+                            <strong>CE-MS relative Migration Times search using 1 marker</strong>: <strong>mz/s</strong> and <strong>RMTs</strong>
+                            regarding the compound used by the user and present in the database. 
+                            The capillary length (mm), the capillary voltage (kV) and the migration time of 1 marker 
+                            present in the database shall be introduced in order to predict the MTs of all the compounds 
+                            in the database. The prediction is based on the effective mobilities acquired experimentally 
+                            in both positive and negative ionization mode.
+                        </li>
+                        <li>
+                            <strong>CE-MS relative Migration Times search using 2 markers</strong>: <strong>mz/s</strong> and <strong>RMTs</strong>
+                            regarding the compound used by the user and present in the database. 
+                            The migration time of 2 markers present in the database shall be introduced in order to predict the MTs of all the database compounds. 
+                            The prediction is based on the effective mobilities acquired experimentally 
+                            in both positive and negative ionization mode.
+                        </li>
+                        <li>
+                            <strong>CE-MS targeted effective mobility search</strong>: <strong>mz/s</strong>, <strong>effective mobilities</strong> 
+                            and <strong>in-source product ions</strong>. The effective mobilities were collected experimentally 
+                            in both positive and negative ionization mode. 
+                            The product ions were collected from standards using both 100V and 200V in the ionization source.
+                            For more information, check the CMM manual.
+                        </li>
+                        <li>
+                            <strong>CE-MS targeted experimental RMT search</strong>: <strong>mz/s</strong> and <strong>RMTs</strong> 
+                            respecting methionine sulfone or paracetamol and <strong>in-source product ions</strong>. 
+                            The experimental RMTs were collected experimentally in both positive ionization mode. 
+                            The product ions were collected from standards using both 100V and 200V in the ionization source.
+                            For more information, check the CMM manual.
+                        </li>
+                    </ul>
+                </p>
+
+                <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+                    <p:row>
+                        <a href="cems_exprmt_cesearch.xhtml" class="button style3 small" style="width:100%">CE-MS EXP RMT Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="cems_effmob_cesearch.xhtml" class="button style3 small" style="width:100%">CE-MS eff Mob Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="cems_mt1_cesearch.xhtml" class="button style3 small" style="width:100%">CE-MS MT 1 marker</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="cems_mt2_cesearch.xhtml" class="button style3 small" style="width:100%">CE-MS MT 2 markers</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="cems_rmt1_cesearch.xhtml" class="button style3 small" style="width:100%">CE-MS RMT 1 marker</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="cems_rmt2_cesearch.xhtml" class="button style3 small" style="width:100%">CE-MS RMT 2 markers</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="cems_targeted_exprmt_cesearch.xhtml" class="button style3 small" style="width:100%">Targeted CE-MS EXP RMT Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="cems_targeted_effmob_cesearch.xhtml" class="button style3 small" style="width:100%">Targeted CE-MS eff Mob Search</a>
+                    </p:row>
+
+                    <p:row>
+                        <a href="manuals.xhtml" class="button style3 small" style="width:100%">Manual</a>
+                    </p:row>
+
+                </p:panelGrid>
+                <br/><br/>
+            </div>
+
+        </ui:define>
+    </ui:composition>
+
+</html>
+
+
+

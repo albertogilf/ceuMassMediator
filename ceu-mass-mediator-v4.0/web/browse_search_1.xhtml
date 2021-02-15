@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <ui:composition template="/template_general.xhtml">
+        <ui:define name="head">
+            <title>Browse Search. CEU mass mediator</title>
+        </ui:define>
+        
+        <ui:param name="onloadbody" value="#{browseSearchControllerJDBC.clearForm()}"/>
+        <ui:param name="idbody" value="searchbody"/>
+
+        <ui:define name="intro-wrapper">
+
+            <div class="form" >
+                <h:form id="mainsearch" prependId="false">
+                    <p:focus for="name"/>
+                    <h:commandButton id="dummy" actionListener="#{browseSearchControllerJDBC.submitBrowseSearch()}" 
+                                     action="/List?faces-redirect=true" style="display:none;"
+                                     />
+                    <div id="highlights" class="container whiteborder">
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="name" class="tooltip">Name:
+                                    <span class="tooltiptext">regular expressions accepted (see manual)</span>
+                                </label>
+                                <p:inputText id="name" size="2" maxlength="50"  
+                                             value="#{browseSearchControllerJDBC.queryName}"
+                                             binding="#{name}"
+                                             pt:placeholder="enter name"
+                                             style="width:100%"
+                                             />
+                                <p:message for="name" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row></p:row>
+                            
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="exactname" style="float: top; display: inline-block;">Exact Name: </label>
+                                <p:selectBooleanCheckbox id="exactname" 
+                                                         value="#{browseSearchControllerJDBC.exactName}"
+                                                         style="width:100%"
+                                                         />
+                            </p:row>
+                            <p:row></p:row>
+                            
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="formula" class="tooltip">Formula: 
+                                    <span class="tooltiptext">regular expressions accepted (see manual)</span>
+                                </label>
+                                <p:inputText id="formula" size="2" maxlength="20"  
+                                             value="#{browseSearchControllerJDBC.queryFormula}" 
+                                             pt:placeholder="enter formula"
+                                             style="width:100%"
+                                             >
+                                    <f:validator validatorId="browseSearchValidator" />
+                                    <f:attribute name="name" value="#{name}" />
+                                </p:inputText>
+                                <p:message for="formula" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row></p:row>
+                            
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="exactformula" style="float: top; display: inline-block;">Exact Formula: </label>
+                                <p:selectBooleanCheckbox id="exactformula" 
+                                                         value="#{browseSearchControllerJDBC.exactName}"
+                                                         style="width:100%"
+                                                         />
+                            </p:row>
+                            <p:row></p:row>
+                            
+                            <p:row></p:row>
+                            <p:row>
+                                <label for="databasesmenu" style="float: top">Databases: &nbsp;</label>
+                                <p:selectManyMenu id="databasesmenu" 
+                                                  value="#{browseSearchControllerJDBC.databases}" 
+                                                  filter="false" 
+                                                  filterMatchMode="contains"
+                                                  showCheckbox="true"
+                                                  required="true"
+                                                  requiredMessage="Choose some database"
+                                                  style="width:100%">
+                                    <f:ajax execute="databasesmenu" render=" databasesmenu"/>
+                                    <f:selectItems value="#{browseSearchControllerJDBC.DBcandidates}" />
+                                </p:selectManyMenu>
+                                <p:message for="databasesmenu" styleClass="errormessage"></p:message>
+                            </p:row>
+                            <p:row></p:row>
+                            <p:row></p:row>
+
+                            <p:row>
+                                <label for="metabolitestypemenu" style="float: top">Metabolites: &nbsp;</label>
+                                <p:selectOneListbox id="metabolitestypemenu" 
+                                                    value="#{browseSearchControllerJDBC.metabolitesType}" 
+                                                    filter="false" 
+                                                    filterMatchMode="contains"
+                                                    required="true"
+                                                    requiredMessage="Choose type of metabolites to search"
+                                                    style="width:100%">
+                                    <f:ajax execute="metabolitestypemenu" render=" metabolitestypemenu"/>
+                                    <f:selectItems value="#{browseSearchControllerJDBC.metabolitesTypecandidates}" />
+                                </p:selectOneListbox>
+                                <p:message for="metabolitestypemenu" styleClass="errormessage"></p:message>
+                            </p:row>
+
+                            <p:row></p:row>
+                        </p:panelGrid>
+
+                        <hr/>
+
+                        <p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+                            <p:row>                                
+                                <h:commandButton 
+                                    id="loadDemo" 
+                                    type="submit" 
+                                    value="Loading of demo data" 
+                                    action="#{browseSearchControllerJDBC.setDemoNameFormula()}" 
+                                    immediate="true"
+                                    style="width:100%">
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>
+                                <h:commandButton
+                                    id="submit" 
+                                    value="submit for compounds" 
+                                    actionListener="#{browseSearchControllerJDBC.submitBrowseSearch()}" 
+                                    action="/browselist_1?faces-redirect=true"
+                                    style="width:100%">
+                                </h:commandButton>
+                            </p:row>
+                            <p:row>
+                                <h:commandButton  
+                                    id="reset" 
+                                    type="submit" 
+                                    value="reset" 
+                                    action="#{browseSearchControllerJDBC.clearForm()}"
+                                    immediate="true"
+                                    style="width:100%"> 
+                                    <f:ajax render="@form"/>
+                                    <f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+                                </h:commandButton>
+                            </p:row>
+
+                        </p:panelGrid>
+
+                    </div>
+                </h:form>
+            </div>
+        </ui:define>
+    </ui:composition>
+
+</html>
