@@ -309,16 +309,40 @@ public final class CEMSFacadeInMemory {
         Set<CEMSAnnotation> CEMSAnnotationsFromFinalDBCandidates = new TreeSet<>();
 
         for (CEMSCompound cemscompound : dbcandidates) {
+            
+            Integer pc_id = null;
+            try {
+                pc_id = Integer.parseInt(cemscompound.getPc_id());
+            } catch (NumberFormatException nfe) {
 
+            }
+            Integer chebi_id = null;
+            try {
+                chebi_id = Integer.parseInt(cemscompound.getChebi_id());
+            } catch (NumberFormatException nfe) {
+
+            }
+            Integer mine_id = null;
+            try {
+                mine_id = Integer.parseInt(cemscompound.getMINE_id());
+            } catch (NumberFormatException nfe) {
+
+            }
+            Integer npatlas_id = null;
+            try {
+                npatlas_id = Integer.parseInt(cemscompound.getNpatlas_id());
+            } catch (NumberFormatException nfe) {
+
+            }
             CEMSAnnotation cemsAnnotation = new CEMSAnnotation(massToSearch, adduct, expEffMob, expMT, expRMT,
                     experimentalFragments, cemscompound.getCe_exp_properties(), cemscompound.getEffMob(),
                     cemscompound.getMT(), cemscompound.getRMT(), cemscompound.getFragments(),
                     cemscompound.getCompound_id(), cemscompound.getMass(), cemscompound.getFormula(), cemscompound.getCompound_name(),
                     cemscompound.getCas_id(), cemscompound.getFormula_type(), cemscompound.getCompound_type(), cemscompound.getCompound_status(),
                     cemscompound.getCharge_type(), cemscompound.getCharge_number(), cemscompound.getLm_id(), cemscompound.getKegg_id(),
-                    cemscompound.getHmdb_id(), cemscompound.getMetlin_id(), cemscompound.getIn_house_id(), cemscompound.getPc_id(),
-                    cemscompound.getChebi_id(), cemscompound.getMINE_id(),
-                    cemscompound.getAspergillus_id(), cemscompound.getMesh_nomenclature(), cemscompound.getIupac_classification(), cemscompound.getAspergillus_web_name(), 
+                    cemscompound.getHmdb_id(), cemscompound.getMetlin_id(), cemscompound.getIn_house_id(), pc_id,
+                    chebi_id, mine_id, cemscompound.getKnapsack_id(), npatlas_id,
+                    cemscompound.getAspergillus_id(), cemscompound.getMesh_nomenclature(), cemscompound.getIupac_classification(), cemscompound.getAspergillus_web_name(),
                     cemscompound.getFahfa_id(), cemscompound.getOh_position(),
                     cemscompound.getStructure(), cemscompound.getPathways(), false);
 

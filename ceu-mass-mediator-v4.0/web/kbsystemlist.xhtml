@@ -10,10 +10,10 @@
         <ui:define name="head">
             <title>CEU mass mediator. KB System </title>
         </ui:define>
-        
+
         <ui:param name="onloadbody" value=""/>
         <ui:param name="idbody" value="bodylistcompounds"/>
-        
+
         <ui:define name="intro-wrapper">
             <!--
             <div class="title">Results</div>
@@ -178,6 +178,29 @@
                                             <h:outputText value="#{compound.PCCompound}" />
                                         </h:outputLink>
                                     </p:column>
+
+                                    <p:column sortBy="#{compound.knapsackId}" style="width:120px">
+                                        <f:facet name="header">  
+                                            <h:outputLink value="#{itemgroup.knapsackWebPage}" target="_blank" styleClass="prime">
+                                                <h:outputText value="KNApSAcK" />  
+                                            </h:outputLink>
+                                        </f:facet> 
+                                        <h:outputLink value="#{compound.knapsackWebPage}" target="_blank" styleClass="prime">
+                                            <h:outputText value="#{compound.knapsackId}" />
+                                        </h:outputLink>
+                                    </p:column>
+
+                                    <p:column sortBy="#{compound.npAtlasId}" style="width:120px">
+                                        <f:facet name="header">  
+                                            <h:outputLink value="#{itemgroup.npAtlasWebPage}" target="_blank" styleClass="prime">
+                                                <h:outputText value="NP Atlas" />  
+                                            </h:outputLink>
+                                        </f:facet> 
+                                        <h:outputLink value="#{compound.npAtlasWebPage}" target="_blank" styleClass="prime">
+                                            <h:outputText value="#{compound.npAtlasId}" />
+                                        </h:outputLink>
+                                    </p:column>
+                                    
                                     <p:column headerText="Pathways" id="columnpathways" styleClass="prime" style="width:200px"> 
                                         <p:commandButton value="Show pathways" id="showpathways" update="datalistpathways" 
                                                          actionListener="#{compound.exchangeBoolShowPathways()}" 

@@ -225,7 +225,7 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
     }
 
     /**
-     * @return the reference of HMDB compound
+     * @return the reference of Metlin compound
      */
     @Override
     public String getMetlinCompound() {
@@ -237,7 +237,7 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
     }
 
     /**
-     * @return the link of the HMDB compound webpage
+     * @return the link of the Metlin compound webpage
      */
     @Override
     public String getMetlinWebPage() {
@@ -249,7 +249,7 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
     }
 
     /**
-     * @return the reference of HMDB compound
+     * @return the reference of LipidMaps compound
      */
     @Override
     public String getLMCompound() {
@@ -261,7 +261,7 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
     }
 
     /**
-     * @return the link of the HMDB compound webpage
+     * @return the link of the LipidMaps compound webpage
      */
     @Override
     public String getLMWebPage() {
@@ -273,7 +273,7 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
     }
 
     /**
-     * @return the reference of HMDB compound
+     * @return the reference of PubChem compound
      */
     @Override
     public String getPCCompound() {
@@ -285,7 +285,7 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
     }
 
     /**
-     * @return the link of the HMDB compound webpage
+     * @return the link of the PubChem compound webpage
      */
     @Override
     public String getPCWebPage() {
@@ -293,6 +293,55 @@ public class NewCompound extends TheoreticalCompoundsAdapter implements Serializ
             return "";
         } else {
             return this.newCompounds.obtainPCWebPage();
+        }
+    }
+    
+    
+    /**
+     * @return the reference of Knapsack compound
+     */
+    @Override
+    public String getKnapsackId() {
+        if (this.newCompounds == null) {
+            return "";
+        } else {
+            return this.newCompounds.getKnapsackId();
+        }
+    }
+
+    /**
+     * @return the link of the Knapsack compound webpage
+     */
+    @Override
+    public String getKnapsackWebPage() {
+        if (this.newCompounds == null) {
+            return "";
+        } else {
+            return this.newCompounds.obtainKnapsackWebPage();
+        }
+    }
+    
+    /**
+     * @return the reference of NP ATlas compound
+     */
+    @Override
+    public String getNpAtlasId() {
+        if (this.newCompounds == null) {
+            return "";
+        } else {
+            return this.newCompounds.getNPAtlasId();
+        }
+    }
+
+    /**
+     * @return the link of the NP ATlas compound webpage
+     */
+    @Override
+    public String getNpAtlasWebPage() {
+        if (this.newCompounds == null) {
+            return "";
+        } else {
+            return this.newCompounds.obtainNPAtlasWebPage();
         }
     }
 

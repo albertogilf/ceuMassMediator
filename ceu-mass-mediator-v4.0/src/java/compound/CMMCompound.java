@@ -10,13 +10,14 @@ import java.util.List;
 import pathway.Pathway;
 import static utilities.Constants.WEB_COMPOUND_ASPERGILLUS;
 import static utilities.Constants.WEB_COMPOUND_CHEBI;
-import static utilities.Constants.WEB_COMPOUND_CMM;
 import static utilities.Constants.WEB_COMPOUND_MINE_START;
 import static utilities.Constants.WEB_COMPOUND_MINE_SUFFIX;
 import static utilities.Constants.WEB_COMPOUND_KEGG;
 import static utilities.Constants.WEB_COMPOUND_METLIN;
 import static utilities.Constants.WEB_COMPOUND_LM;
 import static utilities.Constants.WEB_COMPOUND_HMDB;
+import static utilities.Constants.WEB_COMPOUND_KNAPSACK;
+import static utilities.Constants.WEB_COMPOUND_NPATLAS;
 import static utilities.Constants.WEB_COMPOUND_PUBCHEMICHAL;
 
 /**
@@ -39,9 +40,11 @@ public class CMMCompound extends Compound {
     private final String aspergillus_web_name;
     private final Integer fahfa_id;
     private final Integer oh_position;
-    private final String pc_id;
-    private final String chebi_id;
-    private final String MINE_id;
+    private final Integer pc_id;
+    private final Integer chebi_id;
+    private final Integer MINE_id;
+    private final String knapsack_id;
+    private final Integer npatlas_id;
 
     private Boolean boolShowPathways;
 
@@ -65,6 +68,8 @@ public class CMMCompound extends Compound {
      * @param in_house_id
      * @param chebi_id
      * @param MINE_id
+     * @param knapsack_id
+     * @param npatlas_id
      * @param aspergillus_id
      * @param mesh_nomenclature
      * @param iupac_classification
@@ -81,7 +86,8 @@ public class CMMCompound extends Compound {
     public CMMCompound(Integer compound_id, double mass, String formula, String compound_name,
             String cas_id, Integer formula_type, Integer compound_type, Integer compound_status,
             Integer charge_type, Integer charge_number,
-            String lm_id, String kegg_id, String hmdb_id, String metlin_id, String in_house_id, String pc_id, String chebi_id, String MINE_id,
+            String lm_id, String kegg_id, String hmdb_id, String metlin_id, String in_house_id, Integer pc_id, Integer chebi_id, Integer MINE_id,
+            String knapsack_id, Integer npatlas_id,
             String aspergillus_id, String mesh_nomenclature, String iupac_classification, String aspergillus_web_name,
             Integer fahfa_id, Integer oh_position,
             Structure structure,
@@ -108,6 +114,8 @@ public class CMMCompound extends Compound {
         this.chebi_id = chebi_id;
         this.MINE_id = MINE_id;
         this.lm_id = lm_id;
+        this.knapsack_id = knapsack_id;
+        this.npatlas_id = npatlas_id;
 
         // Variables for view
         this.boolShowPathways = false;
@@ -235,7 +243,7 @@ public class CMMCompound extends Compound {
         if (this.pc_id == null) {
             return "";
         }
-        return this.pc_id;
+        return Integer.toString(this.pc_id);
     }
 
     public String getCompoundPubChemWebPage() {
@@ -246,7 +254,10 @@ public class CMMCompound extends Compound {
     }
 
     public String getChebi_id() {
-        return chebi_id;
+        if (this.chebi_id == null) {
+            return "";
+        }
+        return Integer.toString(this.chebi_id);
     }
 
     public String getCompoundChebiWebPage() {
@@ -256,11 +267,39 @@ public class CMMCompound extends Compound {
         return WEB_COMPOUND_CHEBI + getChebi_id();
     }
 
+    public String getKnapsack_id() {
+        if (this.knapsack_id == null) {
+            return "";
+        }
+        return this.knapsack_id;
+    }
+
+    public String getCompoundKnapsackWebPage() {
+        if (null == this.knapsack_id) {
+            return "";
+        }
+        return WEB_COMPOUND_KNAPSACK + getKnapsack_id();
+    }
+
+    public String getNpatlas_id() {
+        if (this.npatlas_id == null) {
+            return "";
+        }
+        return Integer.toString(this.npatlas_id);
+    }
+
+    public String getCompoundNpatlasWebPage() {
+        if (null == this.npatlas_id) {
+            return "";
+        }
+        return WEB_COMPOUND_NPATLAS + getNpatlas_id();
+    }
+
     public String getMINE_id() {
         if (this.MINE_id == null) {
             return "";
         }
-        return this.MINE_id;
+        return Integer.toString(this.MINE_id);
     }
 
     public String getCompoundMINEWebPage() {

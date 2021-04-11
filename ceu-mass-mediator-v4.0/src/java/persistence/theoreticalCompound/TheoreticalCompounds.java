@@ -51,6 +51,10 @@ public interface TheoreticalCompounds {
     String getPCWebPage();
     String getMineId();
     String getMineWebPage();
+    String getKnapsackId();
+    String getKnapsackWebPage();
+    String getNpAtlasId();    
+    String getNpAtlasWebPage();
     
 // Attributes for InChiKey
     String getInChIKey();

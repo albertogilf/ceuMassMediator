@@ -9,9 +9,7 @@ import services.rest.api.request.IonMode;
  */
 public class CompoundView extends View {
 
-
     private static final String title = "Compound";
-
 
     private final Integer identifier;
 
@@ -35,7 +33,7 @@ public class CompoundView extends View {
     private final Integer chebi_id;
     private final Integer aspergillus_id;
     private final String knapsack_id;
-
+    private final Integer npatlas_id;
 
     private final Integer oh_position;
 
@@ -66,8 +64,6 @@ public class CompoundView extends View {
     private final List<Link> references;
     private final List<Link> organisms;
 
-
-
     // POR SI ACA.
     /* NUEVA SECCION Electrophoretic information EFF MOBILITY FOR CE. It
      * can have up to 16 different eff mobilities
@@ -82,24 +78,25 @@ public class CompoundView extends View {
      * where ce_eff_mob.compound_id = @compound_id
      */
     public CompoundView(Integer identifier, String cas_id, String name,
-                        String formula, Double mass, Integer charge_type,
-                        Integer charge_number, Double logP, String kegg_id,
-                        String lm_id, String hmdb_id, String metlin_id,
-                        Integer pc_id, Integer chebi_id,
-                        Integer aspergillus_id, Integer oh_position,
-                        String mesh_nomenclature, String iupac_classification,
-                        String aspergillus_web_name, String inchi, String inchi_key,
-                        String smiles, Integer num_chains,
-                        Integer number_carbons, Integer double_bonds, String category,
-                        String main_class, String sub_class, String class_level4,
-                        String created, String last_updated,
-                        String knapsack_id,
-                        String biological_activity,
-                        List<Link> reactions,
-                        List<Link> classyfire_classification,
-                        List<Link> ontology_terms,
-                        List<Link> references,
-                        List<Link> organisms) {
+            String formula, Double mass, Integer charge_type,
+            Integer charge_number, Double logP, String kegg_id,
+            String lm_id, String hmdb_id, String metlin_id,
+            Integer pc_id, Integer chebi_id,
+            Integer aspergillus_id, Integer oh_position,
+            String mesh_nomenclature, String iupac_classification,
+            String aspergillus_web_name, String inchi, String inchi_key,
+            String smiles, Integer num_chains,
+            Integer number_carbons, Integer double_bonds, String category,
+            String main_class, String sub_class, String class_level4,
+            String created, String last_updated,
+            String knapsack_id,
+            Integer npatlas_id,
+            String biological_activity,
+            List<Link> reactions,
+            List<Link> classyfire_classification,
+            List<Link> ontology_terms,
+            List<Link> references,
+            List<Link> organisms) {
         super(created, last_updated);
         this.identifier = identifier;
         this.cas_id = cas_id;
@@ -131,6 +128,7 @@ public class CompoundView extends View {
         this.sub_class = sub_class;
         this.class_level4 = class_level4;
         this.knapsack_id = knapsack_id;
+        this.npatlas_id = npatlas_id;
         this.biological_activity = biological_activity;
         this.reactions = reactions;
         this.classyfire_classification = classyfire_classification;
@@ -139,223 +137,153 @@ public class CompoundView extends View {
         this.organisms = organisms;
     }
 
-
-
     public List<Link> getReferences() {
         return references;
     }
-
-
 
     public Integer getIdentifier() {
         return identifier;
     }
 
-
-
     public String getCas_id() {
         return cas_id;
     }
-
-
 
     public String getName() {
         return name;
     }
 
-
-
     public String getFormula() {
         return formula;
     }
-
-
 
     public Double getMass() {
         return mass;
     }
 
-
-
     public String getCharge_type() {
         return charge_type;
     }
-
-
 
     public Integer getCharge_number() {
         return charge_number;
     }
 
-
-
     public Double getLogP() {
         return logP;
     }
-
-
 
     public String getKegg_id() {
         return kegg_id;
     }
 
-
-
     public String getLm_id() {
         return lm_id;
     }
-
-
 
     public String getHmdb_id() {
         return hmdb_id;
     }
 
-
-
     public String getMetlin_id() {
         return metlin_id;
     }
-
-
 
     public Integer getPc_id() {
         return pc_id;
     }
 
-
-
     public Integer getChebi_id() {
         return chebi_id;
     }
-
-
 
     public Integer getAspergillus_id() {
         return aspergillus_id;
     }
 
-
-
     public Integer getOh_position() {
         return oh_position;
     }
-
-
 
     public String getMesh_nomenclature() {
         return mesh_nomenclature;
     }
 
-
-
     public String getIupac_classification() {
         return iupac_classification;
     }
-
-
 
     public String getAspergillus_web_name() {
         return aspergillus_web_name;
     }
 
-
-
     public String getInchi() {
         return inchi;
     }
-
-
 
     public String getInchi_key() {
         return inchi_key;
     }
 
-
-
     public String getSmiles() {
         return smiles;
     }
-
-
 
     public Integer getNum_chains() {
         return num_chains;
     }
 
-
-
     public Integer getNumber_carbons() {
         return number_carbons;
     }
-
-
 
     public Integer getDouble_bonds() {
         return double_bonds;
     }
 
-
-
     public String getCategory() {
         return category;
     }
-
-
 
     public String getMain_class() {
         return main_class;
     }
 
-
-
     public String getSub_class() {
         return sub_class;
     }
-
-
 
     public String getClass_level4() {
         return class_level4;
     }
 
-
-
     public String getKnapsack_id() {
         return knapsack_id;
     }
 
-
+    public Integer getNpatlas_id() {
+        return npatlas_id;
+    }
 
     public String getBiological_activity() {
         return biological_activity;
     }
 
-
-
     public List<Link> getReactions() {
         return reactions;
     }
-
-
 
     public List<Link> getClassyfire_classification() {
         return classyfire_classification;
     }
 
-
-
     public List<Link> getOntology_terms() {
         return ontology_terms;
     }
 
-
-
     public List<Link> getOrganisms() {
         return organisms;
     }
-
-
 
     @Override
     public String getTitle() {
@@ -363,4 +291,3 @@ public class CompoundView extends View {
     }
 
 }
-

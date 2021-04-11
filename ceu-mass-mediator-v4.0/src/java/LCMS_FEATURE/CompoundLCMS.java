@@ -91,6 +91,8 @@ public class CompoundLCMS extends CMMCompound {
      * @param in_house_id
      * @param chebi_id
      * @param MINE_id
+     * @param knapsack_id
+     * @param npatlas_id
      * @param aspergillus_id
      * @param mesh_nomenclature
      * @param iupac_classification
@@ -107,7 +109,8 @@ public class CompoundLCMS extends CMMCompound {
             Boolean isSignificative, int compound_id, double compound_mass,
             String formula, String compound_name, String cas_id, int formula_type, int compound_type, int compound_status,
             Integer charge_type, Integer charge_number, String lm_id,
-            String kegg_id, String hmdb_id, String metlin_id, String in_house_id, String pc_id, String chebi_id, String MINE_id,
+            String kegg_id, String hmdb_id, String metlin_id, String in_house_id, Integer pc_id, Integer chebi_id, Integer MINE_id, 
+            String knapsack_id, Integer npatlas_id,
             String aspergillus_id, String mesh_nomenclature, String iupac_classification, String aspergillus_web_name,
             Integer fahfa_id, Integer oh_position,
             Structure structure,
@@ -115,7 +118,7 @@ public class CompoundLCMS extends CMMCompound {
             Lipids_Classification lipids_classification, List<Pathway> pathways) {
         super(compound_id, compound_mass, formula, compound_name, cas_id, formula_type, compound_type, compound_status,
                 charge_type, charge_number,
-                lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, chebi_id, MINE_id,
+                lm_id, kegg_id, hmdb_id, metlin_id, in_house_id, pc_id, chebi_id, MINE_id, knapsack_id, npatlas_id,
                 aspergillus_id, mesh_nomenclature, iupac_classification, aspergillus_web_name,
                 fahfa_id, oh_position,
                 structure, lm_classification, classyfire_classification, lipids_classification, pathways);

@@ -47,6 +47,7 @@ public interface Constants {
     public static final String WEB_COMPOUND_CHEBI = "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:";
     public static final String WEB_COMPOUND_ASPERGILLUS = "https://www.aspergillus.org.uk/content/";
     public static final String WEB_COMPOUND_KNAPSACK = "http://www.knapsackfamily.com/knapsack_core/information.php?mode=r&word=";
+    public static final String WEB_COMPOUND_NPATLAS = "https://www.npatlas.org/joomla/index.php/explore/compounds?npaid=";
     public static final String WEB_KEGG = "http://www.genome.jp/kegg/";
     public static final String WEB_METLIN = "https://metlin.scripps.edu";
     public static final String WEB_CHEBI = "https://www.ebi.ac.uk/chebi/";
@@ -56,6 +57,8 @@ public interface Constants {
     public static final String WEB_COMPOUND_MINE_START = "http://minedatabase.mcs.anl.gov/#/acompound-";
     public static final String WEB_COMPOUND_MINE_SUFFIX = "/overview";
     public static final String WEB_MINE = "http://minedatabase.mcs.anl.gov";
+    public static final String WEB_KNAPSACK = "http://www.knapsackfamily.com";
+    public static final String WEB_NPATLAS = "https://www.npatlas.org/";
     public static final int ITEMS_PER_PAGE = 6500;
     public static final int ITEMS_PER_PAGE_IN_EXCEL = 6500;
     public static final float MIN_RETENTION_TIME_SCORE = 0.05F;
@@ -129,9 +132,9 @@ public interface Constants {
     public static final String FILENAMEPATHWAYSEXCEL = "CEMS_experiment.xls";
 
     //New constants for the paths of the server
-    public static final String UPLOADPATH = "C:\\Users\\alberto.gildelafuent\\CMM\\mediatorLoaderPathways";
+    //public static final String UPLOADPATH = "C:\\Users\\alberto.gildelafuent\\CMM\\mediatorLoaderPathways";
     //public static final String UPLOADPATH = "C:\\Users\\ceu\\Desktop\\alberto\\CMM\\mediatorLoaderPathways";
-    //public static final String UPLOADPATH = "/var/mediatorloader";
+    public static final String UPLOADPATH = "/var/mediatorloader";
 
 
     /**

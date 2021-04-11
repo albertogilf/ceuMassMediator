@@ -68,9 +68,9 @@ public class CompoundFA extends CMMCompound {
             Double oxidizedFAEM,
             Double masstoSearchForOxidizedFA,
             String oxidationType) {
-        super(compound_id, mass, formula, compound_name, "",
-                formula_type, compound_type, compound_status, 0, 0,
-                "", "", "", "", "", "", "", "", "", "", "", "", 0, 0,
+        super(compound_id, mass, formula, compound_name,
+                "", formula_type, compound_type, compound_status, 0, 0,
+                "", "", "", "", "", 0, 0, 0, "", 0, "", "", "", "", 0, 0,
                 structure, lm_classification, classyfire_classification, lipids_classification, pathways);
         this.FAEM = oxidizedFAEM;
         this.oxidationType = oxidationType;

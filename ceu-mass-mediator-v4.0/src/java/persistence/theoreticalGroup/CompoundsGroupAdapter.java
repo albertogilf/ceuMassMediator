@@ -72,5 +72,15 @@ public abstract class CompoundsGroupAdapter implements TheoreticalCompoundsGroup
         return Constants.WEB_CHEBI;
     }
     
+    @Override
+    public String getKnapsackWebPage() {
+        return Constants.WEB_KNAPSACK;
+    }
+    
+    @Override
+    public String getNpAtlasWebPage() {
+        return Constants.WEB_NPATLAS;
+    }
+    
     
 }

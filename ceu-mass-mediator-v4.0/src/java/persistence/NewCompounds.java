@@ -83,6 +83,14 @@ public class NewCompounds implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private NewCompoundsKnapsack ncKnapsack;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private NewCompoundsNPAtlas ncNPAtlas;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "compound_id", unique = true, nullable = true, insertable = false, updatable = false)
     private NewCompoundsIdentifiers ncIdentifier;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -444,6 +452,70 @@ public class NewCompounds implements Serializable {
         this.ncPC.setPcId(Integer.parseInt(pcId));
     }
 
+    public String obtainPCWebPage() {
+        if (getPcId().equals("")) {
+            return "";
+        }
+        return WEB_COMPOUND_PUBCHEMICHAL + getPcId();
+        //return "";
+    }
+
+    public NewCompoundsKnapsack getNcKnapsack() {
+        return this.ncKnapsack;
+    }
+
+    public void setNcKnapsack(NewCompoundsKnapsack ncKnapsack) {
+        this.ncKnapsack = ncKnapsack;
+    }
+
+    public String getKnapsackId() {
+        if (this.ncKnapsack == null) {
+            return "";
+
+        } else {
+            return this.ncKnapsack.getKnapsackId();
+        }
+    }
+
+    public void setKnapsackId(String knapsackId) {
+        this.ncKnapsack.setKnapsackId(knapsackId);
+    }
+
+    public String obtainKnapsackWebPage() {
+        if (getPcId().equals("")) {
+            return "";
+        }
+        return WEB_COMPOUND_KNAPSACK + this.getKnapsackId();
+    }
+
+    public NewCompoundsNPAtlas getNcNPAtlas() {
+        return this.ncNPAtlas;
+    }
+
+    public void setNcNPAtlas(NewCompoundsNPAtlas ncNPAtlas) {
+        this.ncNPAtlas = ncNPAtlas;
+    }
+
+    public String getNPAtlasId() {
+        if (this.ncNPAtlas == null) {
+            return "";
+
+        } else {
+            return Integer.toString(this.ncNPAtlas.getNpatlasId());
+        }
+    }
+
+    public void setNPAtlasId(String npAtlasId) {
+        this.ncNPAtlas.setNpatlasId(Integer.parseInt(npAtlasId));
+    }
+
+    public String obtainNPAtlasWebPage() {
+        if (getPcId().equals("")) {
+            return "";
+        }
+        return WEB_COMPOUND_NPATLAS + this.getNPAtlasId();
+    }
+
     public String obtainCMMWebPage() {
         if (this.compoundId == 0) {
             return "";
@@ -454,14 +526,6 @@ public class NewCompounds implements Serializable {
         } catch (NumberFormatException ex) {
             return "";
         }
-    }
-
-    public String obtainPCWebPage() {
-        if (getPcId().equals("")) {
-            return "";
-        }
-        return WEB_COMPOUND_PUBCHEMICHAL + getPcId();
-        //return "";
     }
 
     public NewCompoundsIdentifiers getNcIdentifier() {

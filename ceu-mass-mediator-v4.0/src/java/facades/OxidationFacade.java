@@ -636,60 +636,58 @@ public class OxidationFacade {
             prepSt.setDouble(5, high);
             prepSt.setDouble(6, massToSearch);
             rs = prepSt.executeQuery();
+            while (rs.next()) {
+                int compound_id = rs.getInt("compound_id");
+                String sql2;
+                ResultSet rs2;
+                PreparedStatement prepSt2;
+                sql2 = QueryConstructor.createSQLForPCCompoundFromCompoundId_Carbons_DoubleBonds();
+                // System.out.println("SQL2" +  sql2);
+                prepSt2 = conn.prepareStatement(sql2);
+                prepSt2.setInt(1, compound_id);
+                prepSt2.setInt(2, numCarbonsOfNonOxidizedFA);
+                prepSt2.setInt(3, doubleBondsOfNonOxidizedFA);
+                //prepSt2.setString(4, "");
+                rs2 = prepSt2.executeQuery();
 
-            if (rs.next()) {
-                rs.beforeFirst();
-                while (rs.next()) {
-                    int compound_id = rs.getInt("compound_id");
-                    String sql2;
-                    ResultSet rs2;
-                    PreparedStatement prepSt2;
-                    sql2 = QueryConstructor.createSQLForPCCompoundFromCompoundId_Carbons_DoubleBonds();
-                    // System.out.println("SQL2" +  sql2);
-                    prepSt2 = conn.prepareStatement(sql2);
-                    prepSt2.setInt(1, compound_id);
-                    prepSt2.setInt(2, numCarbonsOfNonOxidizedFA);
-                    prepSt2.setInt(3, doubleBondsOfNonOxidizedFA);
-                    //prepSt2.setString(4, "");
-                    rs2 = prepSt2.executeQuery();
-
-                    if (rs2.next()) {
-                        double mass = rs2.getDouble("mass");
-                        String formula = rs2.getString("formula");
-                        String name = rs2.getString("compound_name");
-                        String cas_id = rs2.getString("cas_id");
-                        int charge_type = rs2.getInt("charge_type");
-                        int charge_number = rs2.getInt("charge_number");
-                        int formula_type_int = rs2.getInt("formula_type_int");
-                        int compound_type = rs2.getInt("compound_type");
-                        int compound_status = rs2.getInt("compound_status");
-                        String lm_id = rs2.getString("lm_id");
-                        String kegg_id = rs2.getString("kegg_id");
-                        String hmdb_id = rs2.getString("hmdb_id");
-                        String agilent_id = rs2.getString("agilent_id");
-                        String in_house_id = rs2.getString("in_house_id");
-                        String aspergillus_id = rs2.getString("aspergillus_id");
-                        int fahfa_id = rs2.getInt("fahfa_id");
-                        int oh_position = rs2.getInt("oh_position");
-                        String mesh_nomenclature = rs2.getString("mesh_nomenclature");
-                        String iupac_classification = rs2.getString("iupac_classification");
-                        String aspergillus_web_name = rs2.getString("aspergillus_web_name");
-                        String pc_id = rs2.getString("pc_id");
-                        String chebi_id = rs2.getString("chebi_id");
-                        String MINE_id = "";
-                        LM_Classification lm_classification = msfacade.getLM_ClassificationByCompound_id(compound_id);
-                        Lipids_Classification lipids_classification = msfacade.getLipids_classificationByCompound_id(compound_id);
-                        List<Classyfire_Classification> classyfire_classifications = new LinkedList();
-                        List<Pathway> pathways = new LinkedList();
-                        Structure structure = null;
-                        CMMCompound oxidizedAnnotation = new CMMCompound(compound_id, mass, formula, name, cas_id,
-                                formula_type_int, compound_type, compound_status, charge_type, charge_number,
-                                lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, chebi_id, MINE_id,
-                                aspergillus_id, mesh_nomenclature, iupac_classification, aspergillus_web_name,
-                                fahfa_id, oh_position,
-                                structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
-                        oxidizedCompound.addOxidizedAnnotation(oxidizedAnnotation);
-                    }
+                if (rs2.next()) {
+                    double mass = rs2.getDouble("mass");
+                    String formula = rs2.getString("formula");
+                    String name = rs2.getString("compound_name");
+                    String cas_id = rs2.getString("cas_id");
+                    int charge_type = rs2.getInt("charge_type");
+                    int charge_number = rs2.getInt("charge_number");
+                    int formula_type_int = rs2.getInt("formula_type_int");
+                    int compound_type = rs2.getInt("compound_type");
+                    int compound_status = rs2.getInt("compound_status");
+                    String lm_id = rs2.getString("lm_id");
+                    String kegg_id = rs2.getString("kegg_id");
+                    String hmdb_id = rs2.getString("hmdb_id");
+                    String agilent_id = rs2.getString("agilent_id");
+                    String in_house_id = rs2.getString("in_house_id");
+                    String aspergillus_id = rs2.getString("aspergillus_id");
+                    int fahfa_id = rs2.getInt("fahfa_id");
+                    int oh_position = rs2.getInt("oh_position");
+                    String mesh_nomenclature = rs2.getString("mesh_nomenclature");
+                    String iupac_classification = rs2.getString("iupac_classification");
+                    String aspergillus_web_name = rs2.getString("aspergillus_web_name");
+                    Integer pc_id = rs2.getInt("pc_id");
+                    Integer chebi_id = rs2.getInt("chebi_id");
+                    String knapsack_id = rs2.getString("knapsack_id");
+                    Integer npatlas_id = rs2.getInt("npatlas_id");
+                    Integer MINE_id = null;
+                    LM_Classification lm_classification = msfacade.getLM_ClassificationByCompound_id(compound_id);
+                    Lipids_Classification lipids_classification = msfacade.getLipids_classificationByCompound_id(compound_id);
+                    List<Classyfire_Classification> classyfire_classifications = new LinkedList();
+                    List<Pathway> pathways = new LinkedList();
+                    Structure structure = null;
+                    CMMCompound oxidizedAnnotation = new CMMCompound(compound_id, mass, formula, name, cas_id,
+                            formula_type_int, compound_type, compound_status, charge_type, charge_number,
+                            lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, chebi_id, MINE_id, knapsack_id, npatlas_id,
+                            aspergillus_id, mesh_nomenclature, iupac_classification, aspergillus_web_name,
+                            fahfa_id, oh_position,
+                            structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
+                    oxidizedCompound.addOxidizedAnnotation(oxidizedAnnotation);
                 }
             }
         } catch (SQLException ex) {
@@ -798,59 +796,60 @@ public class OxidationFacade {
             prepSt.setDouble(6, massToSearch);
             rs = prepSt.executeQuery();
 
-            if (rs.next()) {
-                rs.beforeFirst();
-                while (rs.next()) {
-                    int compound_id = rs.getInt("compound_id");
-                    String sql2;
-                    ResultSet rs2;
-                    PreparedStatement prepSt2;
-                    sql2 = QueryConstructor.createSQLForPCCompoundFromCompoundId_Carbons_DoubleBonds();
-                    prepSt2 = conn.prepareStatement(sql2);
-                    prepSt2.setInt(1, compound_id);
-                    prepSt2.setInt(2, numCarbonsOfNonOxidizedFA);
-                    prepSt2.setInt(3, doubleBondsOfNonOxidizedFA);
-                    //prepSt2.setString(4, "");
-                    rs2 = prepSt2.executeQuery();
+            while (rs.next()) {
+                int compound_id = rs.getInt("compound_id");
+                String sql2;
+                ResultSet rs2;
+                PreparedStatement prepSt2;
+                sql2 = QueryConstructor.createSQLForPCCompoundFromCompoundId_Carbons_DoubleBonds();
+                prepSt2 = conn.prepareStatement(sql2);
+                prepSt2.setInt(1, compound_id);
+                prepSt2.setInt(2, numCarbonsOfNonOxidizedFA);
+                prepSt2.setInt(3, doubleBondsOfNonOxidizedFA);
+                //prepSt2.setString(4, "");
+                rs2 = prepSt2.executeQuery();
 
-                    if (rs2.next()) {
-                        double mass = rs2.getDouble("mass");
-                        String formula = rs2.getString("formula");
-                        String name = rs2.getString("compound_name");
-                        String cas_id = rs2.getString("cas_id");
-                        int charge_type = rs2.getInt("charge_type");
-                        int charge_number = rs2.getInt("charge_number");
-                        int formula_type_int = rs2.getInt("formula_type_int");
-                        int compound_type = rs2.getInt("compound_type");
-                        int compound_status = rs2.getInt("compound_status");
-                        String lm_id = rs2.getString("lm_id");
-                        String kegg_id = rs2.getString("kegg_id");
-                        String hmdb_id = rs2.getString("hmdb_id");
-                        String agilent_id = rs2.getString("agilent_id");
-                        String in_house_id = rs2.getString("in_house_id");
-                        String aspergillus_id = rs2.getString("aspergillus_id");
-                        String mesh_nomenclature = rs2.getString("mesh_nomenclature");
-                        String iupac_classification = rs2.getString("iupac_classification");
-                        String aspergillus_web_name = rs2.getString("aspergillus_web_name");
-                        int fahfa_id = rs2.getInt("fahfa_id");
-                        int oh_position = rs2.getInt("oh_position");
-                        String pc_id = rs2.getString("pc_id");
-                        String chebi_id = rs2.getString("chebi_id");
-                        String MINE_id = "";
-                        LM_Classification lm_classification = msfacade.getLM_ClassificationByCompound_id(compound_id);
-                        Lipids_Classification lipids_classification = msfacade.getLipids_classificationByCompound_id(compound_id);
-                        List<Classyfire_Classification> classyfire_classifications = new LinkedList();
-                        List<Pathway> pathways = new LinkedList();
-                        Structure structure = null;
-                        CMMCompound nonOxidizedAnnotation = new CMMCompound(compound_id, mass, formula, name, cas_id,
-                                formula_type_int, compound_type, compound_status, charge_type, charge_number,
-                                lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, chebi_id, MINE_id,
-                                aspergillus_id, mesh_nomenclature, iupac_classification, aspergillus_web_name,
-                                fahfa_id, oh_position,
-                                structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
-                        oxidizedCompound.addNonOxidizedCompoundsGroupByMass(nonOxidizedAnnotation);
-                    }
+                if (rs2.next()) {
+                    double mass = rs2.getDouble("mass");
+                    String formula = rs2.getString("formula");
+                    String name = rs2.getString("compound_name");
+                    String cas_id = rs2.getString("cas_id");
+                    int charge_type = rs2.getInt("charge_type");
+                    int charge_number = rs2.getInt("charge_number");
+                    int formula_type_int = rs2.getInt("formula_type_int");
+                    int compound_type = rs2.getInt("compound_type");
+                    int compound_status = rs2.getInt("compound_status");
+                    String lm_id = rs2.getString("lm_id");
+                    String kegg_id = rs2.getString("kegg_id");
+                    String hmdb_id = rs2.getString("hmdb_id");
+                    String agilent_id = rs2.getString("agilent_id");
+                    String in_house_id = rs2.getString("in_house_id");
+                    String aspergillus_id = rs2.getString("aspergillus_id");
+                    String mesh_nomenclature = rs2.getString("mesh_nomenclature");
+                    String iupac_classification = rs2.getString("iupac_classification");
+                    String aspergillus_web_name = rs2.getString("aspergillus_web_name");
+                    int fahfa_id = rs2.getInt("fahfa_id");
+                    int oh_position = rs2.getInt("oh_position");
+
+                    Integer pc_id = rs2.getInt("pc_id");
+                    Integer chebi_id = rs2.getInt("chebi_id");
+                    String knapsack_id = rs2.getString("knapsack_id");
+                    Integer npatlas_id = rs2.getInt("npatlas_id");
+                    Integer MINE_id = null;
+                    LM_Classification lm_classification = msfacade.getLM_ClassificationByCompound_id(compound_id);
+                    Lipids_Classification lipids_classification = msfacade.getLipids_classificationByCompound_id(compound_id);
+                    List<Classyfire_Classification> classyfire_classifications = new LinkedList();
+                    List<Pathway> pathways = new LinkedList();
+                    Structure structure = null;
+                    CMMCompound nonOxidizedAnnotation = new CMMCompound(compound_id, mass, formula, name, cas_id,
+                            formula_type_int, compound_type, compound_status, charge_type, charge_number,
+                            lm_id, kegg_id, hmdb_id, agilent_id, in_house_id, pc_id, chebi_id, MINE_id, knapsack_id, npatlas_id,
+                            aspergillus_id, mesh_nomenclature, iupac_classification, aspergillus_web_name,
+                            fahfa_id, oh_position,
+                            structure, lm_classification, classyfire_classifications, lipids_classification, pathways);
+                    oxidizedCompound.addNonOxidizedCompoundsGroupByMass(nonOxidizedAnnotation);
                 }
+
             }
         } catch (SQLException ex) {
             System.out.println("SQL EXCEPTION ADDING NON OXIDIZED ANNOTATIONS");

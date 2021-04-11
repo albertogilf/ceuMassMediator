@@ -29,4 +29,6 @@ public interface TheoreticalCompoundsGroup<T> {
     String getLMWebPage();
     String getPCWebPage();
     String getChebiWebPage();
+    String getKnapsackWebPage();
+    String getNpAtlasWebPage();
 }

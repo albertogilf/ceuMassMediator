@@ -181,7 +181,7 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
     public String getKeggCompound() {
         return "";
     }
-    
+
     /**
      * @return the link of CMM
      */
@@ -189,8 +189,6 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
     public String getCMMWebPage() {
         return "";
     }
-    
-    
 
     /**
      * @return the link of the kegg compound webpage
@@ -217,7 +215,7 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
     }
 
     /**
-     * @return the reference of HMDB compound
+     * @return the reference of METLIN compound
      */
     @Override
     public String getMetlinCompound() {
@@ -225,7 +223,7 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
     }
 
     /**
-     * @return the link of the HMDB compound webpage
+     * @return the link of the METLIN compound webpage
      */
     @Override
     public String getMetlinWebPage() {
@@ -233,7 +231,7 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
     }
 
     /**
-     * @return the reference of HMDB compound
+     * @return the reference of LM compound
      */
     @Override
     public String getLMCompound() {
@@ -241,7 +239,7 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
     }
 
     /**
-     * @return the link of the HMDB compound webpage
+     * @return the link of the LM compound webpage
      */
     @Override
     public String getLMWebPage() {
@@ -249,7 +247,7 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
     }
 
     /**
-     * @return the reference of HMDB compound
+     * @return the reference of PC compound
      */
     @Override
     public String getPCCompound() {
@@ -257,10 +255,42 @@ public class NewCompoundGen extends TheoreticalCompoundsAdapter implements Seria
     }
 
     /**
-     * @return the link of the HMDB compound webpage
+     * @return the link of the PC compound webpage
      */
     @Override
     public String getPCWebPage() {
+        return "";
+    }
+
+    /**
+     * @return the reference of HMDB compound
+     */
+    @Override
+    public String getKnapsackWebPage() {
+        return "";
+    }
+
+    /**
+     * @return the link of the HMDB compound webpage
+     */
+    @Override
+    public String getKnapsackId() {
+        return "";
+    }
+
+    /**
+     * @return the reference of HMDB compound
+     */
+    @Override
+    public String getNpAtlasWebPage() {
+        return "";
+    }
+
+    /**
+     * @return the link of the HMDB compound webpage
+     */
+    @Override
+    public String getNpAtlasId() {
         return "";
     }
 

@@ -30,7 +30,6 @@ import utilities.*;
 @Produces(MediaType.APPLICATION_JSON)
 public class APIServices {
 
-
     private Configuration freemarker = null;
 
     Gson gson;
@@ -38,21 +37,15 @@ public class APIServices {
     @EJB
     private facades.TheoreticalCompoundsFacade ejbFacade;
 
-
-
     public APIServices() {
         gson = new Gson();
     }
-
-
 
     @Path("/test")
     @GET
     public String getTest() {
         return "{\"debug\": \"on\"}";
     }
-
-
 
     @Path("/simplesearch")
     @POST
@@ -122,7 +115,7 @@ public class APIServices {
                     PathWay pathway = new PathWay(path.getPathwayName(), path.obtainPathwayWebPage());
                 }
                 Compound ssrcompound
-                         = new Compound(
+                        = new Compound(
                                 compound.getCompoundId(),
                                 compound.getExperimentalMass(),
                                 compound.getName(),
@@ -150,8 +143,6 @@ public class APIServices {
         }
         return gson.toJson(ssr);
     }
-
-
 
     @Path("/advancedsearch")
     @POST
@@ -245,7 +236,7 @@ public class APIServices {
                     PathWay pathway = new PathWay(path.getPathwayName(), path.obtainPathwayWebPage());
                 }
                 AdvancedCompound asrcompound
-                                 = new AdvancedCompound(
+                        = new AdvancedCompound(
                                 compound.getCompoundId(),
                                 compound.getExperimentalMass(),
                                 compound.getRetentionTime(),
@@ -276,8 +267,6 @@ public class APIServices {
         }
         return gson.toJson(asr);
     }
-
-
 
     @Path("/advancedbatch")
     @POST
@@ -385,7 +374,7 @@ public class APIServices {
                     PathWay pathway = new PathWay(path.getPathwayName(), path.obtainPathwayWebPage());
                 }
                 AdvancedCompound asrcompound
-                                 = new AdvancedCompound(
+                        = new AdvancedCompound(
                                 compound.getCompoundId(),
                                 compound.getExperimentalMass(),
                                 compound.getRetentionTime(),
@@ -417,8 +406,6 @@ public class APIServices {
         }
         return gson.toJson(asr);
     }
-
-
 
     @Path("/browsesearch")
     @POST
@@ -462,7 +449,7 @@ public class APIServices {
                     pathways.add(pathway);
                 }
                 BrowseCompound browsecompound
-                               = new BrowseCompound(
+                        = new BrowseCompound(
                                 compound.getCompoundId(),
                                 compound.getName(),
                                 compound.getFormula(),
@@ -485,8 +472,6 @@ public class APIServices {
         }
         return gson.toJson(bsr);
     }
-
-
 
     @Path("/msmssearch")
     @POST
@@ -550,16 +535,14 @@ public class APIServices {
         // Predicted and experimental
         if (spectra_types.size() == 2) {
             spectra_type_int = 2;
-        }
-        else if (spectra_types.get(0).equals(SpectraType.PREDICTED)) {
+        } else if (spectra_types.get(0).equals(SpectraType.PREDICTED)) {
             spectra_type_int = 1;
-        }
-        else if (spectra_types.get(0).equals(SpectraType.EXPERIMENTAL)) {
+        } else if (spectra_types.get(0).equals(SpectraType.EXPERIMENTAL)) {
             spectra_type_int = 0;
         }
         Msms msms = new Msms(ion_mass, ion_mode_int,
-                             ionization_volt_v, ionization_volt.toString(),
-                             peaksList, spectra_type_int);
+                ionization_volt_v, ionization_volt.toString(),
+                peaksList, spectra_type_int);
         MSMSFacade msmsFacade = new MSMSFacade();
 
         // Set up Tolerance mode and use Da instead of mDa
@@ -604,8 +587,6 @@ public class APIServices {
         return gson.toJson(mssr);
     }
 
-
-
     @Path("/oxidationlong")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -638,9 +619,9 @@ public class APIServices {
         databases.add("all");
 
         List<OxidizedTheoreticalCompound> compounds = ejbFacade.findLCOxidizedFA(precursor_mz,
-                                                                                 fatty_acids, fatty_tolerance_mode, fatty_tolerance,
-                                                                                 precursor_tolerance_mode, precursor_tolerance,
-                                                                                 2, databases, oxidations);
+                fatty_acids, fatty_tolerance_mode, fatty_tolerance,
+                precursor_tolerance_mode, precursor_tolerance,
+                2, databases, oxidations);
 
         System.out.println("######### Processing oxidized long search #########");
         System.out.println("## --> Num. Compounds: " + compounds.size());
@@ -691,7 +672,7 @@ public class APIServices {
                         }
                     }
                     OxidationCompound oxidationcompound
-                                      = new OxidationCompound(
+                            = new OxidationCompound(
                                     compound.getOxidizedFAEM(),
                                     compound.getNonOxidizedFAEM(),
                                     compound.getParentIonEM(),
@@ -712,8 +693,6 @@ public class APIServices {
 
         return gson.toJson(osr);
     }
-
-
 
     @Path("/oxidationshort")
     @POST
@@ -745,9 +724,9 @@ public class APIServices {
         databases.add("all");
 
         List<OxidizedTheoreticalCompound> compounds = ejbFacade.findSCOxidizedFA(precursor_mz,
-                                                                                 fatty_acids, fatty_tolerance_mode, fatty_tolerance,
-                                                                                 precursor_tolerance_mode, precursor_tolerance,
-                                                                                 2, databases, oxidations);
+                fatty_acids, fatty_tolerance_mode, fatty_tolerance,
+                precursor_tolerance_mode, precursor_tolerance,
+                2, databases, oxidations);
 
         //System.out.println("######### Processing oxidized short search #########");
         //System.out.println("## --> Num. Compounds: " + compounds.size());
@@ -796,7 +775,7 @@ public class APIServices {
                         }
                     }
                     OxidationCompound oxidationcompound
-                                      = new OxidationCompound(
+                            = new OxidationCompound(
                                     compound.getOxidizedFAEM(),
                                     compound.getNonOxidizedFAEM(),
                                     compound.getParentIonEM(),
@@ -818,8 +797,6 @@ public class APIServices {
         return gson.toJson(osr);
     }
 
-
-
     @Path("/pathwaydisplayer")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -835,8 +812,6 @@ public class APIServices {
         return gson.toJson(pdr);
     }
 
-
-
     @Path("/spectralquality")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -851,8 +826,6 @@ public class APIServices {
 
         return gson.toJson(sqcr);
     }
-
-
 
     // ***********************************************************************************************************
     //
@@ -905,7 +878,7 @@ public class APIServices {
 
         // Create features from input data
         List<String> adductsFiltered = AdductProcessing.FilterAdductsFromInterface(adducts,
-                                                                                   DataFromInterfacesUtilities.ionizationModeToInteger(ion_mode));
+                DataFromInterfacesUtilities.ionizationModeToInteger(ion_mode));
 
         // Rewrite values according to Database integers.
         int chemAlphabetInt = DataFromInterfacesUtilities.getChemAlphabetAsInt(chemical_alphabet);
@@ -1046,7 +1019,7 @@ public class APIServices {
                             PathWay pathway = new PathWay(path.getPathwayName(), path.getPathwayWebPage());
                         }
                         AdvancedCompound asrcompound
-                                         = new AdvancedCompound(
+                                = new AdvancedCompound(
                                         compound.getCompound_id(),
                                         compound.getEM(),
                                         compound.getRT(),
@@ -1082,8 +1055,6 @@ public class APIServices {
         //System.out.println(gson.toJson(asr));
         return gson.toJson(asr);
     }
-
-
 
     @Path("/v3/batch")
     @POST
@@ -1123,7 +1094,7 @@ public class APIServices {
 
         // Create features from input data
         List<String> adductsFiltered = AdductProcessing.FilterAdductsFromInterface(adducts,
-                                                                                   DataFromInterfacesUtilities.ionizationModeToInteger(ion_mode));
+                DataFromInterfacesUtilities.ionizationModeToInteger(ion_mode));
 
         // Rewrite values according to Database integers.
         List<Integer> databasesInt = DataFromInterfacesUtilities.getDatabasesAsInt(databases);
@@ -1150,7 +1121,7 @@ public class APIServices {
         // Default values
         List<Double> retentionTimes = new ArrayList(Collections.nCopies(significantMasses.size(), 0.0));
         List<Map<Double, Double>> compositeSpectra
-                                  = new ArrayList(Collections.nCopies(significantMasses.size(), new HashMap<>()));
+                = new ArrayList(Collections.nCopies(significantMasses.size(), new HashMap<>()));
         int chemAlphabetInt = 4; // ALL = 4
         int modifiersInt = 0; // NONE = 0
 
@@ -1210,7 +1181,7 @@ public class APIServices {
                             PathWay pathway = new PathWay(path.getPathwayName(), path.getPathwayWebPage());
                         }
                         Compound asrcompound
-                                 = new Compound(
+                                = new Compound(
                                         compound.getCompound_id(),
                                         compound.getEM(),
                                         compound.getCompound_name(),
@@ -1244,8 +1215,6 @@ public class APIServices {
         return gson.toJson(ssr);
     }
 
-
-
     @Path("/v3/cesearch/effmob")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -1260,7 +1229,7 @@ public class APIServices {
         MSFacade msFacade = new MSFacade();
 
         CEMSEffMobExperiment experiment
-                             = new CEMSEffMobExperiment(
+                = new CEMSEffMobExperiment(
                         query.getTolerance(),
                         DataFromInterfacesUtilities.toleranceTypeToInteger(query.getTolerance_mode().toString()),
                         DataFromInterfacesUtilities.ionizationModeToInteger(query.getIon_mode().toString()),
@@ -1293,8 +1262,7 @@ public class APIServices {
                     query.getPolarity().intValue(),
                     adducts,
                     true);
-        }
-        catch (bufferTemperatureException bte) {
+        } catch (bufferTemperatureException bte) {
             error(service);
         }
         experiment.setCEMSFeatures(cemsFeatures);
@@ -1326,8 +1294,6 @@ public class APIServices {
         return gson.toJson(emsr);
     }
 
-
-
     @Path("/v3/cesearch/exprmt")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -1347,7 +1313,7 @@ public class APIServices {
         MSFacade msFacade = new MSFacade();
 
         CEMSRMTExperiment experiment
-                          = new CEMSRMTExperiment(
+                = new CEMSRMTExperiment(
                         query.getTolerance(),
                         query.getTolerance_mode().intValue(),
                         query.getIon_mode().intValue(),
@@ -1366,23 +1332,22 @@ public class APIServices {
 
         try {
             cemsFeatures = msFacade.getCEAnnotationsFromMassesToleranceAndExpRMTs(query.getMasses(),
-                                                                                  query.getTolerance(),
-                                                                                  query.getTolerance_mode().intValue(),
-                                                                                  query.getRmt(),
-                                                                                  query.getRmt_tolerance(),
-                                                                                  query.getRmt_tolerance_mode().toString(),
-                                                                                  query.getBuffer().intValue(),
-                                                                                  query.getBuffer().getTemperature(),
-                                                                                  query.getChemical_alphabet().intValue(),
-                                                                                  query.isDeuterium(),
-                                                                                  query.getMasses_mode().intValue(),
-                                                                                  query.getIon_mode().intValue(),
-                                                                                  query.getPolarity().intValue(),
-                                                                                  adducts,
-                                                                                  query.getRmt_Reference().intValue(),
-                                                                                  ALLOWOPPOSITEESIMODE);
-        }
-        catch (bufferTemperatureException bte) {
+                    query.getTolerance(),
+                    query.getTolerance_mode().intValue(),
+                    query.getRmt(),
+                    query.getRmt_tolerance(),
+                    query.getRmt_tolerance_mode().toString(),
+                    query.getBuffer().intValue(),
+                    query.getBuffer().getTemperature(),
+                    query.getChemical_alphabet().intValue(),
+                    query.isDeuterium(),
+                    query.getMasses_mode().intValue(),
+                    query.getIon_mode().intValue(),
+                    query.getPolarity().intValue(),
+                    adducts,
+                    query.getRmt_Reference().intValue(),
+                    ALLOWOPPOSITEESIMODE);
+        } catch (bufferTemperatureException bte) {
             error(service);
         }
         experiment.setCEMSFeatures(cemsFeatures);
@@ -1414,15 +1379,12 @@ public class APIServices {
         return gson.toJson(emsr);
     }
 
-
-
     @Path("/v3/cesearch/rmt1marker")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public String getCEMSRMT1MarkerSearchImpl(String rmt1marker) {
 
         String service = "CE-MS RMT 1 Marker Search";
-
 
         //Estos valores se establecen fijos en CEMSMTControllerAdapter
         final boolean ALLOWOPPOSITEESIMODE = true;
@@ -1433,9 +1395,8 @@ public class APIServices {
 
         MSFacade msFacade = new MSFacade();
 
-
         CEMSRMTExperiment experiment
-                          = new CEMSRMTExperiment(
+                = new CEMSRMTExperiment(
                         query.getTolerance(),
                         query.getTolerance_mode().intValue(),
                         query.getIon_mode().intValue(),
@@ -1452,11 +1413,11 @@ public class APIServices {
         List<String> adducts = query.getAdducts().stream().map(element -> element.toString()).collect(Collectors.toList());
 
         Map<Integer, CEMSCompound> dbcandidates = getDbCandidates(query.getBuffer().intValue(),
-                                                                  query.getBuffer().getTemperature(),
-                                                                  query.getMasses_mode().intValue(),
-                                                                  query.getIon_mode().intValue(),
-                                                                  query.getPolarity().intValue(),
-                                                                  ALLOWOPPOSITEESIMODE);
+                query.getBuffer().getTemperature(),
+                query.getMasses_mode().intValue(),
+                query.getIon_mode().intValue(),
+                query.getPolarity().intValue(),
+                ALLOWOPPOSITEESIMODE);
 
         float[] databaseMobilities = new float[dbcandidates.size()];
         float[] migrationTimeBuffer = new float[dbcandidates.size()];
@@ -1519,8 +1480,6 @@ public class APIServices {
         return gson.toJson(emsr);
     }
 
-
-
     @Path("/v3/cesearch/rmt2marker")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -1533,7 +1492,6 @@ public class APIServices {
         final int CAPILLARYVOLTAGE = 30; // kvoltios
         final boolean ALLOWOPPOSITEESIMODE = true;
 
-
         debug(service, "-> QUERY:" + "\nINPUT JSON:\n" + rmt1marker);
 
         RMT2MarkerSearchQuery query = gson.fromJson(rmt1marker, RMT2MarkerSearchQuery.class);
@@ -1541,7 +1499,7 @@ public class APIServices {
         MSFacade msFacade = new MSFacade();
 
         CEMSRMTExperiment experiment
-                          = new CEMSRMTExperiment(
+                = new CEMSRMTExperiment(
                         query.getTolerance(),
                         query.getTolerance_mode().intValue(),
                         query.getIon_mode().intValue(),
@@ -1557,14 +1515,13 @@ public class APIServices {
         List<String> adducts = query.getAdducts().stream().map(element -> element.toString()).collect(Collectors.toList());
 
         Map<Integer, CEMSCompound> dbcandidates = getDbCandidates(query.getBuffer().intValue(),
-                                                                  query.getBuffer().getTemperature(),
-                                                                  query.getMasses_mode().intValue(),
-                                                                  query.getIon_mode().intValue(),
-                                                                  query.getPolarity().intValue(),
-                                                                  ALLOWOPPOSITEESIMODE);
+                query.getBuffer().getTemperature(),
+                query.getMasses_mode().intValue(),
+                query.getIon_mode().intValue(),
+                query.getPolarity().intValue(),
+                ALLOWOPPOSITEESIMODE);
         float[] databaseMobilities = new float[dbcandidates.size()];
         float[] migrationTimeBuffer = new float[dbcandidates.size()];
-
 
         Double[] markerMobilities = Utilities.getDBMobilitiesFromCEMSCompounds(dbcandidates, databaseMobilities, query.getMarker().intValue(), query.getMarker2().intValue());
 
@@ -1626,15 +1583,12 @@ public class APIServices {
         return gson.toJson(emsr);
     }
 
-
-
     @Path("/v3/cesearch/mt1marker")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public String getCEMSMT1MarkerSearchImpl(String rmt1marker) {
 
         String service = "CE-MS MT 1 Marker Search";
-
 
         //Estos valores se establecen fijos en CEMSMTControllerAdapter
         final boolean ALLOWOPPOSITEESIMODE = true;
@@ -1645,9 +1599,8 @@ public class APIServices {
 
         MSFacade msFacade = new MSFacade();
 
-
         CEMSMTExperiment experiment
-                         = new CEMSMTExperiment(
+                = new CEMSMTExperiment(
                         query.getTolerance(),
                         query.getTolerance_mode().intValue(),
                         query.getIon_mode().intValue(),
@@ -1662,11 +1615,11 @@ public class APIServices {
         List<String> adducts = query.getAdducts().stream().map(element -> element.toString()).collect(Collectors.toList());
 
         Map<Integer, CEMSCompound> dbcandidates = getDbCandidates(query.getBuffer().intValue(),
-                                                                  query.getBuffer().getTemperature(),
-                                                                  query.getMasses_mode().intValue(),
-                                                                  query.getIon_mode().intValue(),
-                                                                  query.getPolarity().intValue(),
-                                                                  ALLOWOPPOSITEESIMODE);
+                query.getBuffer().getTemperature(),
+                query.getMasses_mode().intValue(),
+                query.getIon_mode().intValue(),
+                query.getPolarity().intValue(),
+                ALLOWOPPOSITEESIMODE);
 
         float[] databaseMobilities = new float[dbcandidates.size()];
         float[] migrationTimeBuffer = new float[dbcandidates.size()];
@@ -1727,8 +1680,6 @@ public class APIServices {
         return gson.toJson(emsr);
     }
 
-
-
     @Path("/v3/cesearch/mt2marker")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -1747,9 +1698,8 @@ public class APIServices {
 
         MSFacade msFacade = new MSFacade();
 
-
         CEMSMTExperiment experiment
-                         = new CEMSMTExperiment(
+                = new CEMSMTExperiment(
                         query.getTolerance(),
                         query.getTolerance_mode().intValue(),
                         query.getIon_mode().intValue(),
@@ -1764,11 +1714,11 @@ public class APIServices {
         List<String> adducts = query.getAdducts().stream().map(element -> element.toString()).collect(Collectors.toList());
 
         Map<Integer, CEMSCompound> dbcandidates = getDbCandidates(query.getBuffer().intValue(),
-                                                                  query.getBuffer().getTemperature(),
-                                                                  query.getMasses_mode().intValue(),
-                                                                  query.getIon_mode().intValue(),
-                                                                  query.getPolarity().intValue(),
-                                                                  ALLOWOPPOSITEESIMODE);
+                query.getBuffer().getTemperature(),
+                query.getMasses_mode().intValue(),
+                query.getIon_mode().intValue(),
+                query.getPolarity().intValue(),
+                ALLOWOPPOSITEESIMODE);
 
         float[] databaseMobilities = new float[dbcandidates.size()];
         float[] migrationTimeBuffer = new float[dbcandidates.size()];
@@ -1831,8 +1781,6 @@ public class APIServices {
         return gson.toJson(emsr);
     }
 
-
-
     @Path("/v3/cesearch/targeted-effmob")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -1871,7 +1819,6 @@ public class APIServices {
 
         List<String> adducts = query.getAdducts().stream().map(element -> element.toString()).collect(Collectors.toList());
 
-
         try {
             // TODO QUERIES OVER THE EXP RMT
             List<CEMSFeature> cemsFeatures = msFacade.getCEAnnotationsFromMassesToleranceEffMobsAndFragments(
@@ -1895,11 +1842,9 @@ public class APIServices {
                     ALLOWOPPOSITEESIMODE);
 
             experiment.setCEMSFeatures(cemsFeatures);
-        }
-        catch (bufferTemperatureException ex) {
+        } catch (bufferTemperatureException ex) {
             error(service);
         }
-
 
         List<CEMSFeature> features = experiment.getCEMSFeatures();
 
@@ -1918,15 +1863,12 @@ public class APIServices {
             emsr.addCompoundGroup(groupmz);
         }
 
-
         msFacade.disconnect();
 
         debug(service, "-> RESULTS:" + "\nOUTPUT JSON:\n" + gson.toJson(emsr));
 
         return gson.toJson(emsr);
     }
-
-
 
     @Path("/v3/cesearch/targeted-exprmt")
     @POST
@@ -1967,7 +1909,6 @@ public class APIServices {
 
         List<String> adducts = query.getAdducts().stream().map(element -> element.toString()).collect(Collectors.toList());
 
-
         // TODO QUERIES OVER THE EXP RMT
         List<CEMSFeature> cemsFeatures;
         try {
@@ -1992,11 +1933,9 @@ public class APIServices {
                     ALLOWOPPOSITEESIMODE);
 
             experiment.setCEMSFeatures(cemsFeatures);
-        }
-        catch (bufferTemperatureException ex) {
+        } catch (bufferTemperatureException ex) {
             Logger.getLogger(APIServices.class.getName()).log(Level.SEVERE, null, ex);
         }
-
 
         List<CEMSFeature> features = experiment.getCEMSFeatures();
 
@@ -2022,8 +1961,6 @@ public class APIServices {
         return gson.toJson(emsr);
     }
 
-
-
     private CompoundView obtainCompound(Integer compoundId) {
         MSFacade msFacade = new MSFacade();
         CompoundView cv = msFacade.getCompound(compoundId);
@@ -2031,8 +1968,6 @@ public class APIServices {
 
         return cv;
     }
-
-
 
     @Path("/v3/compounds/{compoundId}")
     @GET
@@ -2045,8 +1980,6 @@ public class APIServices {
 
         return (cv != null) ? gson.toJson(cv) : "";
     }
-
-
 
     @Path("/v3/compounds/{compoundId}")
     @GET
@@ -2071,11 +2004,10 @@ public class APIServices {
         dataModel.put("base_class", Constants.WEB_CLASSYFIRE);
         dataModel.put("base_ontology", Constants.WEB_ONTOLOGY_LOCAL);
         dataModel.put("base_organism", Constants.WEB_ORGANISMS_LOCAL);
+        dataModel.put("base_npatlas", Constants.WEB_COMPOUND_NPATLAS);
 
         return this.generateHTMLRepresentation("compound_template.ftl", dataModel);
     }
-
-
 
     private ClassyfireNodeView obtainClassyfireNode(String nodeId) {
         MSFacade msFacade = new MSFacade();
@@ -2084,8 +2016,6 @@ public class APIServices {
 
         return cn;
     }
-
-
 
     @Path("/v3/classyfire/{nodeId}")
     @GET
@@ -2098,8 +2028,6 @@ public class APIServices {
 
         return (cn != null) ? gson.toJson(cn) : "";
     }
-
-
 
     @Path("/v3/classyfire/{nodeId}")
     @GET
@@ -2118,8 +2046,6 @@ public class APIServices {
         return this.generateHTMLRepresentation("classyfire_template.ftl", dataModel);
     }
 
-
-
     private TermView obtainOntologyTerm(Integer termId) {
         MSFacade msFacade = new MSFacade();
         TermView term = msFacade.getOntologyTerm(termId);
@@ -2127,8 +2053,6 @@ public class APIServices {
 
         return term;
     }
-
-
 
     @Path("/v3/ontology/{termId}")
     @GET
@@ -2141,8 +2065,6 @@ public class APIServices {
 
         return (term != null) ? gson.toJson(term) : "";
     }
-
-
 
     @Path("/v3/ontology/{termId}")
     @GET
@@ -2161,8 +2083,6 @@ public class APIServices {
         return this.generateHTMLRepresentation("term_template.ftl", dataModel);
     }
 
-
-
     private ReferenceView obtainReference(Integer referenceId) {
         MSFacade msFacade = new MSFacade();
         ReferenceView reference = msFacade.getReference(referenceId);
@@ -2170,8 +2090,6 @@ public class APIServices {
 
         return reference;
     }
-
-
 
     @Path("/v3/references/{referenceId}")
     @GET
@@ -2184,8 +2102,6 @@ public class APIServices {
 
         return (reference != null) ? gson.toJson(reference) : "";
     }
-
-
 
     @Path("/v3/references/{referenceId}")
     @GET
@@ -2204,8 +2120,6 @@ public class APIServices {
         return this.generateHTMLRepresentation("reference_template.ftl", dataModel);
     }
 
-
-
     private OrganismView obtainOrganism(Integer organismId) {
         MSFacade msFacade = new MSFacade();
         OrganismView organism = msFacade.getOrganism(organismId);
@@ -2213,8 +2127,6 @@ public class APIServices {
 
         return organism;
     }
-
-
 
     @Path("/v3/organisms/{organismId}")
     @GET
@@ -2227,8 +2139,6 @@ public class APIServices {
 
         return (organism != null) ? gson.toJson(organism) : "";
     }
-
-
 
     @Path("/v3/organisms/{organismId}")
     @GET
@@ -2247,8 +2157,6 @@ public class APIServices {
         return this.generateHTMLRepresentation("organism_template.ftl", dataModel);
     }
 
-
-
     // UTILITY METHODS
     private Map<Integer, CEMSCompound> getDbCandidates(int buffer, int buffer_temperature, int masses_mode, int ion_mode, int polarity, boolean allowOppositeESIMode) {
 
@@ -2259,26 +2167,20 @@ public class APIServices {
         Map<Integer, CEMSCompound> dbAcetic25CandidatesPositiveDirect = fillDBsByExpCond(2, 25, 1, 1, allowOppositeESIMode);
         Map<Integer, CEMSCompound> dbAcetic25CandidatesNegativeInverse = fillDBsByExpCond(2, 25, 2, 2, allowOppositeESIMode);
 
-
         int provIonMode = (masses_mode == 0) ? 1 : ion_mode;
 
         if (buffer == 1 && buffer_temperature == 20 && provIonMode == 1 && polarity == 1) {
             dbCandidates = dbFormic20CandidatesPositiveDirect;
-        }
-        else if (buffer == 1 && buffer_temperature == 20 && provIonMode == 2 && polarity == 2) {
+        } else if (buffer == 1 && buffer_temperature == 20 && provIonMode == 2 && polarity == 2) {
             dbCandidates = dbFormic20CandidatesNegativeInverse;
-        }
-        else if (buffer == 2 && buffer_temperature == 25 && provIonMode == 1 && polarity == 1) {
+        } else if (buffer == 2 && buffer_temperature == 25 && provIonMode == 1 && polarity == 1) {
             dbCandidates = dbAcetic25CandidatesPositiveDirect;
-        }
-        else if (buffer == 2 && buffer_temperature == 25 && provIonMode == 2 && polarity == 2) {
+        } else if (buffer == 2 && buffer_temperature == 25 && provIonMode == 2 && polarity == 2) {
             dbCandidates = dbAcetic25CandidatesNegativeInverse;
         }
 
         return dbCandidates;
     }
-
-
 
     private Map<Integer, CEMSCompound> fillDBsByExpCond(Integer buffer, Integer temperature, Integer ionMode, Integer polarity, boolean allowOppositeESIMode) {
         Map<Integer, CEMSCompound> cemscompounds = new LinkedHashMap<Integer, CEMSCompound>();
@@ -2287,14 +2189,11 @@ public class APIServices {
             cemscompounds = msFacade.getCEMSCompoundsFromExperimentalConditions(buffer, temperature, ionMode, polarity, allowOppositeESIMode);
 
             msFacade.disconnect();
-        }
-        catch (bufferTemperatureException ex) {
+        } catch (bufferTemperatureException ex) {
             Logger.getLogger(CEMSRMTController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cemscompounds;
     }
-
-
 
     private List<Set<CEMSFragment>> convert(List<List<Signal>> signals_grouped, int inputMasses, IonSourceVoltage isv) {
         List<Set<CEMSFragment>> allExperimentalFragments = new ArrayList<>();
@@ -2302,7 +2201,7 @@ public class APIServices {
             Set<CEMSFragment> experimentalFragments = new TreeSet();
             for (Signal signal : signals) {
                 CEMSFragment experimentalFragment = new CEMSFragment(null, null, null, isv.intValue(),
-                                                                     signal.getMz(), signal.getIntensity(), null, null, null);
+                        signal.getMz(), signal.getIntensity(), null, null, null);
                 experimentalFragments.add(experimentalFragment);
             }
             allExperimentalFragments.add(experimentalFragments);
@@ -2316,19 +2215,13 @@ public class APIServices {
         return allExperimentalFragments;
     }
 
-
-
     private void debug(String service, String message) {
         System.err.println("RESTful Api -" + service + "- DEBUG ~~> " + message);
     }
 
-
-
     private void error(String service) {
         System.err.println("RESTful Api -" + service + "- ERROR ~~> Something wrong happened. Please, review the service");
     }
-
-
 
     private void debug(String name, Double[] doubles) {
         System.out.println(name);
@@ -2338,8 +2231,6 @@ public class APIServices {
         System.err.println("");
     }
 
-
-
     private void debug(String name, double[] doubles) {
         System.out.println(name);
         for (double d : doubles) {
@@ -2348,8 +2239,6 @@ public class APIServices {
         System.err.println("");
     }
 
-
-
     private void debug(String name, float[] floats) {
         System.err.println(name);
         for (float f : floats) {
@@ -2357,8 +2246,6 @@ public class APIServices {
         }
         System.err.println("");
     }
-
-
 
     private String generateHTMLRepresentation(String template, ViewDataModel dataModel) {
 
@@ -2377,8 +2264,7 @@ public class APIServices {
 
             output = sw.toString();
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             error("generateHTMLRepresentation method");
             ex.printStackTrace();
             throw new InternalServerErrorException();
@@ -2386,8 +2272,6 @@ public class APIServices {
 
         return output;
     }
-
-
 
     private Configuration getFreemarkerConf() {
         //Freemarker lib version
@@ -2413,4 +2297,3 @@ public class APIServices {
     }
 
 }
-
