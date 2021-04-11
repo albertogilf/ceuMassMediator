@@ -1,730 +1,602 @@
-"organism_id"|"organism_name"|"organism_level"|"parent_id"|"parent_name"
-"1687"|"094102"|"4"|"133"|"Aspergillus ustus"
-"2221"|"16-02-1"|"4"|"153"|"Aspergillus"
-"1476"|"5378"|"4"|"12"|"Aspergillus terreus"
-"1629"|"95F-1"|"4"|"12"|"Aspergillus terreus"
-"1564"|"A.R.M. 325"|"4"|"1562"|"Aspergillus rugulosus"
-"1705"|"A1149"|"4"|"128"|"Aspergillus nidulans"
-"1383"|"A1163"|"4"|"152"|"Aspergillus fumigatus"
-"1438"|"A437"|"4"|"234"|"Aspergillus oryzae"
-"2365"|"AF119"|"4"|"153"|"Aspergillus"
-"1715"|"AJ-2008001"|"4"|"153"|"Aspergillus"
-"1410"|"AJ117509"|"4"|"153"|"Aspergillus"
-"2373"|"asper"|"4"|"153"|"Aspergillus"
-"153"|"Aspergillus"|"3"|"2"|"Trichocomaceae"
-"1723"|"Aspergillus acanthosporus"|"3"|"2"|"Trichocomaceae"
-"1724"|"Aspergillus acidus"|"3"|"2"|"Trichocomaceae"
-"1728"|"Aspergillus aculeatinus"|"3"|"2"|"Trichocomaceae"
-"1370"|"Aspergillus aculeatus"|"3"|"2"|"Trichocomaceae"
-"1730"|"Aspergillus aeneus"|"3"|"2"|"Trichocomaceae"
-"1731"|"Aspergillus affinis"|"3"|"2"|"Trichocomaceae"
-"1733"|"Aspergillus alabamensis"|"3"|"2"|"Trichocomaceae"
-"1734"|"Aspergillus albertensis"|"3"|"2"|"Trichocomaceae"
-"1737"|"Aspergillus allahabadii"|"3"|"2"|"Trichocomaceae"
-"1460"|"Aspergillus alliaceus"|"3"|"2"|"Trichocomaceae"
-"1742"|"Aspergillus ambiguus"|"3"|"2"|"Trichocomaceae"
-"1743"|"Aspergillus amoenus"|"3"|"2"|"Trichocomaceae"
-"142"|"Aspergillus amstelodami"|"3"|"2"|"Trichocomaceae"
-"1747"|"Aspergillus anthodesmis"|"3"|"2"|"Trichocomaceae"
-"1749"|"Aspergillus appendiculatus"|"3"|"2"|"Trichocomaceae"
-"1750"|"Aspergillus arachidicola"|"3"|"2"|"Trichocomaceae"
-"3924"|"Aspergillus arcoverdensis"|"3"|"2"|"Trichocomaceae"
-"3925"|"Aspergillus ardalensis"|"3"|"2"|"Trichocomaceae"
-"1751"|"Aspergillus arenarioide"|"3"|"2"|"Trichocomaceae"
-"1697"|"Aspergillus arenarius"|"3"|"2"|"Trichocomaceae"
-"1756"|"Aspergillus arxii"|"3"|"2"|"Trichocomaceae"
-"3905"|"Aspergillus asper"|"3"|"2"|"Trichocomaceae"
-"1758"|"Aspergillus asperescens"|"3"|"2"|"Trichocomaceae"
-"1759"|"Aspergillus assulatus"|"3"|"2"|"Trichocomaceae"
-"1760"|"Aspergillus astellatus"|"3"|"2"|"Trichocomaceae"
-"1766"|"Aspergillus aurantiobrunneus"|"3"|"2"|"Trichocomaceae"
-"1767"|"Aspergillus auratus"|"3"|"2"|"Trichocomaceae"
-"1768"|"Aspergillus aureofulgens"|"3"|"2"|"Trichocomaceae"
-"1770"|"Aspergillus aureolatus"|"3"|"2"|"Trichocomaceae"
-"1771"|"Aspergillus aureolus"|"3"|"2"|"Trichocomaceae"
-"1773"|"Aspergillus aureoterreus"|"3"|"2"|"Trichocomaceae"
-"1775"|"Aspergillus aureus"|"3"|"2"|"Trichocomaceae"
-"1776"|"Aspergillus auricomus"|"3"|"2"|"Trichocomaceae"
-"1777"|"Aspergillus australensis"|"3"|"2"|"Trichocomaceae"
-"1778"|"Aspergillus austroafricanus"|"3"|"2"|"Trichocomaceae"
-"1779"|"Aspergillus avenaceus"|"3"|"2"|"Trichocomaceae"
-"1412"|"Aspergillus awamori"|"3"|"2"|"Trichocomaceae"
-"1781"|"Aspergillus baarnensis"|"3"|"2"|"Trichocomaceae"
-"1782"|"Aspergillus baeticus"|"3"|"2"|"Trichocomaceae"
-"1784"|"Aspergillus beijingensis"|"3"|"2"|"Trichocomaceae"
-"1787"|"Aspergillus bertholletius"|"3"|"2"|"Trichocomaceae"
-"1788"|"Aspergillus bicolor"|"3"|"2"|"Trichocomaceae"
-"1790"|"Aspergillus biplanus"|"3"|"2"|"Trichocomaceae"
-"1791"|"Aspergillus bisporus"|"3"|"2"|"Trichocomaceae"
-"1792"|"Aspergillus bombycis"|"3"|"2"|"Trichocomaceae"
-"1795"|"Aspergillus brasiliensis"|"3"|"2"|"Trichocomaceae"
-"3926"|"Aspergillus brevijanus"|"3"|"2"|"Trichocomaceae"
-"1796"|"Aspergillus brevipes"|"3"|"2"|"Trichocomaceae"
-"1797"|"Aspergillus brevistipitatus"|"3"|"2"|"Trichocomaceae"
-"1798"|"Aspergillus bridgeri"|"3"|"2"|"Trichocomaceae"
-"1800"|"Aspergillus brunneouniseriatus"|"3"|"2"|"Trichocomaceae"
-"1801"|"Aspergillus brunneoviolaceu"|"3"|"2"|"Trichocomaceae"
-"1802"|"Aspergillus brunneus"|"3"|"2"|"Trichocomaceae"
-"3927"|"Aspergillus caatingaensis"|"3"|"2"|"Trichocomaceae"
-"1682"|"Aspergillus caelatus"|"3"|"2"|"Trichocomaceae"
-"1805"|"Aspergillus caesiellus"|"3"|"2"|"Trichocomaceae"
-"540"|"Aspergillus caespitosus"|"3"|"2"|"Trichocomaceae"
-"1806"|"Aspergillus calidoustus"|"3"|"2"|"Trichocomaceae"
-"1807"|"Aspergillus californicus"|"3"|"2"|"Trichocomaceae"
-"277"|"Aspergillus campestris"|"3"|"2"|"Trichocomaceae"
-"278"|"Aspergillus candidus"|"3"|"2"|"Trichocomaceae"
-"1809"|"Aspergillus capensis"|"3"|"2"|"Trichocomaceae"
-"1810"|"Aspergillus capsici"|"3"|"2"|"Trichocomaceae"
-"129"|"Aspergillus carbonarius"|"3"|"2"|"Trichocomaceae"
-"1811"|"Aspergillus carlsbadensis"|"3"|"2"|"Trichocomaceae"
-"1632"|"Aspergillus carneus"|"3"|"2"|"Trichocomaceae"
-"1814"|"Aspergillus cavernicola"|"3"|"2"|"Trichocomaceae"
-"1815"|"Aspergillus cejpii"|"3"|"2"|"Trichocomaceae"
-"1591"|"Aspergillus cervinus"|"3"|"2"|"Trichocomaceae"
-"143"|"Aspergillus chevalieri"|"3"|"2"|"Trichocomaceae"
-"1817"|"Aspergillus chinensis"|"3"|"2"|"Trichocomaceae"
-"1819"|"Aspergillus chlamydosporus"|"3"|"2"|"Trichocomaceae"
-"1818"|"Aspergillus chrysellus"|"3"|"2"|"Trichocomaceae"
-"1821"|"Aspergillus cibarius"|"3"|"2"|"Trichocomaceae"
-"1829"|"Aspergillus citrisporus"|"3"|"2"|"Trichocomaceae"
-"1831"|"Aspergillus clavatonanicus"|"3"|"2"|"Trichocomaceae"
-"1402"|"Aspergillus clavatus"|"3"|"2"|"Trichocomaceae"
-"1838"|"Aspergillus conicus"|"3"|"2"|"Trichocomaceae"
-"1839"|"Aspergillus conjunctus"|"3"|"2"|"Trichocomaceae"
-"1841"|"Aspergillus conversis"|"3"|"2"|"Trichocomaceae"
-"1843"|"Aspergillus coremiiformis"|"3"|"2"|"Trichocomaceae"
-"1844"|"Aspergillus corolligenus"|"3"|"2"|"Trichocomaceae"
-"1845"|"Aspergillus corrugatus"|"3"|"2"|"Trichocomaceae"
-"1846"|"Aspergillus costaricensis"|"3"|"2"|"Trichocomaceae"
-"1847"|"Aspergillus costiformis"|"3"|"2"|"Trichocomaceae"
-"1849"|"Aspergillus creber"|"3"|"2"|"Trichocomaceae"
-"1851"|"Aspergillus cremeus"|"3"|"2"|"Trichocomaceae"
-"1852"|"Aspergillus cretensis"|"3"|"2"|"Trichocomaceae"
-"1853"|"Aspergillus cristatellus"|"3"|"2"|"Trichocomaceae"
-"1854"|"Aspergillus cristatus"|"3"|"2"|"Trichocomaceae"
-"1855"|"Aspergillus crustosus"|"3"|"2"|"Trichocomaceae"
-"1856"|"Aspergillus crystallinus"|"3"|"2"|"Trichocomaceae"
-"3929"|"Aspergillus cumulatus"|"3"|"2"|"Trichocomaceae"
-"1857"|"Aspergillus cuum"|"3"|"2"|"Trichocomaceae"
-"1859"|"Aspergillus cvjetkovicii"|"3"|"2"|"Trichocomaceae"
-"1861"|"Aspergillus deflectus"|"3"|"2"|"Trichocomaceae"
-"1863"|"Aspergillus delacroxii"|"3"|"2"|"Trichocomaceae"
-"1864"|"Aspergillus delicatus"|"3"|"2"|"Trichocomaceae"
-"1868"|"Aspergillus denticulatus"|"3"|"2"|"Trichocomaceae"
-"1870"|"Aspergillus desertorum"|"3"|"2"|"Trichocomaceae"
-"1873"|"Aspergillus dimorphicus"|"3"|"2"|"Trichocomaceae"
-"1875"|"Aspergillus discophorus"|"3"|"2"|"Trichocomaceae"
-"1877"|"Aspergillus diversus"|"3"|"2"|"Trichocomaceae"
-"1880"|"Aspergillus duricaulis"|"3"|"2"|"Trichocomaceae"
-"1882"|"Aspergillus eburneocremeus"|"3"|"2"|"Trichocomaceae"
-"1884"|"Aspergillus echinosporus"|"3"|"2"|"Trichocomaceae"
-"1885"|"Aspergillus echinulatus"|"3"|"2"|"Trichocomaceae"
-"1886"|"Aspergillus ecuadorensis"|"3"|"2"|"Trichocomaceae"
-"2335"|"Aspergillus effuses"|"3"|"2"|"Trichocomaceae"
-"1887"|"Aspergillus effusus"|"3"|"2"|"Trichocomaceae"
-"1888"|"Aspergillus egyptiacus"|"3"|"2"|"Trichocomaceae"
-"1889"|"Aspergillus elatior"|"3"|"2"|"Trichocomaceae"
-"1890"|"Aspergillus elegans"|"3"|"2"|"Trichocomaceae"
-"1891"|"Aspergillus ellipsoideus"|"3"|"2"|"Trichocomaceae"
-"1892"|"Aspergillus ellipticus"|"3"|"2"|"Trichocomaceae"
-"1893"|"Aspergillus elongatus"|"3"|"2"|"Trichocomaceae"
-"1894"|"Aspergillus equitis"|"3"|"2"|"Trichocomaceae"
-"1895"|"Aspergillus erythrocephalus"|"3"|"2"|"Trichocomaceae"
-"1896"|"Aspergillus eucalypticola"|"3"|"2"|"Trichocomaceae"
-"1897"|"Aspergillus falconensis"|"3"|"2"|"Trichocomaceae"
-"1898"|"Aspergillus fasciculatus"|"3"|"2"|"Trichocomaceae"
-"1899"|"Aspergillus felis"|"3"|"2"|"Trichocomaceae"
-"1548"|"Aspergillus fennelliae"|"3"|"2"|"Trichocomaceae"
-"1900"|"Aspergillus ferencziensis"|"3"|"2"|"Trichocomaceae"
-"1901"|"Aspergillus ferenczii"|"3"|"2"|"Trichocomaceae"
-"1902"|"Aspergillus ferrugineus"|"3"|"2"|"Trichocomaceae"
-"1904"|"Aspergillus ficuum"|"3"|"2"|"Trichocomaceae"
-"1903"|"Aspergillus fiemonthi"|"3"|"2"|"Trichocomaceae"
-"1905"|"Aspergillus fijiensis"|"3"|"2"|"Trichocomaceae"
-"1906"|"Aspergillus filifer"|"3"|"2"|"Trichocomaceae"
-"1908"|"Aspergillus fimetarius"|"3"|"2"|"Trichocomaceae"
-"1909"|"Aspergillus fimeti"|"3"|"2"|"Trichocomaceae"
-"1446"|"Aspergillus fischeri"|"3"|"2"|"Trichocomaceae"
-"1911"|"Aspergillus fischerianus"|"3"|"2"|"Trichocomaceae"
-"1912"|"Aspergillus flaschentraegeri"|"3"|"2"|"Trichocomaceae"
-"1913"|"Aspergillus flavescens"|"3"|"2"|"Trichocomaceae"
-"1914"|"Aspergillus flavidus"|"3"|"2"|"Trichocomaceae"
-"1400"|"Aspergillus flavipes"|"3"|"2"|"Trichocomaceae"
-"1915"|"Aspergillus flavofurcatus"|"3"|"2"|"Trichocomaceae"
-"1916"|"Aspergillus flavoviridescens"|"3"|"2"|"Trichocomaceae"
-"19"|"Aspergillus flavus"|"3"|"2"|"Trichocomaceae"
-"1918"|"Aspergillus floccosus"|"3"|"2"|"Trichocomaceae"
-"1917"|"Aspergillus flocculosus"|"3"|"2"|"Trichocomaceae"
-"1919"|"Aspergillus floridensis"|"3"|"2"|"Trichocomaceae"
-"1920"|"Aspergillus floriformis"|"3"|"2"|"Trichocomaceae"
-"1921"|"Aspergillus foeniculicola"|"3"|"2"|"Trichocomaceae"
-"1922"|"Aspergillus foetidus"|"3"|"2"|"Trichocomaceae"
-"130"|"Aspergillus fonsecaeus"|"3"|"2"|"Trichocomaceae"
-"1923"|"Aspergillus foutoynontii"|"3"|"2"|"Trichocomaceae"
-"1924"|"Aspergillus foveolatus"|"3"|"2"|"Trichocomaceae"
-"1925"|"Aspergillus fresenii"|"3"|"2"|"Trichocomaceae"
-"1926"|"Aspergillus fructus"|"3"|"2"|"Trichocomaceae"
-"1927"|"Aspergillus fruticans"|"3"|"2"|"Trichocomaceae"
-"1928"|"Aspergillus fruticulosus"|"3"|"2"|"Trichocomaceae"
-"1929"|"Aspergillus fujiokensis"|"3"|"2"|"Trichocomaceae"
-"1930"|"Aspergillus fuliginosus"|"3"|"2"|"Trichocomaceae"
-"1931"|"Aspergillus fulvus"|"3"|"2"|"Trichocomaceae"
-"1932"|"Aspergillus fumaricus"|"3"|"2"|"Trichocomaceae"
-"1933"|"Aspergillus fumigatiaffinis"|"3"|"2"|"Trichocomaceae"
-"3906"|"Aspergillus fumigatoides"|"3"|"2"|"Trichocomaceae"
-"152"|"Aspergillus fumigatus"|"3"|"2"|"Trichocomaceae"
-"1935"|"Aspergillus fumisynnematus"|"3"|"2"|"Trichocomaceae"
-"1936"|"Aspergillus fungoides"|"3"|"2"|"Trichocomaceae"
-"1468"|"Aspergillus funiculosus"|"3"|"2"|"Trichocomaceae"
-"1937"|"Aspergillus fuscus"|"3"|"2"|"Trichocomaceae"
-"1938"|"Aspergillus galapagensis"|"3"|"2"|"Trichocomaceae"
-"1940"|"Aspergillus galeritus"|"3"|"2"|"Trichocomaceae"
-"1939"|"Aspergillus germanicus"|"3"|"2"|"Trichocomaceae"
-"1575"|"Aspergillus giganteus"|"3"|"2"|"Trichocomaceae"
-"1941"|"Aspergillus gigantosulphureus"|"3"|"2"|"Trichocomaceae"
-"1942"|"Aspergillus gigas"|"3"|"2"|"Trichocomaceae"
-"1943"|"Aspergillus glaber"|"3"|"2"|"Trichocomaceae"
-"1944"|"Aspergillus glaucoaffinis"|"3"|"2"|"Trichocomaceae"
-"1945"|"Aspergillus glauconiveus"|"3"|"2"|"Trichocomaceae"
-"1691"|"Aspergillus glaucus"|"3"|"2"|"Trichocomaceae"
-"1946"|"Aspergillus globosus"|"3"|"2"|"Trichocomaceae"
-"1947"|"Aspergillus godfrini"|"3"|"2"|"Trichocomaceae"
-"1948"|"Aspergillus gorakhpurensis"|"3"|"2"|"Trichocomaceae"
-"1949"|"Aspergillus gracilis"|"3"|"2"|"Trichocomaceae"
-"1950"|"Aspergillus granulatus"|"3"|"2"|"Trichocomaceae"
-"1951"|"Aspergillus granulosus"|"3"|"2"|"Trichocomaceae"
-"1952"|"Aspergillus gratioti"|"3"|"2"|"Trichocomaceae"
-"1953"|"Aspergillus greconis"|"3"|"2"|"Trichocomaceae"
-"1955"|"Aspergillus griseoaurantiacus"|"3"|"2"|"Trichocomaceae"
-"1954"|"Aspergillus griseus"|"3"|"2"|"Trichocomaceae"
-"1956"|"Aspergillus guttifer"|"3"|"2"|"Trichocomaceae"
-"1957"|"Aspergillus gymnosardae"|"3"|"2"|"Trichocomaceae"
-"1958"|"Aspergillus hagenii"|"3"|"2"|"Trichocomaceae"
-"1959"|"Aspergillus haitiensis"|"3"|"2"|"Trichocomaceae"
-"1960"|"Aspergillus halophilicus"|"3"|"2"|"Trichocomaceae"
-"1961"|"Aspergillus halophilus"|"3"|"2"|"Trichocomaceae"
-"1962"|"Aspergillus helicothrix"|"3"|"2"|"Trichocomaceae"
-"1963"|"Aspergillus hennebergii"|"3"|"2"|"Trichocomaceae"
-"1964"|"Aspergillus herbariorum"|"3"|"2"|"Trichocomaceae"
-"1965"|"Aspergillus heterocaryoticus"|"3"|"2"|"Trichocomaceae"
-"1966"|"Aspergillus heteromorphus"|"3"|"2"|"Trichocomaceae"
-"1967"|"Aspergillus heterothallicus"|"3"|"2"|"Trichocomaceae"
-"1968"|"Aspergillus heyangensis"|"3"|"2"|"Trichocomaceae"
-"1969"|"Aspergillus hiratsukae"|"3"|"2"|"Trichocomaceae"
-"1970"|"Aspergillus hollandicus"|"3"|"2"|"Trichocomaceae"
-"1971"|"Aspergillus homomorphus"|"3"|"2"|"Trichocomaceae"
-"1972"|"Aspergillus hortae"|"3"|"2"|"Trichocomaceae"
-"1973"|"Aspergillus humicola"|"3"|"2"|"Trichocomaceae"
-"1974"|"Aspergillus humus"|"3"|"2"|"Trichocomaceae"
-"1975"|"Aspergillus ibericus"|"3"|"2"|"Trichocomaceae"
-"1976"|"Aspergillus igneus"|"3"|"2"|"Trichocomaceae"
-"1977"|"Aspergillus iizukae"|"3"|"2"|"Trichocomaceae"
-"1978"|"Aspergillus implicatus"|"3"|"2"|"Trichocomaceae"
-"1979"|"Aspergillus incrassatus"|"3"|"2"|"Trichocomaceae"
-"1980"|"Aspergillus indicus"|"3"|"2"|"Trichocomaceae"
-"1981"|"Aspergillus indohii"|"3"|"2"|"Trichocomaceae"
-"1982"|"Aspergillus indologenus"|"3"|"2"|"Trichocomaceae"
-"1983"|"Aspergillus inflatus"|"3"|"2"|"Trichocomaceae"
-"1984"|"Aspergillus ingratus"|"3"|"2"|"Trichocomaceae"
-"1985"|"Aspergillus insecticola"|"3"|"2"|"Trichocomaceae"
-"1986"|"Aspergillus insolitus"|"3"|"2"|"Trichocomaceae"
-"320"|"Aspergillus insuetus"|"3"|"2"|"Trichocomaceae"
-"1699"|"Aspergillus insulicola"|"3"|"2"|"Trichocomaceae"
-"1987"|"Aspergillus intermedius"|"3"|"2"|"Trichocomaceae"
-"1988"|"Aspergillus inuii"|"3"|"2"|"Trichocomaceae"
-"1989"|"Aspergillus itaconicus"|"3"|"2"|"Trichocomaceae"
-"1990"|"Aspergillus ivoriensis"|"3"|"2"|"Trichocomaceae"
-"1991"|"Aspergillus jaipurensis"|"3"|"2"|"Trichocomaceae"
-"1527"|"Aspergillus janus"|"3"|"2"|"Trichocomaceae"
-"1356"|"Aspergillus japonicus"|"3"|"2"|"Trichocomaceae"
-"1992"|"Aspergillus jeanselmei"|"3"|"2"|"Trichocomaceae"
-"1993"|"Aspergillus jensenii"|"3"|"2"|"Trichocomaceae"
-"1994"|"Aspergillus kambarensis"|"3"|"2"|"Trichocomaceae"
-"1995"|"Aspergillus kanagawaensis"|"3"|"2"|"Trichocomaceae"
-"1678"|"Aspergillus karnatakaensis"|"3"|"2"|"Trichocomaceae"
-"1996"|"Aspergillus kassunensis"|"3"|"2"|"Trichocomaceae"
-"1997"|"Aspergillus katsuobushi"|"3"|"2"|"Trichocomaceae"
-"1998"|"Aspergillus keveii"|"3"|"2"|"Trichocomaceae"
-"1999"|"Aspergillus kitaii"|"3"|"2"|"Trichocomaceae"
-"2000"|"Aspergillus koningii"|"3"|"2"|"Trichocomaceae"
-"2340"|"Aspergillus kumbius"|"3"|"2"|"Trichocomaceae"
-"2001"|"Aspergillus laciniosus"|"3"|"2"|"Trichocomaceae"
-"2002"|"Aspergillus lacticoffeatus"|"3"|"2"|"Trichocomaceae"
-"2003"|"Aspergillus laneus"|"3"|"2"|"Trichocomaceae"
-"2004"|"Aspergillus lanosus"|"3"|"2"|"Trichocomaceae"
-"2005"|"Aspergillus laokiashanensis"|"3"|"2"|"Trichocomaceae"
-"2006"|"Aspergillus lateralis"|"3"|"2"|"Trichocomaceae"
-"2007"|"Aspergillus lentulus"|"3"|"2"|"Trichocomaceae"
-"2008"|"Aspergillus lepidophyton"|"3"|"2"|"Trichocomaceae"
-"2009"|"Aspergillus leporis"|"3"|"2"|"Trichocomaceae"
-"2010"|"Aspergillus leucocarpus"|"3"|"2"|"Trichocomaceae"
-"2011"|"Aspergillus lignieresii"|"3"|"2"|"Trichocomaceae"
-"2012"|"Aspergillus longivesica"|"3"|"2"|"Trichocomaceae"
-"2013"|"Aspergillus longobasidia"|"3"|"2"|"Trichocomaceae"
-"2014"|"Aspergillus luchensi"|"3"|"2"|"Trichocomaceae"
-"2015"|"Aspergillus luchuensis"|"3"|"2"|"Trichocomaceae"
-"2016"|"Aspergillus lucknowensis"|"3"|"2"|"Trichocomaceae"
-"2017"|"Aspergillus luteoniger"|"3"|"2"|"Trichocomaceae"
-"2018"|"Aspergillus luteovirescens"|"3"|"2"|"Trichocomaceae"
-"2019"|"Aspergillus lutescens"|"3"|"2"|"Trichocomaceae"
-"2020"|"Aspergillus luteus"|"3"|"2"|"Trichocomaceae"
-"2021"|"Aspergillus macfiei"|"3"|"2"|"Trichocomaceae"
-"2022"|"Aspergillus macrosporus"|"3"|"2"|"Trichocomaceae"
-"3879"|"Aspergillus Maggi"|"3"|"2"|"Trichocomaceae"
-"2023"|"Aspergillus malignus"|"3"|"2"|"Trichocomaceae"
-"2024"|"Aspergillus malodoratus"|"3"|"2"|"Trichocomaceae"
-"2025"|"Aspergillus malvaceus"|"3"|"2"|"Trichocomaceae"
-"2026"|"Aspergillus mandshuricus"|"3"|"2"|"Trichocomaceae"
-"2027"|"Aspergillus manginii"|"3"|"2"|"Trichocomaceae"
-"2028"|"Aspergillus mannitosus"|"3"|"2"|"Trichocomaceae"
-"2029"|"Aspergillus maritimus"|"3"|"2"|"Trichocomaceae"
-"2030"|"Aspergillus marvanovae"|"3"|"2"|"Trichocomaceae"
-"2031"|"Aspergillus mattletii"|"3"|"2"|"Trichocomaceae"
-"2032"|"Aspergillus maximus"|"3"|"2"|"Trichocomaceae"
-"2033"|"Aspergillus medius"|"3"|"2"|"Trichocomaceae"
-"2034"|"Aspergillus melitensis"|"3"|"2"|"Trichocomaceae"
-"543"|"Aspergillus melleus"|"3"|"2"|"Trichocomaceae"
-"2035"|"Aspergillus mellinus"|"3"|"2"|"Trichocomaceae"
-"2036"|"Aspergillus mencieri"|"3"|"2"|"Trichocomaceae"
-"2037"|"Aspergillus michelii"|"3"|"2"|"Trichocomaceae"
-"2038"|"Aspergillus microcephalus"|"3"|"2"|"Trichocomaceae"
-"1399"|"Aspergillus microcysticus"|"3"|"2"|"Trichocomaceae"
-"2039"|"Aspergillus micronesiensis"|"3"|"2"|"Trichocomaceae"
-"2040"|"Aspergillus microsporus"|"3"|"2"|"Trichocomaceae"
-"2041"|"Aspergillus microthecius"|"3"|"2"|"Trichocomaceae"
-"2042"|"Aspergillus microviridicitrinus"|"3"|"2"|"Trichocomaceae"
-"2043"|"Aspergillus minimus"|"3"|"2"|"Trichocomaceae"
-"2044"|"Aspergillus minisclerotigenes"|"3"|"2"|"Trichocomaceae"
-"2045"|"Aspergillus minor"|"3"|"2"|"Trichocomaceae"
-"2046"|"Aspergillus minutus"|"3"|"2"|"Trichocomaceae"
-"2047"|"Aspergillus miyajii"|"3"|"2"|"Trichocomaceae"
-"2048"|"Aspergillus miyakoensis"|"3"|"2"|"Trichocomaceae"
-"2049"|"Aspergillus mollis"|"3"|"2"|"Trichocomaceae"
-"2050"|"Aspergillus monodii"|"3"|"2"|"Trichocomaceae"
-"2051"|"Aspergillus montenegroi"|"3"|"2"|"Trichocomaceae"
-"2052"|"Aspergillus montevidensis"|"3"|"2"|"Trichocomaceae"
-"2053"|"Aspergillus mottae"|"3"|"2"|"Trichocomaceae"
-"2055"|"Aspergillus mucoroideus"|"3"|"2"|"Trichocomaceae"
-"2056"|"Aspergillus muelleri"|"3"|"2"|"Trichocomaceae"
-"144"|"Aspergillus multicolor"|"3"|"2"|"Trichocomaceae"
-"2057"|"Aspergillus multiplicatus"|"3"|"2"|"Trichocomaceae"
-"2355"|"Aspergillus mulundensis"|"3"|"2"|"Trichocomaceae"
-"2058"|"Aspergillus muricatus"|"3"|"2"|"Trichocomaceae"
-"2059"|"Aspergillus muscivora"|"3"|"2"|"Trichocomaceae"
-"2060"|"Aspergillus mutabilis"|"3"|"2"|"Trichocomaceae"
-"2061"|"Aspergillus mycetomi-villabruzzii"|"3"|"2"|"Trichocomaceae"
-"2062"|"Aspergillus mycobanche"|"3"|"2"|"Trichocomaceae"
-"2063"|"Aspergillus nakazawae"|"3"|"2"|"Trichocomaceae"
-"2064"|"Aspergillus nantae"|"3"|"2"|"Trichocomaceae"
-"2065"|"Aspergillus nanus"|"3"|"2"|"Trichocomaceae"
-"2066"|"Aspergillus navahoensis"|"3"|"2"|"Trichocomaceae"
-"2067"|"Aspergillus neoafricanus"|"3"|"2"|"Trichocomaceae"
-"2068"|"Aspergillus neobridgeri"|"3"|"2"|"Trichocomaceae"
-"2069"|"Aspergillus neocarnoyi"|"3"|"2"|"Trichocomaceae"
-"2070"|"Aspergillus neoellipticus"|"3"|"2"|"Trichocomaceae"
-"2072"|"Aspergillus neoglaber"|"3"|"2"|"Trichocomaceae"
-"2071"|"Aspergillus neoindicus"|"3"|"2"|"Trichocomaceae"
-"2073"|"Aspergillus neoniger"|"3"|"2"|"Trichocomaceae"
-"2074"|"Aspergillus neoniveus"|"3"|"2"|"Trichocomaceae"
-"128"|"Aspergillus nidulans"|"3"|"2"|"Trichocomaceae"
-"2075"|"Aspergillus nidulellus"|"3"|"2"|"Trichocomaceae"
-"283"|"Aspergillus niger"|"3"|"2"|"Trichocomaceae"
-"2076"|"Aspergillus nigrescens"|"3"|"2"|"Trichocomaceae"
-"2077"|"Aspergillus nigricans"|"3"|"2"|"Trichocomaceae"
-"2078"|"Aspergillus nishimurae"|"3"|"2"|"Trichocomaceae"
-"2079"|"Aspergillus niveoglaucus"|"3"|"2"|"Trichocomaceae"
-"1618"|"Aspergillus niveus"|"3"|"2"|"Trichocomaceae"
-"2080"|"Aspergillus noelting"|"3"|"2"|"Trichocomaceae"
-"2081"|"Aspergillus nominus"|"3"|"2"|"Trichocomaceae"
-"20"|"Aspergillus nomius"|"3"|"2"|"Trichocomaceae"
-"2082"|"Aspergillus novofumigatus"|"3"|"2"|"Trichocomaceae"
-"2083"|"Aspergillus novoparasiticus"|"3"|"2"|"Trichocomaceae"
-"2084"|"Aspergillus novus"|"3"|"2"|"Trichocomaceae"
-"2085"|"Aspergillus nutans"|"3"|"2"|"Trichocomaceae"
-"2086"|"Aspergillus obscurus"|"3"|"2"|"Trichocomaceae"
-"2087"|"Aspergillus occultus"|"3"|"2"|"Trichocomaceae"
-"2088"|"Aspergillus ochraceopetaliformis"|"3"|"2"|"Trichocomaceae"
-"2089"|"Aspergillus ochraceoroseus"|"3"|"2"|"Trichocomaceae"
-"2090"|"Aspergillus ochraceoruber"|"3"|"2"|"Trichocomaceae"
-"3"|"Aspergillus ochraceus"|"3"|"2"|"Trichocomaceae"
-"2092"|"Aspergillus oerlinghausenensis"|"3"|"2"|"Trichocomaceae"
-"2093"|"Aspergillus olivaceofuscus"|"3"|"2"|"Trichocomaceae"
-"2094"|"Aspergillus olivaceus"|"3"|"2"|"Trichocomaceae"
-"2096"|"Aspergillus olivicola"|"3"|"2"|"Trichocomaceae"
-"2097"|"Aspergillus omanensis"|"3"|"2"|"Trichocomaceae"
-"2098"|"Aspergillus onikii"|"3"|"2"|"Trichocomaceae"
-"2099"|"Aspergillus oosporus"|"3"|"2"|"Trichocomaceae"
-"2100"|"Aspergillus ornatulus"|"3"|"2"|"Trichocomaceae"
-"2101"|"Aspergillus ornatus"|"3"|"2"|"Trichocomaceae"
-"234"|"Aspergillus oryzae"|"3"|"2"|"Trichocomaceae"
-"1408"|"Aspergillus ostianus"|"3"|"2"|"Trichocomaceae"
-"2102"|"Aspergillus otanii"|"3"|"2"|"Trichocomaceae"
-"2103"|"Aspergillus ovalispermus"|"3"|"2"|"Trichocomaceae"
-"2104"|"Aspergillus paleaceus"|"3"|"2"|"Trichocomaceae"
-"2106"|"Aspergillus pallidofulvus"|"3"|"2"|"Trichocomaceae"
-"2105"|"Aspergillus pallidus"|"3"|"2"|"Trichocomaceae"
-"1457"|"Aspergillus panamensis"|"3"|"2"|"Trichocomaceae"
-"2107"|"Aspergillus papuensis"|"3"|"2"|"Trichocomaceae"
-"2108"|"Aspergillus paradoxus"|"3"|"2"|"Trichocomaceae"
-"2109"|"Aspergillus parafelis"|"3"|"2"|"Trichocomaceae"
-"21"|"Aspergillus parasiticus"|"3"|"2"|"Trichocomaceae"
-"2111"|"Aspergillus parvathecius"|"3"|"2"|"Trichocomaceae"
-"2112"|"Aspergillus parvisclerotigenus"|"3"|"2"|"Trichocomaceae"
-"2113"|"Aspergillus parviverruculosus"|"3"|"2"|"Trichocomaceae"
-"2110"|"Aspergillus parvulus"|"3"|"2"|"Trichocomaceae"
-"2115"|"Aspergillus paulistensis"|"3"|"2"|"Trichocomaceae"
-"2116"|"Aspergillus penicillatus"|"3"|"2"|"Trichocomaceae"
-"2117"|"Aspergillus penicilliformis"|"3"|"2"|"Trichocomaceae"
-"2118"|"Aspergillus penicillioides"|"3"|"2"|"Trichocomaceae"
-"2119"|"Aspergillus penicillioideum"|"3"|"2"|"Trichocomaceae"
-"2120"|"Aspergillus penicillopsis"|"3"|"2"|"Trichocomaceae"
-"2121"|"Aspergillus periconioides"|"3"|"2"|"Trichocomaceae"
-"2122"|"Aspergillus perniciosus"|"3"|"2"|"Trichocomaceae"
-"2123"|"Aspergillus persii"|"3"|"2"|"Trichocomaceae"
-"2124"|"Aspergillus petrakii"|"3"|"2"|"Trichocomaceae"
-"2125"|"Aspergillus peyronelii"|"3"|"2"|"Trichocomaceae"
-"2126"|"Aspergillus phaeocephalus"|"3"|"2"|"Trichocomaceae"
-"2127"|"Aspergillus phialiseptatus"|"3"|"2"|"Trichocomaceae"
-"3907"|"Aspergillus phialiseptus"|"3"|"2"|"Trichocomaceae"
-"1703"|"Aspergillus phoenicis"|"3"|"2"|"Trichocomaceae"
-"2129"|"Aspergillus pidoplichknovii"|"3"|"2"|"Trichocomaceae"
-"2130"|"Aspergillus piperis"|"3"|"2"|"Trichocomaceae"
-"2131"|"Aspergillus pisci"|"3"|"2"|"Trichocomaceae"
-"2132"|"Aspergillus pluriseminatus"|"3"|"2"|"Trichocomaceae"
-"2133"|"Aspergillus polychromus"|"3"|"2"|"Trichocomaceae"
-"2134"|"Aspergillus porphyreostipitatus"|"3"|"2"|"Trichocomaceae"
-"2135"|"Aspergillus pouchetii"|"3"|"2"|"Trichocomaceae"
-"2136"|"Aspergillus pragensis"|"3"|"2"|"Trichocomaceae"
-"2137"|"Aspergillus primulinus"|"3"|"2"|"Trichocomaceae"
-"2138"|"Aspergillus profusus"|"3"|"2"|"Trichocomaceae"
-"2139"|"Aspergillus proliferans"|"3"|"2"|"Trichocomaceae"
-"2140"|"Aspergillus protuberus"|"3"|"2"|"Trichocomaceae"
-"2141"|"Aspergillus pseudocaelatus"|"3"|"2"|"Trichocomaceae"
-"2142"|"Aspergillus pseudocarbonarius"|"3"|"2"|"Trichocomaceae"
-"2143"|"Aspergillus pseudocitricus"|"3"|"2"|"Trichocomaceae"
-"2144"|"Aspergillus pseudoclavatus"|"3"|"2"|"Trichocomaceae"
-"2145"|"Aspergillus pseudodeflectus"|"3"|"2"|"Trichocomaceae"
-"2146"|"Aspergillus pseudoelatior"|"3"|"2"|"Trichocomaceae"
-"2147"|"Aspergillus pseudoelegans"|"3"|"2"|"Trichocomaceae"
-"2149"|"Aspergillus pseudofelis"|"3"|"2"|"Trichocomaceae"
-"2148"|"Aspergillus pseudofischeri"|"3"|"2"|"Trichocomaceae"
-"2150"|"Aspergillus pseudoflavus"|"3"|"2"|"Trichocomaceae"
-"2151"|"Aspergillus pseudoglaucus"|"3"|"2"|"Trichocomaceae"
-"2152"|"Aspergillus pseudoheteromorphus"|"3"|"2"|"Trichocomaceae"
-"2153"|"Aspergillus pseudoniger"|"3"|"2"|"Trichocomaceae"
-"2154"|"Aspergillus pseudonomius"|"3"|"2"|"Trichocomaceae"
-"2155"|"Aspergillus pseudotamarii"|"3"|"2"|"Trichocomaceae"
-"2156"|"Aspergillus pseudoterreus"|"3"|"2"|"Trichocomaceae"
-"2157"|"Aspergillus pseudoustus"|"3"|"2"|"Trichocomaceae"
-"2158"|"Aspergillus pseudoviridinutans"|"3"|"2"|"Trichocomaceae"
-"2159"|"Aspergillus pulchellus"|"3"|"2"|"Trichocomaceae"
-"2160"|"Aspergillus pulmonum-hominis"|"3"|"2"|"Trichocomaceae"
-"2162"|"Aspergillus pulvericola"|"3"|"2"|"Trichocomaceae"
-"2161"|"Aspergillus pulverulentus"|"3"|"2"|"Trichocomaceae"
-"2163"|"Aspergillus pulvinus"|"3"|"2"|"Trichocomaceae"
-"2164"|"Aspergillus puniceus"|"3"|"2"|"Trichocomaceae"
-"2165"|"Aspergillus purpureofuscus"|"3"|"2"|"Trichocomaceae"
-"2166"|"Aspergillus purpureus"|"3"|"2"|"Trichocomaceae"
-"2167"|"Aspergillus pusillus"|"3"|"2"|"Trichocomaceae"
-"2168"|"Aspergillus puulaauensis"|"3"|"2"|"Trichocomaceae"
-"2169"|"Aspergillus pyramidus"|"3"|"2"|"Trichocomaceae"
-"2170"|"Aspergillus pyri"|"3"|"2"|"Trichocomaceae"
-"2171"|"Aspergillus qinqixianii"|"3"|"2"|"Trichocomaceae"
-"2172"|"Aspergillus qizutongii"|"3"|"2"|"Trichocomaceae"
-"2173"|"Aspergillus quadricinctus"|"3"|"2"|"Trichocomaceae"
-"2174"|"Aspergillus quadricingens"|"3"|"2"|"Trichocomaceae"
-"2175"|"Aspergillus quadrifidus"|"3"|"2"|"Trichocomaceae"
-"145"|"Aspergillus quadrilineatus"|"3"|"2"|"Trichocomaceae"
-"1592"|"Aspergillus quercinus"|"3"|"2"|"Trichocomaceae"
-"2176"|"Aspergillus quininae"|"3"|"2"|"Trichocomaceae"
-"2177"|"Aspergillus quitensis"|"3"|"2"|"Trichocomaceae"
-"2178"|"Aspergillus racemosus"|"3"|"2"|"Trichocomaceae"
-"2179"|"Aspergillus raianus"|"3"|"2"|"Trichocomaceae"
-"3877"|"Aspergillus rambellii"|"3"|"2"|"Trichocomaceae"
-"2181"|"Aspergillus ramosus"|"3"|"2"|"Trichocomaceae"
-"2182"|"Aspergillus raperi"|"3"|"2"|"Trichocomaceae"
-"2183"|"Aspergillus recurvatus"|"3"|"2"|"Trichocomaceae"
-"2184"|"Aspergillus rehmii"|"3"|"2"|"Trichocomaceae"
-"2185"|"Aspergillus repandus"|"3"|"2"|"Trichocomaceae"
-"1608"|"Aspergillus repens"|"3"|"2"|"Trichocomaceae"
-"2186"|"Aspergillus reptans"|"3"|"2"|"Trichocomaceae"
-"1623"|"Aspergillus restrictus"|"3"|"2"|"Trichocomaceae"
-"2187"|"Aspergillus rhizopodus"|"3"|"2"|"Trichocomaceae"
-"2188"|"Aspergillus robustus"|"3"|"2"|"Trichocomaceae"
-"2189"|"Aspergillus roseoglobosus"|"3"|"2"|"Trichocomaceae"
-"2190"|"Aspergillus roseoglobulosus"|"3"|"2"|"Trichocomaceae"
-"2191"|"Aspergillus roseovelutinus"|"3"|"2"|"Trichocomaceae"
-"2192"|"Aspergillus roseus"|"3"|"2"|"Trichocomaceae"
-"146"|"Aspergillus ruber"|"3"|"2"|"Trichocomaceae"
-"2193"|"Aspergillus rubrobrunneus"|"3"|"2"|"Trichocomaceae"
-"2194"|"Aspergillus rubrum"|"3"|"2"|"Trichocomaceae"
-"2195"|"Aspergillus rufescens"|"3"|"2"|"Trichocomaceae"
-"1562"|"Aspergillus rugulosus"|"3"|"2"|"Trichocomaceae"
-"2196"|"Aspergillus rugulovalvus"|"3"|"2"|"Trichocomaceae"
-"2197"|"Aspergillus rutilans"|"3"|"2"|"Trichocomaceae"
-"2198"|"Aspergillus sacchari"|"3"|"2"|"Trichocomaceae"
-"2199"|"Aspergillus saccharolyticus"|"3"|"2"|"Trichocomaceae"
-"1405"|"Aspergillus saitoi"|"3"|"2"|"Trichocomaceae"
-"2200"|"Aspergillus salviicola"|"3"|"2"|"Trichocomaceae"
-"2201"|"Aspergillus salwaensis"|"3"|"2"|"Trichocomaceae"
-"2202"|"Aspergillus sartoryi"|"3"|"2"|"Trichocomaceae"
-"2203"|"Aspergillus scheelei"|"3"|"2"|"Trichocomaceae"
-"2204"|"Aspergillus schiemanniae"|"3"|"2"|"Trichocomaceae"
-"2205"|"Aspergillus sclerogenus"|"3"|"2"|"Trichocomaceae"
-"2206"|"Aspergillus sclerotialis"|"3"|"2"|"Trichocomaceae"
-"2207"|"Aspergillus sclerotiicarbonarius"|"3"|"2"|"Trichocomaceae"
-"2208"|"Aspergillus sclerotioniger"|"3"|"2"|"Trichocomaceae"
-"1588"|"Aspergillus sclerotiorum"|"3"|"2"|"Trichocomaceae"
-"3876"|"Aspergillus section Nigri"|"3"|"2"|"Trichocomaceae"
-"2209"|"Aspergillus sejunctus"|"3"|"2"|"Trichocomaceae"
-"2211"|"Aspergillus septatus"|"3"|"2"|"Trichocomaceae"
-"2212"|"Aspergillus sepultus"|"3"|"2"|"Trichocomaceae"
-"2213"|"Aspergillus sergii"|"3"|"2"|"Trichocomaceae"
-"2210"|"Aspergillus sesamicola"|"3"|"2"|"Trichocomaceae"
-"2214"|"Aspergillus shendaweii"|"3"|"2"|"Trichocomaceae"
-"450"|"Aspergillus silvaticus"|"3"|"2"|"Trichocomaceae"
-"2215"|"Aspergillus similanensis"|"3"|"2"|"Trichocomaceae"
-"2216"|"Aspergillus simplex"|"3"|"2"|"Trichocomaceae"
-"1612"|"Aspergillus simplicissimum"|"3"|"2"|"Trichocomaceae"
-"2217"|"Aspergillus sloanii"|"3"|"2"|"Trichocomaceae"
-"515"|"Aspergillus sojae"|"3"|"2"|"Trichocomaceae"
-"2218"|"Aspergillus solicola"|"3"|"2"|"Trichocomaceae"
-"2219"|"Aspergillus sparsus"|"3"|"2"|"Trichocomaceae"
-"2220"|"Aspergillus spathulatus"|"3"|"2"|"Trichocomaceae"
-"2232"|"Aspergillus spectabilis"|"3"|"2"|"Trichocomaceae"
-"2233"|"Aspergillus spelunceus"|"3"|"2"|"Trichocomaceae"
-"2234"|"Aspergillus spiculisporus"|"3"|"2"|"Trichocomaceae"
-"2235"|"Aspergillus spinosus"|"3"|"2"|"Trichocomaceae"
-"2236"|"Aspergillus spinulosus"|"3"|"2"|"Trichocomaceae"
-"2237"|"Aspergillus spiralis"|"3"|"2"|"Trichocomaceae"
-"2238"|"Aspergillus stella-maris"|"3"|"2"|"Trichocomaceae"
-"1719"|"Aspergillus stellatus"|"3"|"2"|"Trichocomaceae"
-"2239"|"Aspergillus stellifer"|"3"|"2"|"Trichocomaceae"
-"2240"|"Aspergillus stercoreus"|"3"|"2"|"Trichocomaceae"
-"2241"|"Aspergillus sterigmatophorus"|"3"|"2"|"Trichocomaceae"
-"2242"|"Aspergillus steynii"|"3"|"2"|"Trichocomaceae"
-"2243"|"Aspergillus stramenius"|"3"|"2"|"Trichocomaceae"
-"2244"|"Aspergillus striatulus"|"3"|"2"|"Trichocomaceae"
-"2245"|"Aspergillus striatus"|"3"|"2"|"Trichocomaceae"
-"2246"|"Aspergillus stromatoides"|"3"|"2"|"Trichocomaceae"
-"2247"|"Aspergillus strychni"|"3"|"2"|"Trichocomaceae"
-"2248"|"Aspergillus subalbidus"|"3"|"2"|"Trichocomaceae"
-"2250"|"Aspergillus subfuscus"|"3"|"2"|"Trichocomaceae"
-"2251"|"Aspergillus subgriseus"|"3"|"2"|"Trichocomaceae"
-"2252"|"Aspergillus sublatus"|"3"|"2"|"Trichocomaceae"
-"2253"|"Aspergillus sublevisporus"|"3"|"2"|"Trichocomaceae"
-"1520"|"Aspergillus subolivaceus"|"3"|"2"|"Trichocomaceae"
-"2249"|"Aspergillus subramanianii"|"3"|"2"|"Trichocomaceae"
-"2254"|"Aspergillus subsessilis"|"3"|"2"|"Trichocomaceae"
-"2255"|"Aspergillus subunguis"|"3"|"2"|"Trichocomaceae"
-"2256"|"Aspergillus subversicolor"|"3"|"2"|"Trichocomaceae"
-"544"|"Aspergillus sulphureus"|"3"|"2"|"Trichocomaceae"
-"2257"|"Aspergillus sunderbanii"|"3"|"2"|"Trichocomaceae"
-"1404"|"Aspergillus sydowii"|"3"|"2"|"Trichocomaceae"
-"2258"|"Aspergillus sylvaticus"|"3"|"2"|"Trichocomaceae"
-"2259"|"Aspergillus syncephalis"|"3"|"2"|"Trichocomaceae"
-"2260"|"Aspergillus tabacinus"|"3"|"2"|"Trichocomaceae"
-"2261"|"Aspergillus taichungensis"|"3"|"2"|"Trichocomaceae"
-"2262"|"Aspergillus taiensis"|"3"|"2"|"Trichocomaceae"
-"2263"|"Aspergillus takakii"|"3"|"2"|"Trichocomaceae"
-"2264"|"Aspergillus taklimakanensis"|"3"|"2"|"Trichocomaceae"
-"2351"|"Aspergillus tamari"|"3"|"2"|"Trichocomaceae"
-"2265"|"Aspergillus tanneri"|"3"|"2"|"Trichocomaceae"
-"2266"|"Aspergillus tapirirae"|"3"|"2"|"Trichocomaceae"
-"2267"|"Aspergillus tardus"|"3"|"2"|"Trichocomaceae"
-"2268"|"Aspergillus tatenoi"|"3"|"2"|"Trichocomaceae"
-"2269"|"Aspergillus templicola"|"3"|"2"|"Trichocomaceae"
-"2270"|"Aspergillus tennesseensis"|"3"|"2"|"Trichocomaceae"
-"2271"|"Aspergillus terrestris"|"3"|"2"|"Trichocomaceae"
-"12"|"Aspergillus terreus"|"3"|"2"|"Trichocomaceae"
-"2272"|"Aspergillus terricola"|"3"|"2"|"Trichocomaceae"
-"2273"|"Aspergillus testaceocolorans"|"3"|"2"|"Trichocomaceae"
-"2274"|"Aspergillus tetrazonus"|"3"|"2"|"Trichocomaceae"
-"2275"|"Aspergillus thermomutatus"|"3"|"2"|"Trichocomaceae"
-"2276"|"Aspergillus thesauricus"|"3"|"2"|"Trichocomaceae"
-"2277"|"Aspergillus thomi"|"3"|"2"|"Trichocomaceae"
-"2278"|"Aspergillus tiraboschii"|"3"|"2"|"Trichocomaceae"
-"2279"|"Aspergillus togoensis"|"3"|"2"|"Trichocomaceae"
-"2280"|"Aspergillus tokelau"|"3"|"2"|"Trichocomaceae"
-"2281"|"Aspergillus tonophilus"|"3"|"2"|"Trichocomaceae"
-"2282"|"Aspergillus toxicarius"|"3"|"2"|"Trichocomaceae"
-"2283"|"Aspergillus transmontanensis"|"3"|"2"|"Trichocomaceae"
-"2284"|"Aspergillus trinidadensis"|"3"|"2"|"Trichocomaceae"
-"2285"|"Aspergillus tritici"|"3"|"2"|"Trichocomaceae"
-"2287"|"Aspergillus tsunodae"|"3"|"2"|"Trichocomaceae"
-"2288"|"Aspergillus tsurutae"|"3"|"2"|"Trichocomaceae"
-"2289"|"Aspergillus tuberculatus"|"3"|"2"|"Trichocomaceae"
-"131"|"Aspergillus tubingensis"|"3"|"2"|"Trichocomaceae"
-"2290"|"Aspergillus tunetanus"|"3"|"2"|"Trichocomaceae"
-"2291"|"Aspergillus turcosus"|"3"|"2"|"Trichocomaceae"
-"2292"|"Aspergillus turkensis"|"3"|"2"|"Trichocomaceae"
-"2293"|"Aspergillus udagawae"|"3"|"2"|"Trichocomaceae"
-"2294"|"Aspergillus umbrinus"|"3"|"2"|"Trichocomaceae"
-"2295"|"Aspergillus umbrosus"|"3"|"2"|"Trichocomaceae"
-"2296"|"Aspergillus undulatus"|"3"|"2"|"Trichocomaceae"
-"147"|"Aspergillus unguis"|"3"|"2"|"Trichocomaceae"
-"2297"|"Aspergillus unilateralis"|"3"|"2"|"Trichocomaceae"
-"2298"|"Aspergillus usamii"|"3"|"2"|"Trichocomaceae"
-"2299"|"Aspergillus ustilago"|"3"|"2"|"Trichocomaceae"
-"133"|"Aspergillus ustus"|"3"|"2"|"Trichocomaceae"
-"2300"|"Aspergillus uvarum"|"3"|"2"|"Trichocomaceae"
-"2301"|"Aspergillus vadensis"|"3"|"2"|"Trichocomaceae"
-"2302"|"Aspergillus vancampenhoutii"|"3"|"2"|"Trichocomaceae"
-"2303"|"Aspergillus varanasensis"|"3"|"2"|"Trichocomaceae"
-"2304"|"Aspergillus variabilis"|"3"|"2"|"Trichocomaceae"
-"2305"|"Aspergillus varians"|"3"|"2"|"Trichocomaceae"
-"18"|"Aspergillus variecolor"|"3"|"2"|"Trichocomaceae"
-"2306"|"Aspergillus variegatus"|"3"|"2"|"Trichocomaceae"
-"2307"|"Aspergillus velutinus"|"3"|"2"|"Trichocomaceae"
-"2308"|"Aspergillus venenatus"|"3"|"2"|"Trichocomaceae"
-"2309"|"Aspergillus venezuelensis"|"3"|"2"|"Trichocomaceae"
-"134"|"Aspergillus versicolor"|"3"|"2"|"Trichocomaceae"
-"3875"|"Aspergillus vinaceus"|"3"|"2"|"Trichocomaceae"
-"2310"|"Aspergillus vinosobubalinus"|"3"|"2"|"Trichocomaceae"
-"2311"|"Aspergillus violaceobrunneus"|"3"|"2"|"Trichocomaceae"
-"2312"|"Aspergillus violaceofuscus"|"3"|"2"|"Trichocomaceae"
-"2313"|"Aspergillus violaceus"|"3"|"2"|"Trichocomaceae"
-"2314"|"Aspergillus virens"|"3"|"2"|"Trichocomaceae"
-"2315"|"Aspergillus viridigriseus"|"3"|"2"|"Trichocomaceae"
-"1472"|"Aspergillus viridinutans"|"3"|"2"|"Trichocomaceae"
-"2317"|"Aspergillus vitellinus"|"3"|"2"|"Trichocomaceae"
-"2318"|"Aspergillus vitis"|"3"|"2"|"Trichocomaceae"
-"2319"|"Aspergillus vitricola"|"3"|"2"|"Trichocomaceae"
-"2320"|"Aspergillus waksmani"|"3"|"2"|"Trichocomaceae"
-"2321"|"Aspergillus wangduanlii"|"3"|"2"|"Trichocomaceae"
-"2322"|"Aspergillus warcupii"|"3"|"2"|"Trichocomaceae"
-"2323"|"Aspergillus wehmeri"|"3"|"2"|"Trichocomaceae"
-"2324"|"Aspergillus welwitschiae"|"3"|"2"|"Trichocomaceae"
-"1513"|"Aspergillus wentii"|"3"|"2"|"Trichocomaceae"
-"2325"|"Aspergillus westendorpii"|"3"|"2"|"Trichocomaceae"
-"2326"|"Aspergillus westerdijkiae"|"3"|"2"|"Trichocomaceae"
-"2327"|"Aspergillus westlandensis"|"3"|"2"|"Trichocomaceae"
-"2328"|"Aspergillus wyomingensis"|"3"|"2"|"Trichocomaceae"
-"2329"|"Aspergillus xerophilus"|"3"|"2"|"Trichocomaceae"
-"2330"|"Aspergillus yezoensis"|"3"|"2"|"Trichocomaceae"
-"2331"|"Aspergillus zhaoqingensis"|"3"|"2"|"Trichocomaceae"
-"1378"|"Aspergillus zonatus"|"3"|"2"|"Trichocomaceae"
-"132"|"ATCC 15517"|"4"|"21"|"Aspergillus parasiticus"
-"1626"|"ATCC 20386"|"4"|"234"|"Aspergillus oryzae"
-"26"|"ATCC 20542"|"4"|"12"|"Aspergillus terreus"
-"1463"|"ATCC 20655"|"4"|"1460"|"Aspergillus alliaceus"
-"1454"|"ATCC 20857"|"4"|"152"|"Aspergillus fumigatus"
-"1459"|"ATCC 22947"|"4"|"3"|"Aspergillus ochraceus"
-"2356"|"ATCC 58397"|"4"|"128"|"Aspergillus nidulans"
-"1355"|"autolysate"|"4"|"283"|"Aspergillus niger"
-"2378"|"B-F-2"|"4"|"153"|"Aspergillus"
-"1701"|"B5233"|"4"|"152"|"Aspergillus fumigatus"
-"148"|"Bainier"|"4"|"133"|"Aspergillus ustus"
-"3940"|"Bartoli"|"4"|"2089"|"Aspergillus ochraceoroseus"
-"2230"|"BH4"|"4"|"153"|"Aspergillus"
-"1430"|"BM 939"|"4"|"152"|"Aspergillus fumigatus"
-"2366"|"C2WU"|"4"|"1402"|"Aspergillus clavatus"
-"1458"|"CBS 120. 45"|"4"|"1457"|"Aspergillus panamensis"
-"1406"|"CFR-1046"|"4"|"283"|"Aspergillus niger"
-"1413"|"CFR-W-105"|"4"|"283"|"Aspergillus niger"
-"1423"|"CL38916"|"4"|"1370"|"Aspergillus aculeatus"
-"2231"|"CM9a"|"4"|"153"|"Aspergillus"
-"1465"|"CMI 16046"|"4"|"278"|"Aspergillus candidus"
-"1663"|"CNK-371"|"4"|"153"|"Aspergillus"
-"2338"|"CXCTD-06-6a"|"4"|"134"|"Aspergillus versicolor"
-"1641"|"DRCC 152"|"4"|"12"|"Aspergillus terreus"
-"1640"|"EKI-2342"|"4"|"283"|"Aspergillus niger"
-"3932"|"EN-13"|"4"|"283"|"Aspergillus niger"
-"3872"|"EN-48"|"4"|"1513"|"Aspergillus wentii"
-"1416"|"F7586"|"4"|"283"|"Aspergillus niger"
-"1449"|"FA2692"|"4"|"153"|"Aspergillus"
-"2225"|"FA75"|"4"|"153"|"Aspergillus"
-"1407"|"Fb000501"|"4"|"12"|"Aspergillus terreus"
-"1373"|"Fg-551"|"4"|"1356"|"Aspergillus japonicus"
-"1437"|"FH-A 6357"|"4"|"153"|"Aspergillus"
-"3931"|"FKI-2342"|"4"|"283"|"Aspergillus niger"
-"1450"|"FO-1289"|"4"|"152"|"Aspergillus fumigatus"
-"1436"|"FO-1289-2501"|"4"|"152"|"Aspergillus fumigatus"
-"2226"|"FO-4282"|"4"|"153"|"Aspergillus"
-"1419"|"FO-5904"|"4"|"283"|"Aspergillus niger"
-"1462"|"Fresenius 1863"|"4"|"152"|"Aspergillus fumigatus"
-"1422"|"FT-0554"|"4"|"283"|"Aspergillus niger"
-"2374"|"fumigatoides"|"4"|"153"|"Aspergillus"
-"2336"|"H1-1"|"4"|"2335"|"Aspergillus effuses"
-"1456"|"HA 302-84"|"4"|"234"|"Aspergillus oryzae"
-"1672"|"HK10499"|"4"|"12"|"Aspergillus terreus"
-"2227"|"HT-2"|"4"|"153"|"Aspergillus"
-"1563"|"I. M. I. strain 84338"|"4"|"1562"|"Aspergillus rugulosus"
-"749"|"IFO 4290"|"4"|"234"|"Aspergillus oryzae"
-"1440"|"IMI 337664"|"4"|"153"|"Aspergillus"
-"13"|"IMI16043"|"4"|"12"|"Aspergillus terreus"
-"1716"|"JRJ111048"|"4"|"152"|"Aspergillus fumigatus"
-"1439"|"JV-23"|"4"|"1356"|"Aspergillus japonicus"
-"1649"|"JV33-48"|"4"|"283"|"Aspergillus niger"
-"2362"|"KMC901"|"4"|"152"|"Aspergillus fumigatus"
-"2334"|"KUFA 0013"|"4"|"2215"|"Aspergillus similanensis"
-"1451"|"KY52178"|"4"|"153"|"Aspergillus"
-"2370"|"LCJ-5-4"|"4"|"134"|"Aspergillus versicolor"
-"1571"|"Lederle culture S491"|"4"|"143"|"Aspergillus chevalieri"
-"1674"|"LL-LV3020"|"4"|"283"|"Aspergillus niger"
-"1429"|"M-4214"|"4"|"1370"|"Aspergillus aculeatus"
-"2222"|"MF-93"|"4"|"153"|"Aspergillus"
-"1384"|"MF297-2"|"4"|"153"|"Aspergillus"
-"1525"|"Mutant strain 1-11-105 wk-1"|"4"|"21"|"Aspergillus parasiticus"
-"1526"|"Mutant WE-47(hvn-1)"|"4"|"21"|"Aspergillus parasiticus"
-"2377"|"NE-45"|"4"|"153"|"Aspergillus"
-"3930"|"NH-401"|"4"|"283"|"Aspergillus niger"
-"3923"|"NH-405"|"4"|"283"|"Aspergillus niger"
-"1421"|"No. 13830"|"4"|"12"|"Aspergillus terreus"
-"1470"|"No. 14"|"4"|"12"|"Aspergillus terreus"
-"1471"|"No. 5239"|"4"|"152"|"Aspergillus fumigatus"
-"2360"|"NRC FA 200"|"4"|"12"|"Aspergillus terreus"
-"1464"|"NRCC 14509"|"4"|"278"|"Aspergillus candidus"
-"547"|"NRRL 11156"|"4"|"12"|"Aspergillus terreus"
-"1518"|"NRRL 13462"|"4"|"19"|"Aspergillus flavus"
-"1415"|"NRRL 3112"|"4"|"1412"|"Aspergillus awamori"
-"1524"|"NRRL 3251"|"4"|"19"|"Aspergillus flavus"
-"1673"|"NRRL 35600"|"4"|"134"|"Aspergillus versicolor"
-"1516"|"NRRL 4077"|"4"|"544"|"Aspergillus sulphureus"
-"1522"|"NRRL 4700"|"4"|"131"|"Aspergillus tubingensis"
-"1521"|"NRRL 4998"|"4"|"1520"|"Aspergillus subolivaceus"
-"1698"|"NRRL 5012"|"4"|"1697"|"Aspergillus arenarius"
-"1686"|"NRRL 5167"|"4"|"1588"|"Aspergillus sclerotiorum"
-"1515"|"NRRL 5890"|"4"|"1402"|"Aspergillus clavatus"
-"1519"|"NRRL 6433"|"4"|"21"|"Aspergillus parasiticus"
-"1514"|"NRRL 6435"|"4"|"1513"|"Aspergillus wentii"
-"1365"|"NSC-F038"|"4"|"133"|"Aspergillus ustus"
-"1362"|"PFW1-13"|"4"|"1404"|"Aspergillus sydowii"
-"2375"|"phialiseptus"|"4"|"153"|"Aspergillus"
-"2341"|"PT06-1"|"4"|"1588"|"Aspergillus sclerotiorum"
-"3873"|"Raper"|"4"|"540"|"Aspergillus caespitosus"
-"3937"|"Raper"|"4"|"540"|"Aspergillus caespitosus"
-"1645"|"RDWD1-2"|"4"|"21"|"Aspergillus parasiticus"
-"1434"|"RE-1149"|"4"|"153"|"Aspergillus"
-"1428"|"RF-5672 (FERM BP-5882)"|"4"|"278"|"Aspergillus candidus"
-"3878"|"RIB 40"|"4"|"234"|"Aspergillus oryzae"
-"1453"|"SANK 10588"|"4"|"152"|"Aspergillus fumigatus"
-"1445"|"SC230"|"4"|"153"|"Aspergillus"
-"1452"|"SC319"|"4"|"153"|"Aspergillus"
-"1517"|"sclerotia"|"4"|"19"|"Aspergillus flavus"
-"3936"|"SCSIO 00305"|"4"|"1404"|"Aspergillus sydowii"
-"3871"|"SCSIO 05879"|"4"|"134"|"Aspergillus versicolor"
-"2228"|"SCSIO Ind09F01"|"4"|"153"|"Aspergillus"
-"1671"|"strain 01F313"|"4"|"1408"|"Aspergillus ostianus"
-"1565"|"strain CBS 135-55"|"4"|"18"|"Aspergillus variecolor"
-"1469"|"T. 680"|"4"|"1468"|"Aspergillus funiculosus"
-"1418"|"TC 1118"|"4"|"133"|"Aspergillus ustus"
-"1417"|"TC 1446"|"4"|"1400"|"Aspergillus flavipes"
-"1411"|"TC 1629"|"4"|"283"|"Aspergillus niger"
-"3874"|"Thom"|"4"|"540"|"Aspergillus caespitosus"
-"3938"|"Thom"|"4"|"540"|"Aspergillus caespitosus"
-"1420"|"Thom DSM 11247"|"4"|"12"|"Aspergillus terreus"
-"1448"|"var. brasiliensis"|"4"|"1446"|"Aspergillus fischeri"
-"1414"|"var. columnaris FKI-0739"|"4"|"19"|"Aspergillus flavus"
-"2095"|"var. olivascens"|"4"|"1691"|"Aspergillus glaucus"
-"1444"|"WB2346"|"4"|"283"|"Aspergillus niger"
-"1619"|"WC76446"|"4"|"3"|"Aspergillus ochraceus"
-"1566"|"WF-38-11"|"4"|"1402"|"Aspergillus clavatus"
-"1461"|"Y-30462"|"4"|"1404"|"Aspergillus sydowii"
-"2229"|"YT-008"|"4"|"153"|"Aspergillus"
-"2339"|"ZHN-7-07"|"4"|"2261"|"Aspergillus taichungensis"
-"1713"|"ZJ-2008001"|"4"|"153"|"Aspergillus"
-"2353"|"ZLN-60"|"4"|"134"|"Aspergillus versicolor"
-"2367"|"ZLN-61"|"4"|"134"|"Aspergillus versicolor"
-"2368"|"ZLN-62"|"4"|"134"|"Aspergillus versicolor"
-"2369"|"ZLN-63"|"4"|"134"|"Aspergillus versicolor"
+ORGANISM_ID|ORGANISM_NAME|ORGANISM_LEVEL|PARENT_ID|PARENT_NAME
+153|Aspergillus|3|2|Trichocomaceae
+1724|Aspergillus acidus|3|2|Trichocomaceae
+1728|Aspergillus aculeatinus|3|2|Trichocomaceae
+1370|Aspergillus aculeatus|3|2|Trichocomaceae
+4053|Aspergillus aegyptiacus|3|2|Trichocomaceae
+1731|Aspergillus affinis|3|2|Trichocomaceae
+1733|Aspergillus alabamensis|3|2|Trichocomaceae
+1734|Aspergillus albertensis|3|2|Trichocomaceae
+1737|Aspergillus allahabadii|3|2|Trichocomaceae
+1460|Aspergillus alliaceus|3|2|Trichocomaceae
+1743|Aspergillus amoenus|3|2|Trichocomaceae
+142|Aspergillus amstelodami|3|2|Trichocomaceae
+1750|Aspergillus arachidicola|3|2|Trichocomaceae
+3924|Aspergillus arcoverdensis|3|2|Trichocomaceae
+3925|Aspergillus ardalensis|3|2|Trichocomaceae
+1697|Aspergillus arenarius|3|2|Trichocomaceae
+1758|Aspergillus asperescens|3|2|Trichocomaceae
+1768|Aspergillus aureofulgens|3|2|Trichocomaceae
+1770|Aspergillus aureolatus|3|2|Trichocomaceae
+1773|Aspergillus aureoterreus|3|2|Trichocomaceae
+1775|Aspergillus aureus|3|2|Trichocomaceae
+1776|Aspergillus auricomus|3|2|Trichocomaceae
+1778|Aspergillus austroafricanus|3|2|Trichocomaceae
+1779|Aspergillus avenaceus|3|2|Trichocomaceae
+1412|Aspergillus awamori|3|2|Trichocomaceae
+4152|Aspergillus banksianus|3|2|Trichocomaceae
+1792|Aspergillus bombycis|3|2|Trichocomaceae
+1795|Aspergillus brasiliensis|3|2|Trichocomaceae
+1798|Aspergillus bridgeri|3|2|Trichocomaceae
+1682|Aspergillus caelatus|3|2|Trichocomaceae
+540|Aspergillus caespitosus|3|2|Trichocomaceae
+1806|Aspergillus calidoustus|3|2|Trichocomaceae
+277|Aspergillus campestris|3|2|Trichocomaceae
+278|Aspergillus candidus|3|2|Trichocomaceae
+129|Aspergillus carbonarius|3|2|Trichocomaceae
+1632|Aspergillus carneus|3|2|Trichocomaceae
+1591|Aspergillus cervinus|3|2|Trichocomaceae
+143|Aspergillus chevalieri|3|2|Trichocomaceae
+1817|Aspergillus chinensis|3|2|Trichocomaceae
+1402|Aspergillus clavatus|3|2|Trichocomaceae
+1846|Aspergillus costaricensis|3|2|Trichocomaceae
+1849|Aspergillus creber|3|2|Trichocomaceae
+1852|Aspergillus cretensis|3|2|Trichocomaceae
+1854|Aspergillus cristatus|3|2|Trichocomaceae
+1855|Aspergillus crustosus|3|2|Trichocomaceae
+1859|Aspergillus cvjetkovicii|3|2|Trichocomaceae
+1861|Aspergillus deflectus|3|2|Trichocomaceae
+1863|Aspergillus delacroxii|3|2|Trichocomaceae
+1870|Aspergillus desertorum|3|2|Trichocomaceae
+1873|Aspergillus dimorphicus|3|2|Trichocomaceae
+1880|Aspergillus duricaulis|3|2|Trichocomaceae
+1882|Aspergillus eburneocremeus|3|2|Trichocomaceae
+1885|Aspergillus echinulatus|3|2|Trichocomaceae
+1887|Aspergillus effusus|3|2|Trichocomaceae
+1890|Aspergillus elegans|3|2|Trichocomaceae
+1895|Aspergillus erythrocephalus|3|2|Trichocomaceae
+1896|Aspergillus eucalypticola|3|2|Trichocomaceae
+1897|Aspergillus falconensis|3|2|Trichocomaceae
+1899|Aspergillus felis|3|2|Trichocomaceae
+1548|Aspergillus fennelliae|3|2|Trichocomaceae
+1446|Aspergillus fischeri|3|2|Trichocomaceae
+1400|Aspergillus flavipes|3|2|Trichocomaceae
+1915|Aspergillus flavofurcatus|3|2|Trichocomaceae
+19|Aspergillus flavus|3|2|Trichocomaceae
+1918|Aspergillus floccosus|3|2|Trichocomaceae
+1917|Aspergillus flocculosus|3|2|Trichocomaceae
+1921|Aspergillus foeniculicola|3|2|Trichocomaceae
+1922|Aspergillus foetidus|3|2|Trichocomaceae
+130|Aspergillus fonsecaeus|3|2|Trichocomaceae
+1925|Aspergillus fresenii|3|2|Trichocomaceae
+1933|Aspergillus fumigatiaffinis|3|2|Trichocomaceae
+152|Aspergillus fumigatus|3|2|Trichocomaceae
+1935|Aspergillus fumisynnematus|3|2|Trichocomaceae
+1468|Aspergillus funiculosus|3|2|Trichocomaceae
+1575|Aspergillus giganteus|3|2|Trichocomaceae
+1691|Aspergillus glaucus|3|2|Trichocomaceae
+1946|Aspergillus globosus|3|2|Trichocomaceae
+1948|Aspergillus gorakhpurensis|3|2|Trichocomaceae
+1955|Aspergillus griseoaurantiacus|3|2|Trichocomaceae
+1959|Aspergillus haitiensis|3|2|Trichocomaceae
+1966|Aspergillus heteromorphus|3|2|Trichocomaceae
+1968|Aspergillus heyangensis|3|2|Trichocomaceae
+1971|Aspergillus homomorphus|3|2|Trichocomaceae
+1972|Aspergillus hortae|3|2|Trichocomaceae
+1973|Aspergillus humicola|3|2|Trichocomaceae
+1975|Aspergillus ibericus|3|2|Trichocomaceae
+1977|Aspergillus iizukae|3|2|Trichocomaceae
+1978|Aspergillus implicatus|3|2|Trichocomaceae
+1982|Aspergillus indologenus|3|2|Trichocomaceae
+320|Aspergillus insuetus|3|2|Trichocomaceae
+1699|Aspergillus insulicola|3|2|Trichocomaceae
+1527|Aspergillus janus|3|2|Trichocomaceae
+1356|Aspergillus japonicus|3|2|Trichocomaceae
+1993|Aspergillus jensenii|3|2|Trichocomaceae
+1995|Aspergillus kanagawaensis|3|2|Trichocomaceae
+1678|Aspergillus karnatakaensis|3|2|Trichocomaceae
+1998|Aspergillus keveii|3|2|Trichocomaceae
+2340|Aspergillus kumbius|3|2|Trichocomaceae
+2001|Aspergillus laciniosus|3|2|Trichocomaceae
+2002|Aspergillus lacticoffeatus|3|2|Trichocomaceae
+2004|Aspergillus lanosus|3|2|Trichocomaceae
+2007|Aspergillus lentulus|3|2|Trichocomaceae
+2009|Aspergillus leporis|3|2|Trichocomaceae
+2012|Aspergillus longivesica|3|2|Trichocomaceae
+2015|Aspergillus luchuensis|3|2|Trichocomaceae
+2018|Aspergillus luteovirescens|3|2|Trichocomaceae
+2019|Aspergillus lutescens|3|2|Trichocomaceae
+3879|Aspergillus Maggi|3|2|Trichocomaceae
+543|Aspergillus melleus|3|2|Trichocomaceae
+1399|Aspergillus microcysticus|3|2|Trichocomaceae
+2039|Aspergillus micronesiensis|3|2|Trichocomaceae
+2044|Aspergillus minisclerotigenes|3|2|Trichocomaceae
+2046|Aspergillus minutus|3|2|Trichocomaceae
+144|Aspergillus multicolor|3|2|Trichocomaceae
+2355|Aspergillus mulundensis|3|2|Trichocomaceae
+2058|Aspergillus muricatus|3|2|Trichocomaceae
+4214|Aspergillus nanangensis|3|2|Trichocomaceae
+2067|Aspergillus neoafricanus|3|2|Trichocomaceae
+2071|Aspergillus neoindicus|3|2|Trichocomaceae
+2073|Aspergillus neoniger|3|2|Trichocomaceae
+2074|Aspergillus neoniveus|3|2|Trichocomaceae
+128|Aspergillus nidulans|3|2|Trichocomaceae
+283|Aspergillus niger|3|2|Trichocomaceae
+2077|Aspergillus nigricans|3|2|Trichocomaceae
+2079|Aspergillus niveoglaucus|3|2|Trichocomaceae
+1618|Aspergillus niveus|3|2|Trichocomaceae
+2081|Aspergillus nominus|3|2|Trichocomaceae
+20|Aspergillus nomius|3|2|Trichocomaceae
+2082|Aspergillus novofumigatus|3|2|Trichocomaceae
+2087|Aspergillus occultus|3|2|Trichocomaceae
+2088|Aspergillus ochraceopetaliformis|3|2|Trichocomaceae
+2089|Aspergillus ochraceoroseus|3|2|Trichocomaceae
+3|Aspergillus ochraceus|3|2|Trichocomaceae
+2092|Aspergillus oerlinghausenensis|3|2|Trichocomaceae
+2093|Aspergillus olivaceofuscus|3|2|Trichocomaceae
+2098|Aspergillus onikii|3|2|Trichocomaceae
+234|Aspergillus oryzae|3|2|Trichocomaceae
+1408|Aspergillus ostianus|3|2|Trichocomaceae
+2106|Aspergillus pallidofulvus|3|2|Trichocomaceae
+1457|Aspergillus panamensis|3|2|Trichocomaceae
+21|Aspergillus parasiticus|3|2|Trichocomaceae
+2112|Aspergillus parvisclerotigenus|3|2|Trichocomaceae
+2110|Aspergillus parvulus|3|2|Trichocomaceae
+2118|Aspergillus penicillioides|3|2|Trichocomaceae
+2123|Aspergillus persii|3|2|Trichocomaceae
+1703|Aspergillus phoenicis|3|2|Trichocomaceae
+2130|Aspergillus piperis|3|2|Trichocomaceae
+4187|Aspergillus porosus|3|2|Trichocomaceae
+2142|Aspergillus pseudocarbonarius|3|2|Trichocomaceae
+2143|Aspergillus pseudocitricus|3|2|Trichocomaceae
+2145|Aspergillus pseudodeflectus|3|2|Trichocomaceae
+2147|Aspergillus pseudoelegans|3|2|Trichocomaceae
+2148|Aspergillus pseudofischeri|3|2|Trichocomaceae
+2154|Aspergillus pseudonomius|3|2|Trichocomaceae
+2155|Aspergillus pseudotamarii|3|2|Trichocomaceae
+2156|Aspergillus pseudoterreus|3|2|Trichocomaceae
+2159|Aspergillus pulchellus|3|2|Trichocomaceae
+2160|Aspergillus pulmonum-hominis|3|2|Trichocomaceae
+2161|Aspergillus pulverulentus|3|2|Trichocomaceae
+2163|Aspergillus pulvinus|3|2|Trichocomaceae
+2164|Aspergillus puniceus|3|2|Trichocomaceae
+2168|Aspergillus puulaauensis|3|2|Trichocomaceae
+145|Aspergillus quadrilineatus|3|2|Trichocomaceae
+1592|Aspergillus quercinus|3|2|Trichocomaceae
+2177|Aspergillus quitensis|3|2|Trichocomaceae
+3877|Aspergillus rambellii|3|2|Trichocomaceae
+1608|Aspergillus repens|3|2|Trichocomaceae
+1623|Aspergillus restrictus|3|2|Trichocomaceae
+2189|Aspergillus roseoglobosus|3|2|Trichocomaceae
+2190|Aspergillus roseoglobulosus|3|2|Trichocomaceae
+2192|Aspergillus roseus|3|2|Trichocomaceae
+146|Aspergillus ruber|3|2|Trichocomaceae
+1562|Aspergillus rugulosus|3|2|Trichocomaceae
+2196|Aspergillus rugulovalvus|3|2|Trichocomaceae
+2199|Aspergillus saccharolyticus|3|2|Trichocomaceae
+1405|Aspergillus saitoi|3|2|Trichocomaceae
+2201|Aspergillus salwaensis|3|2|Trichocomaceae
+2207|Aspergillus sclerotiicarbonarius|3|2|Trichocomaceae
+2208|Aspergillus sclerotioniger|3|2|Trichocomaceae
+1588|Aspergillus sclerotiorum|3|2|Trichocomaceae
+2211|Aspergillus septatus|3|2|Trichocomaceae
+2210|Aspergillus sesamicola|3|2|Trichocomaceae
+450|Aspergillus silvaticus|3|2|Trichocomaceae
+2215|Aspergillus similanensis|3|2|Trichocomaceae
+1612|Aspergillus simplicissimum|3|2|Trichocomaceae
+515|Aspergillus sojae|3|2|Trichocomaceae
+2220|Aspergillus spathulatus|3|2|Trichocomaceae
+1719|Aspergillus stellatus|3|2|Trichocomaceae
+2242|Aspergillus steynii|3|2|Trichocomaceae
+2249|Aspergillus subramanianii|3|2|Trichocomaceae
+2256|Aspergillus subversicolor|3|2|Trichocomaceae
+544|Aspergillus sulphureus|3|2|Trichocomaceae
+1404|Aspergillus sydowii|3|2|Trichocomaceae
+2261|Aspergillus taichungensis|3|2|Trichocomaceae
+2351|Aspergillus tamari|3|2|Trichocomaceae
+2267|Aspergillus tardus|3|2|Trichocomaceae
+2270|Aspergillus tennesseensis|3|2|Trichocomaceae
+12|Aspergillus terreus|3|2|Trichocomaceae
+2278|Aspergillus tiraboschii|3|2|Trichocomaceae
+2281|Aspergillus tonophilus|3|2|Trichocomaceae
+2282|Aspergillus toxicarius|3|2|Trichocomaceae
+2285|Aspergillus tritici|3|2|Trichocomaceae
+131|Aspergillus tubingensis|3|2|Trichocomaceae
+147|Aspergillus unguis|3|2|Trichocomaceae
+2297|Aspergillus unilateralis|3|2|Trichocomaceae
+133|Aspergillus ustus|3|2|Trichocomaceae
+2301|Aspergillus vadensis|3|2|Trichocomaceae
+18|Aspergillus variecolor|3|2|Trichocomaceae
+2309|Aspergillus venezuelensis|3|2|Trichocomaceae
+134|Aspergillus versicolor|3|2|Trichocomaceae
+3875|Aspergillus vinaceus|3|2|Trichocomaceae
+2312|Aspergillus violaceofuscus|3|2|Trichocomaceae
+2313|Aspergillus violaceus|3|2|Trichocomaceae
+1472|Aspergillus viridinutans|3|2|Trichocomaceae
+2320|Aspergillus waksmani|3|2|Trichocomaceae
+1513|Aspergillus wentii|3|2|Trichocomaceae
+2326|Aspergillus westerdijkiae|3|2|Trichocomaceae
+2327|Aspergillus westlandensis|3|2|Trichocomaceae
+2331|Aspergillus zhaoqingensis|3|2|Trichocomaceae
+1378|Aspergillus zonatus|3|2|Trichocomaceae
+4272|JSC-093350089|3|153|Aspergillus
+4043|(CMB-M081F)|4|153|Aspergillus
+4093|(DSM-7428)|4|3|Aspergillus ochraceus
+4123|(Eidam) Winter|4|128|Aspergillus nidulans
+4055|(GX1-5E)|4|131|Aspergillus tubingensis
+4013|(HKI0499)|4|12|Aspergillus terreus
+4083|(IBT 19404)|4|2261|Aspergillus taichungensis
+4067|(IBT 28362)|4|2207|Aspergillus sclerotiicarbonarius
+4128|(IFM 4482)|4|152|Aspergillus fumigatus
+4091|(J-4)|4|152|Aspergillus fumigatus
+4003|(MF357)|4|1404|Aspergillus sydowii
+4126|(No. GX7-3B)|4|12|Aspergillus terreus
+4061|(NOY-2)|4|234|Aspergillus oryzae
+4124|(NRRL 13137)|4|20|Aspergillus nomius
+4181|(NRRL 6273)|4|12|Aspergillus terreus
+3977|(SF-5044)|4|153|Aspergillus
+4109|(strain C-F-3)|4|19|Aspergillus flavus
+4035|(strain CF07002)|4|153|Aspergillus
+4100|(strain NE-45)|4|153|Aspergillus
+3997|(strain UFMGCB 8030)|4|1899|Aspergillus felis
+4107|(w-6)|4|153|Aspergillus
+4094|(ZHN-7)|4|2261|Aspergillus taichungensis
+4269|542|4|12|Aspergillus terreus
+4118|085241B|4|153|Aspergillus
+4044|85242|4|153|Aspergillus
+1687|94102|4|133|Aspergillus ustus
+4175|1017|4|146|Aspergillus ruber
+4195|102|4|283|Aspergillus niger
+3982|125a|4|134|Aspergillus versicolor
+2221|16/02/2001|4|153|Aspergillus
+4023|16-5B|4|153|Aspergillus
+3999|16-5C|4|153|Aspergillus
+4188|16D-1|4|1917|Aspergillus flocculosus
+4102|2HL-M-8|4|283|Aspergillus niger
+4117|3.05358|4|12|Aspergillus terreus
+1476|5378|4|12|Aspergillus terreus
+1629|95F-1|4|12|Aspergillus terreus
+1564|A.R.M. 325|4|1562|Aspergillus rugulosus
+1705|A1149|4|128|Aspergillus nidulans
+1383|A1163|4|152|Aspergillus fumigatus
+4000|A374|4|234|Aspergillus oryzae
+1438|A437|4|234|Aspergillus oryzae
+4103|AF044|4|153|Aspergillus
+2365|AF119|4|153|Aspergillus
+3983|AIL8|4|1400|Aspergillus flavipes
+1715|AJ-2008001|4|153|Aspergillus
+1410|AJ117509|4|153|Aspergillus
+4090|AKRN|4|283|Aspergillus niger
+4112|AM410|4|283|Aspergillus niger
+4194|AS-107|4|1402|Aspergillus clavatus
+4052|ATCC 1015|4|283|Aspergillus niger
+132|ATCC 15517|4|21|Aspergillus parasiticus
+4045|ATCC 18618|4|1446|Aspergillus fischeri
+1626|ATCC 20386|4|234|Aspergillus oryzae
+26|ATCC 20542|4|12|Aspergillus terreus
+1463|ATCC 20655|4|1460|Aspergillus alliaceus
+4246|ATCC 20656|4|1460|Aspergillus alliaceus
+1454|ATCC 20857|4|152|Aspergillus fumigatus
+1459|ATCC 22947|4|3|Aspergillus ochraceus
+4264|ATCC 46645|4|152|Aspergillus fumigatus
+2356|ATCC 58397|4|128|Aspergillus nidulans
+4249|ATCC 9029|4|283|Aspergillus niger
+1355|autolysate|4|283|Aspergillus niger
+4191|AV-2|4|153|Aspergillus
+3996|B-17|4|18|Aspergillus variecolor
+2378|B-F-2|4|153|Aspergillus
+1701|B5233|4|152|Aspergillus fumigatus
+148|Bainier|4|133|Aspergillus ustus
+3940|Bartoli|4|2089|Aspergillus ochraceoroseus
+3988|BCC 4651|4|12|Aspergillus terreus
+3998|BCC45335|4|1737|Aspergillus allahabadii
+4183|BF-0142|4|128|Aspergillus nidulans
+4252|BL-5-1|4|283|Aspergillus niger
+1430|BM 939|4|152|Aspergillus fumigatus
+4041|BM939|4|152|Aspergillus fumigatus
+2366|C2WU|4|1402|Aspergillus clavatus
+4174|CAM231|4|1356|Aspergillus japonicus
+1458|CBS 120. 45|4|1457|Aspergillus panamensis
+4133|CBS 120.45|4|1457|Aspergillus panamensis
+4171|CBS-P-2|4|153|Aspergillus
+4087|CBS117520|4|2082|Aspergillus novofumigatus
+1406|CFR-1046|4|283|Aspergillus niger
+1413|CFR-W-105|4|283|Aspergillus niger
+4244|CFTRI 1105|4|283|Aspergillus niger
+1423|CL38916|4|1370|Aspergillus aculeatus
+4099|CL41582|4|3|Aspergillus ochraceus
+4148|CMB-W031|4|153|Aspergillus
+1465|CMI 16046|4|278|Aspergillus candidus
+4122|CMM|4|153|Aspergillus
+1663|CNK-371|4|153|Aspergillus
+4150|CPCC 400735|4|153|Aspergillus
+4209|CPCC 400810|4|153|Aspergillus
+4071|CRI322-03|4|1370|Aspergillus aculeatus
+4022|CRI323-04|4|1370|Aspergillus aculeatus
+4179|CUGB-F046|4|153|Aspergillus
+4125|Curzi|4|1719|Aspergillus stellatus
+2338|CXCTD-06-6a|4|134|Aspergillus versicolor
+4127|CY018|4|152|Aspergillus fumigatus
+4221|D|4|153|Aspergillus
+4108|D2-6|4|1404|Aspergillus sydowii
+3973|DFFSCS013|4|2326|Aspergillus westerdijkiae
+1641|DRCC 152|4|12|Aspergillus terreus
+1640|EKI-2342|4|283|Aspergillus niger
+3932|EN-13|4|283|Aspergillus niger
+4001|EN-31|4|3|Aspergillus ochraceus
+4095|EN-330|4|128|Aspergillus nidulans
+3872|EN-48|4|1513|Aspergillus wentii
+4218|EN-534/Penicillium citrinum EN-535|4|1404|Aspergillus sydowii
+4192|EN-539|4|12|Aspergillus terreus
+4161|EN-547|4|1733|Aspergillus alabamensis
+4034|F-1491|4|153|Aspergillus
+4080|F-25799|4|153|Aspergillus
+4239|F1544|4|153|Aspergillus
+4096|F37|4|152|Aspergillus fumigatus
+4219|F40|4|153|Aspergillus
+4132|F70609|4|153|Aspergillus
+4265|F746|4|1935|Aspergillus fumisynnematus
+1416|F7586|4|283|Aspergillus niger
+4121|F93|4|152|Aspergillus fumigatus
+1449|FA2692|4|153|Aspergillus
+2225|FA75|4|153|Aspergillus
+1407|Fb000501|4|12|Aspergillus terreus
+1373|Fg-551|4|1356|Aspergillus japonicus
+1437|FH-A 6357|4|153|Aspergillus
+4182|fJ80|4|153|Aspergillus
+4081|FKI-1746|4|153|Aspergillus
+3979|FKI-2136|4|153|Aspergillus
+3931|FKI-2342|4|283|Aspergillus niger
+4140|FKI-6682|4|153|Aspergillus
+4138|FKI-6817|4|2351|Aspergillus tamari
+4189|FM242|4|153|Aspergillus
+4092|FN070449|4|153|Aspergillus
+1450|FO-1289|4|152|Aspergillus fumigatus
+1436|FO-1289-2501|4|152|Aspergillus fumigatus
+2226|FO-4282|4|153|Aspergillus
+1419|FO-5904|4|283|Aspergillus niger
+4242|Fres|4|152|Aspergillus fumigatus
+1462|Fresenius 1863|4|152|Aspergillus fumigatus
+1422|FT-0554|4|283|Aspergillus niger
+4275|G131|4|131|Aspergillus tubingensis
+3984|GH-2|4|134|Aspergillus versicolor
+3981|Gwq-48|4|12|Aspergillus terreus
+4198|GZWMJZ-258|4|153|Aspergillus
+4229|GZWMJZ-288|4|19|Aspergillus flavus
+4076|H-3|4|152|Aspergillus fumigatus
+4168|H010|4|12|Aspergillus terreus
+2336|H1-1|4|2335|Aspergillus effuses
+1456|HA 302-84|4|234|Aspergillus oryzae
+4048|HB1-19|4|1691|Aspergillus glaucus
+3994|HDN08-60|4|134|Aspergillus versicolor
+3989|HDN1009|4|134|Aspergillus versicolor
+4137|HDN11-84|4|134|Aspergillus versicolor
+4157|HDN14-107|4|1770|Aspergillus aureolatus
+1672|HK10499|4|12|Aspergillus terreus
+4073|Hmp-48|4|134|Aspergillus versicolor
+4223|HMP-F28|4|234|Aspergillus oryzae
+4215|HN15-5D|4|153|Aspergillus
+4147|HN4-13|4|1400|Aspergillus flavipes
+4153|HNMF0047|4|152|Aspergillus fumigatus
+4039|HQ889708|4|1632|Aspergillus carneus
+4030|HS-05|4|153|Aspergillus
+4111|Huber Sp080903f04|4|1588|Aspergillus sclerotiorum
+4270|I-639|4|283|Aspergillus niger
+1563|I. M. I. strain 84338|4|1562|Aspergillus rugulosus
+4033|I.M.I. 53242|4|1691|Aspergillus glaucus
+3991|IAM 2054|4|12|Aspergillus terreus
+3968|IBWF002-96|4|153|Aspergillus
+4018|IF10|4|278|Aspergillus candidus
+3978|IFB-E003|4|283|Aspergillus niger
+4058|IFM58441|4|2078|Aspergillus nishimurae
+749|IFO 4290|4|234|Aspergillus oryzae
+4014|IFO 6123|4|12|Aspergillus terreus
+4079|IFO 8835|4|12|Aspergillus terreus
+4234|IFO-6123|4|12|Aspergillus terreus
+1440|IMI 337664|4|153|Aspergillus
+13|IMI16043|4|12|Aspergillus terreus
+4176|J05B-7F-4|4|1404|Aspergillus sydowii
+4151|Jcma1F17|4|3|Aspergillus ochraceus
+4213|JDW-1|4|19|Aspergillus flavus
+1716|JRJ111048|4|152|Aspergillus fumigatus
+1439|JV-23|4|1356|Aspergillus japonicus
+3971|JV-33-48|4|283|Aspergillus niger
+1649|JV33-48|4|283|Aspergillus niger
+4070|KF-428|4|1370|Aspergillus aculeatus
+4260|KJ-9|4|153|Aspergillus
+4037|KM007|4|3|Aspergillus ochraceus
+4015|KMC-901|4|152|Aspergillus fumigatus
+2362|KMC901|4|152|Aspergillus fumigatus
+4101|KMD 901|4|153|Aspergillus
+3995|KMM 4638|4|1632|Aspergillus carneus
+4047|KMM 4640|4|544|Aspergillus sulphureus
+4042|KMM 4664|4|133|Aspergillus ustus
+4217|KU258497|4|134|Aspergillus versicolor
+2334|KUFA 0013|4|2215|Aspergillus similanensis
+4162|KUFA 0062|4|278|Aspergillus candidus
+1451|KY52178|4|153|Aspergillus
+4068|LCJ-5|4|134|Aspergillus versicolor
+2370|LCJ-5-4|4|134|Aspergillus versicolor
+4205|LCJ11-102|4|3|Aspergillus ochraceus
+4236|LDJ-5|4|278|Aspergillus candidus
+1571|Lederle culture S491|4|143|Aspergillus chevalieri
+4028|Link F23967|4|278|Aspergillus candidus
+4114|LINK strain CMI 16046|4|278|Aspergillus candidus
+1674|LL-LV3020|4|283|Aspergillus niger
+4119|LN-4|4|152|Aspergillus fumigatus
+4146|LZD-14-1|4|134|Aspergillus versicolor
+4220|LZD-44-03|4|134|Aspergillus versicolor
+1429|M-4214|4|1370|Aspergillus aculeatus
+3974|MA-132|4|283|Aspergillus niger
+3966|MA-143|4|128|Aspergillus nidulans
+4078|MA-15|4|3|Aspergillus ochraceus
+4277|melanins|4|152|Aspergillus fumigatus
+4149|MEXU 27854|4|153|Aspergillus
+4009|MF-16|4|283|Aspergillus niger
+2222|MF-93|4|153|Aspergillus
+4276|MF138|4|18|Aspergillus variecolor
+4203|MF180151|4|134|Aspergillus versicolor
+1384|MF297-2|4|153|Aspergillus
+4062|MHL-P22|4|12|Aspergillus terreus
+4113|MIT-M26|4|19|Aspergillus flavus
+4253|MRC 1163|4|133|Aspergillus ustus
+4241|MST-F8675|4|2297|Aspergillus unilateralis
+4066|MST-MF495|4|134|Aspergillus versicolor
+1525|Mutant strain 1-11-105 wk-1|4|21|Aspergillus parasiticus
+1526|Mutant WE-47(hvn-1)|4|21|Aspergillus parasiticus
+4273|NBRC 32302|4|1719|Aspergillus stellatus
+2377|NE-45|4|153|Aspergillus
+3987|NF 00659|4|153|Aspergillus
+3930|NH-401|4|283|Aspergillus niger
+4237|NIH2624|4|12|Aspergillus terreus
+4136|NKH-007|4|147|Aspergillus unguis
+1421|No. 13830|4|12|Aspergillus terreus
+1470|No. 14|4|12|Aspergillus terreus
+4016|No. 16-20-8-1|4|153|Aspergillus
+1471|No. 5239|4|152|Aspergillus fumigatus
+4031|No.13830|4|12|Aspergillus terreus
+2360|NRC FA 200|4|12|Aspergillus terreus
+1464|NRCC 14509|4|278|Aspergillus candidus
+4224|NRRL 1|4|1402|Aspergillus clavatus
+547|NRRL 11156|4|12|Aspergillus terreus
+1518|NRRL 13462|4|19|Aspergillus flavus
+1415|NRRL 3112|4|1412|Aspergillus awamori
+4011|NRRL 3174 conidia M18|4|3|Aspergillus ochraceus
+1524|NRRL 3251|4|19|Aspergillus flavus
+4267|NRRL 326|4|283|Aspergillus niger
+3990|NRRL 3519|4|3|Aspergillus ochraceus
+1673|NRRL 35600|4|134|Aspergillus versicolor
+4271|NRRL 369|4|129|Aspergillus carbonarius
+1516|NRRL 4077|4|544|Aspergillus sulphureus
+1522|NRRL 4700|4|131|Aspergillus tubingensis
+1521|NRRL 4998|4|1520|Aspergillus subolivaceus
+1698|NRRL 5012|4|1697|Aspergillus arenarius
+1686|NRRL 5167|4|1588|Aspergillus sclerotiorum
+4086|NRRL 5250|4|147|Aspergillus unguis
+4051|NRRL 5769|4|540|Aspergillus caespitosus
+1515|NRRL 5890|4|1402|Aspergillus clavatus
+1519|NRRL 6433|4|21|Aspergillus parasiticus
+1514|NRRL 6435|4|1513|Aspergillus wentii
+4243|NRRL-3|4|283|Aspergillus niger
+4258|NRRL67|4|130|Aspergillus fonsecaeus
+1365|NSC-F038|4|133|Aspergillus ustus
+4038|oryzae|4|19|Aspergillus flavus
+4065|OUCMDZ-1925|4|12|Aspergillus terreus
+4057|OUCMDZ-2205|4|19|Aspergillus flavus
+4199|OUCMDZ-2738|4|134|Aspergillus versicolor
+4156|OUCMDZ-2739|4|12|Aspergillus terreus
+4193|P63|4|12|Aspergillus terreus
+4098|PF1381|4|153|Aspergillus
+1362|PFW1-13|4|1404|Aspergillus sydowii
+4207|PG-1|4|2039|Aspergillus micronesiensis
+4008|PJ03-11|4|1400|Aspergillus flavipes
+4233|PR-P-2|4|12|Aspergillus terreus
+4063|PSU-F154|4|1404|Aspergillus sydowii
+4145|PSU-RSPG178|4|1588|Aspergillus sclerotiorum
+4004|PSU-RSPG185|4|153|Aspergillus
+4056|PSU-RSPG199|4|147|Aspergillus unguis
+4155|PSU-RSPG204|4|147|Aspergillus unguis
+2341|PT06-1|4|1588|Aspergillus sclerotiorum
+4017|PT06-2|4|12|Aspergillus terreus
+4185|QC812|4|134|Aspergillus versicolor
+4169|QCS12|4|1400|Aspergillus flavipes
+4255|QT122|4|12|Aspergillus terreus
+3975|QXPC-4|4|234|Aspergillus oryzae
+4158|R7|4|1402|Aspergillus clavatus
+3873|Raper|4|540|Aspergillus caespitosus
+4010|RCBC1002|4|12|Aspergillus terreus
+4250|RCC1|4|12|Aspergillus terreus
+1645|RDWD1-2|4|21|Aspergillus parasiticus
+1434|RE-1149|4|153|Aspergillus
+1428|RF-5672 (FERM BP-5882)|4|278|Aspergillus candidus
+3878|RIB 40|4|234|Aspergillus oryzae
+4046|RK95-113|4|153|Aspergillus
+4060|SAITO IFO 4060|4|4059|Aspergillus jaonicus
+1453|SANK 10588|4|152|Aspergillus fumigatus
+4106|SC0156|4|134|Aspergillus versicolor
+1445|SC230|4|153|Aspergillus
+1452|SC319|4|153|Aspergillus
+1517|sclerotia|4|19|Aspergillus flavus
+4064|SCSGAF 0076|4|153|Aspergillus
+3986|SCSGAF0162|4|12|Aspergillus terreus
+3936|SCSIO 00305|4|1404|Aspergillus sydowii
+4115|SCSIO 05233|4|2326|Aspergillus westerdijkiae
+4143|SCSIO 05702|4|2088|Aspergillus ochraceopetaliformis
+3871|SCSIO 05879|4|134|Aspergillus versicolor
+4216|SCSIO 41008|4|12|Aspergillus terreus
+4222|SCSIO 41012|4|152|Aspergillus fumigatus
+4190|SCSIO 41013|4|134|Aspergillus versicolor
+4170|SCSIO 41501|4|153|Aspergillus
+4025|SCSIO F063|4|153|Aspergillus
+2228|SCSIO Ind09F01|4|153|Aspergillus
+4036|SCSIO Jcsw6F30|4|283|Aspergillus niger
+4172|SCSIO XWS03F03|4|153|Aspergillus
+4139|SCSIO41002|4|153|Aspergillus
+4230|SCSIO41211|4|153|Aspergillus
+4116|SCSIOW2|4|153|Aspergillus
+4144|SD-310|4|1513|Aspergillus wentii
+4206|SD-330|4|134|Aspergillus versicolor
+3980|SF-5044|4|153|Aspergillus
+4177|SF-5280|4|153|Aspergillus
+4084|SF-5974|4|153|Aspergillus
+4154|SF-5976|4|153|Aspergillus
+4088|SF-6796|4|153|Aspergillus
+4210|SK-28|4|153|Aspergillus
+4178|SP-1|4|1404|Aspergillus sydowii
+3972|sp. MMAO1|4|234|Aspergillus oryzae
+4020|SPS-02|4|152|Aspergillus fumigatus
+4097|strain (dl-29)|4|134|Aspergillus versicolor
+1671|strain 01F313|4|1408|Aspergillus ostianus
+1565|strain CBS 135-55|4|18|Aspergillus variecolor
+4201|strain CUGBMF170049|4|152|Aspergillus fumigatus
+4012|strain F00785|4|153|Aspergillus
+4069|strain FH-A 6692|4|3|Aspergillus ochraceus
+4197|SW9|4|1404|Aspergillus sydowii
+4225|SYSU-SKS025|4|134|Aspergillus versicolor
+1469|T. 680|4|1468|Aspergillus funiculosus
+1418|TC 1118|4|133|Aspergillus ustus
+1417|TC 1446|4|1400|Aspergillus flavipes
+1411|TC 1629|4|283|Aspergillus niger
+3874|Thom|4|540|Aspergillus caespitosus
+1420|Thom DSM 11247|4|12|Aspergillus terreus
+4240|Tieghem|4|283|Aspergillus niger
+4173|TJ23|4|153|Aspergillus
+4180|TM8|4|12|Aspergillus terreus
+4141|TMPU1623|4|153|Aspergillus
+4085|TPU1343|4|153|Aspergillus
+4254|UGM218|4|133|Aspergillus ustus
+4105|var. boedijnii (Blochwitz)|4|12|Aspergillus terreus
+1414|var. columnaris FKI-0739|4|19|Aspergillus flavus
+1444|WB2346|4|283|Aspergillus niger
+1619|WC76446|4|3|Aspergillus ochraceus
+1566|WF-38-11|4|1402|Aspergillus clavatus
+4110|WFZ-25|4|152|Aspergillus fumigatus
+3970|WILH|4|3|Aspergillus ochraceus
+4019|WZ-4-11|4|129|Aspergillus carbonarius
+4228|WZXY-SX-4-1|4|4227|Aspergillus europaeus
+4200|XNM-4|4|153|Aspergillus
+4024|XS-20090B15|4|153|Aspergillus
+4072|XW-12|4|153|Aspergillus
+4226|xy02|4|153|Aspergillus
+1461|Y-30462|4|1404|Aspergillus sydowii
+4027|Y10|4|134|Aspergillus versicolor
+4160|YHZ-1|4|153|Aspergillus
+4165|YIM PH30711|4|12|Aspergillus terreus
+4021|YK-7|4|152|Aspergillus fumigatus
+4142|YK-76|4|153|Aspergillus
+4232|YQ-13|4|153|Aspergillus
+4002|YXf3|4|153|Aspergillus
+4248|Z120|4|153|Aspergillus
+4164|Z4|4|153|Aspergillus
+4163|ZA-01|4|153|Aspergillus
+3969|ZBY-3|4|134|Aspergillus versicolor
+4196|ZF-79|4|153|Aspergillus
+2339|ZHN-7-07|4|2261|Aspergillus taichungensis
+1713|ZJ-2008001|4|153|Aspergillus
+4186|ZJ-68|4|153|Aspergillus
+3985|ZL0-1b14|4|153|Aspergillus
+2353|ZLN-60|4|134|Aspergillus versicolor
+2367|ZLN-61|4|134|Aspergillus versicolor
+2368|ZLN-62|4|134|Aspergillus versicolor
+2369|ZLN-63|4|134|Aspergillus versicolor
+4166|[CFCC 81836]|4|12|Aspergillus terreus

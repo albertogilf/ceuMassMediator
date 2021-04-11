@@ -2,7 +2,7 @@
 <@macros.header component=state />
 
 <#if (success)>
-    
+
     <@macros.title id=state.getIdentifier() name=state.getName()/>
 
     <fieldset class="attributes"><legend>Basic attributes</legend>
@@ -27,6 +27,7 @@
         <@macros.link name="LipidMaps" base=base_lm id=state.getLm_id()/>
         <@macros.link name="Metlin" base=base_metlin id=state.getMetlin_id()/>
         <@macros.link name="PubChem" base=base_pc id=state.getPc_id()/>
+        <@macros.link name="NpAtlas" base=base_npatlas id=state.getNpatlas_id()/>
     </fieldset>
 
     <#if (state.getNum_chains()?has_content)>
@@ -61,7 +62,7 @@
     <@macros.linklist l=state.getOntology_terms() name="Ontology" base=base_ontology />
     <@macros.linklist l=state.getReferences() name="References" base="" sep="<br/>" />
 
-    
+
 <#else>
     <@macros.error />
 </#if>
